@@ -21,6 +21,12 @@
             width: 42px; height: 42px; border-radius: 50%; font-size: 1.2rem;
         }
         input, select, textarea { font-size: 16px !important; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="text-slate-800 h-[100dvh] flex flex-col overflow-hidden bg-slate-50">
@@ -112,14 +118,78 @@
             </div>
         </div>
 
-        <!-- Transaction List -->
-        <div class="px-4 pb-24">
-            <div class="flex justify-between items-baseline mb-3">
-                <h2 class="font-bold text-slate-700 text-lg">All Transactions</h2>
-                <span class="text-xs text-slate-400 font-medium" id="transaction-count">0 Records</span>
+        <!-- Tabs Navigation -->
+        <div class="px-4 mb-4">
+            <div class="bg-white p-1.5 rounded-2xl shadow-sm flex justify-between items-center border border-slate-100">
+                <div class="flex bg-slate-100 rounded-xl p-1 flex-1 relative">
+                    <!-- Tab Background Slider -->
+                    <div id="tab-indicator" class="absolute left-1 top-1 bottom-1 w-[calc(50%-4px)] bg-indigo-600 rounded-lg shadow transition-all duration-300 z-0"></div>
+                    
+                    <!-- All Tab -->
+                    <button onclick="switchTab('all')" id="tab-all" class="relative z-10 flex-1 py-2.5 text-sm font-semibold text-center transition-colors text-white">
+                        All
+                    </button>
+                    
+                    <!-- Fees Tab -->
+                    <button onclick="switchTab('fees')" id="tab-fees" class="relative z-10 flex-1 py-2.5 text-sm font-semibold text-center transition-colors text-slate-500">
+                        <i class="fa-solid fa-money-bill-wave mr-1"></i> Fees
+                    </button>
+                    
+                    <!-- Expenses Tab -->
+                    <button onclick="switchTab('expenses')" id="tab-expenses" class="relative z-10 flex-1 py-2.5 text-sm font-semibold text-center transition-colors text-slate-500">
+                        <i class="fa-solid fa-cart-shopping mr-1"></i> Expenses
+                    </button>
+                </div>
+                
+                <!-- Filter Button -->
+                <button onclick="toggleFilters()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-10 h-10 rounded-xl ml-2 flex items-center justify-center transition">
+                    <i class="fa-solid fa-filter"></i>
+                </button>
             </div>
-            <div id="transaction-list" class="space-y-3">
-                <!-- Transactions will be loaded here -->
+            
+            <!-- Category Filters (Hidden by default) -->
+            <div id="filter-panel" class="hidden mt-3 p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-slate-700">Filter by Category</h3>
+                    <button onclick="clearFilters()" class="text-xs text-indigo-600 font-medium">Clear All</button>
+                </div>
+                <div class="flex flex-wrap gap-2" id="category-filters"></div>
+            </div>
+        </div>
+
+        <!-- Transaction Lists (Separated by tabs) -->
+        <div class="px-4 pb-24">
+            <!-- All Transactions Tab -->
+            <div id="tab-all-content" class="tab-content active">
+                <div class="flex justify-between items-baseline mb-3">
+                    <h2 class="font-bold text-slate-700 text-lg">All Transactions</h2>
+                    <span class="text-xs text-slate-400 font-medium" id="all-count">0 Records</span>
+                </div>
+                <div id="all-transactions" class="space-y-3">
+                    <!-- All transactions will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Fees Tab -->
+            <div id="tab-fees-content" class="tab-content">
+                <div class="flex justify-between items-baseline mb-3">
+                    <h2 class="font-bold text-slate-700 text-lg">Fee Collections</h2>
+                    <span class="text-xs text-slate-400 font-medium" id="fees-count">0 Records</span>
+                </div>
+                <div id="fees-transactions" class="space-y-3">
+                    <!-- Fee transactions will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Expenses Tab -->
+            <div id="tab-expenses-content" class="tab-content">
+                <div class="flex justify-between items-baseline mb-3">
+                    <h2 class="font-bold text-slate-700 text-lg">Expenses</h2>
+                    <span class="text-xs text-slate-400 font-medium" id="expenses-count">0 Records</span>
+                </div>
+                <div id="expenses-transactions" class="space-y-3">
+                    <!-- Expense transactions will be loaded here -->
+                </div>
             </div>
         </div>
     </main>
@@ -130,7 +200,7 @@
     </div>
 
     <script>
-        // Category configurations (same as your main app)
+        // Category configurations
         const expenseCategories = {
             'Food': { icon: 'fa-utensils', color: 'bg-orange-100 text-orange-600' },
             'Rent': { icon: 'fa-house', color: 'bg-blue-100 text-blue-600' },
@@ -148,8 +218,13 @@
             'Others': { icon: 'fa-money-bill', color: 'bg-gray-100 text-gray-600' }
         };
 
-        // Main data variable
+        // App state
         let jsonData = null;
+        let currentTab = 'all';
+        let activeCategoryFilters = {
+            fees: [],
+            expenses: []
+        };
 
         // Load data on page load
         document.addEventListener('DOMContentLoaded', () => {
@@ -161,15 +236,14 @@
             try {
                 showLoading(true);
                 
-                // Try to fetch the data.json file
                 const response = await fetch('data.json');
-                
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 
                 jsonData = await response.json();
                 renderData();
+                renderCategoryFilters();
                 showLoading(false);
                 
             } catch (error) {
@@ -194,34 +268,125 @@
             document.getElementById('income-count').textContent = jsonData.summary.incomeRecords;
             document.getElementById('expense-count').textContent = jsonData.summary.expenseRecords;
             
-            // Update transaction count
-            document.getElementById('transaction-count').textContent = 
-                `${jsonData.summary.totalTransactions} Records`;
-            
-            // Render transactions
-            renderTransactions();
-            
             // Update footer
             document.getElementById('footer-info').textContent = 
                 `${jsonData.metadata.hostelName} | ${jsonData.metadata.address} | ${jsonData.metadata.contact}`;
+            
+            // Render all transaction tabs
+            renderAllTransactions();
+            renderFeeTransactions();
+            renderExpenseTransactions();
         }
 
-        // Render transaction list
-        function renderTransactions() {
-            const container = document.getElementById('transaction-list');
+        // Tab switching function
+        function switchTab(tabName) {
+            // Update current tab
+            currentTab = tabName;
+            
+            // Update tab indicator position
+            const indicator = document.getElementById('tab-indicator');
+            const tabButtons = {
+                'all': document.getElementById('tab-all'),
+                'fees': document.getElementById('tab-fees'),
+                'expenses': document.getElementById('tab-expenses')
+            };
+            
+            // Move indicator based on selected tab
+            if (tabName === 'all') {
+                indicator.style.transform = 'translateX(0)';
+            } else if (tabName === 'fees') {
+                indicator.style.transform = 'translateX(100%)';
+            } else if (tabName === 'expenses') {
+                indicator.style.transform = 'translateX(200%)';
+            }
+            
+            // Update tab button colors
+            Object.keys(tabButtons).forEach(tab => {
+                if (tab === tabName) {
+                    tabButtons[tab].classList.remove('text-slate-500');
+                    tabButtons[tab].classList.add('text-white');
+                } else {
+                    tabButtons[tab].classList.remove('text-white');
+                    tabButtons[tab].classList.add('text-slate-500');
+                }
+            });
+            
+            // Show/hide tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`tab-${tabName}-content`).classList.add('active');
+        }
+
+        // Render all transactions (mixed)
+        function renderAllTransactions() {
+            const container = document.getElementById('all-transactions');
+            if (!jsonData.transactions || jsonData.transactions.length === 0) {
+                container.innerHTML = getEmptyStateHTML('No transactions found');
+                document.getElementById('all-count').textContent = '0 Records';
+                return;
+            }
+            
+            const filteredTransactions = filterTransactions(jsonData.transactions);
+            renderTransactionList(container, filteredTransactions, 'mixed');
+            document.getElementById('all-count').textContent = `${filteredTransactions.length} Records`;
+        }
+
+        // Render only fee transactions
+        function renderFeeTransactions() {
+            const container = document.getElementById('fees-transactions');
+            if (!jsonData.transactions) {
+                container.innerHTML = getEmptyStateHTML('No fee records found');
+                document.getElementById('fees-count').textContent = '0 Records';
+                return;
+            }
+            
+            let feeTransactions = jsonData.transactions.filter(t => t.type === 'fee');
+            
+            // Apply category filters if any
+            if (activeCategoryFilters.fees.length > 0) {
+                feeTransactions = feeTransactions.filter(t => 
+                    activeCategoryFilters.fees.includes(t.category)
+                );
+            }
+            
+            renderTransactionList(container, feeTransactions, 'fee');
+            document.getElementById('fees-count').textContent = `${feeTransactions.length} Records`;
+        }
+
+        // Render only expense transactions
+        function renderExpenseTransactions() {
+            const container = document.getElementById('expenses-transactions');
+            if (!jsonData.transactions) {
+                container.innerHTML = getEmptyStateHTML('No expense records found');
+                document.getElementById('expenses-count').textContent = '0 Records';
+                return;
+            }
+            
+            let expenseTransactions = jsonData.transactions.filter(t => t.type === 'expense');
+            
+            // Apply category filters if any
+            if (activeCategoryFilters.expenses.length > 0) {
+                expenseTransactions = expenseTransactions.filter(t => 
+                    activeCategoryFilters.expenses.includes(t.category)
+                );
+            }
+            
+            renderTransactionList(container, expenseTransactions, 'expense');
+            document.getElementById('expenses-count').textContent = `${expenseTransactions.length} Records`;
+        }
+
+        // Generic transaction list renderer
+        function renderTransactionList(container, transactions, type) {
             container.innerHTML = '';
             
-            if (!jsonData.transactions || jsonData.transactions.length === 0) {
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-12 opacity-60">
-                        <i class="fa-solid fa-clipboard-list text-4xl text-slate-300 mb-2"></i>
-                        <p class="text-sm text-slate-400">No transactions found</p>
-                    </div>`;
+            if (!transactions || transactions.length === 0) {
+                container.innerHTML = getEmptyStateHTML(`No ${type} records found`);
                 return;
             }
             
             // Sort by date (newest first)
-            const sortedTransactions = [...jsonData.transactions].sort((a, b) => 
+            const sortedTransactions = [...transactions].sort((a, b) => 
                 new Date(b.date) - new Date(a.date)
             );
             
@@ -232,7 +397,7 @@
                                      { icon: 'fa-circle', color: 'bg-gray-100 text-gray-500' };
                 
                 const transactionEl = document.createElement('div');
-                transactionEl.className = 'bg-white p-4 rounded-2xl shadow-sm border border-slate-100';
+                transactionEl.className = 'bg-white p-4 rounded-2xl shadow-sm border border-slate-100 hover:bg-slate-50 transition cursor-pointer';
                 
                 transactionEl.innerHTML = `
                     <div class="flex items-center justify-between">
@@ -240,7 +405,7 @@
                             <div class="${categoryConfig.color} category-icon shrink-0 text-lg">
                                 <i class="fa-solid ${categoryConfig.icon}"></i>
                             </div>
-                            <div class="min-w-0">
+                            <div class="min-w-0 flex-1">
                                 <h4 class="font-semibold text-slate-800 text-sm truncate leading-tight">
                                     ${transaction.description}
                                 </h4>
@@ -252,20 +417,162 @@
                             </div>
                         </div>
                         <div class="flex flex-col items-end shrink-0 pl-2">
-                            <span class="font-bold ${isFee ? 'text-green-600' : 'text-slate-800'} text-base">
+                            <span class="font-bold ${isFee ? 'text-green-600' : 'text-red-600'} text-base">
                                 ${isFee ? '+' : '-'} ${formatCurrency(transaction.amount)}
                             </span>
                             <div class="flex gap-2 mt-1">
-                                <span class="text-xs px-2 py-1 rounded ${isFee ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                                    ${transaction.type}
+                                <span class="text-xs px-2 py-1 rounded-full ${isFee ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                    ${isFee ? 'FEE' : 'EXPENSE'}
                                 </span>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Additional details (hidden by default) -->
+                    <div class="mt-3 pt-3 border-t border-slate-100 hidden" id="details-${transaction.id}">
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <span class="text-slate-500">ID:</span>
+                                <span class="font-medium ml-2">${transaction.id.toString().slice(-6)}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-500">Full Date:</span>
+                                <span class="font-medium ml-2">${formatDate(transaction.date)}</span>
+                            </div>
+                            ${isFee ? `
+                            <div class="col-span-2">
+                                <span class="text-slate-500">Student:</span>
+                                <span class="font-medium ml-2">${transaction.studentName}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
                 `;
+                
+                // Add click event to show details
+                transactionEl.addEventListener('click', (e) => {
+                    // Don't trigger if clicking on a button inside
+                    if (!e.target.closest('button')) {
+                        const detailsEl = transactionEl.querySelector(`#details-${transaction.id}`);
+                        detailsEl.classList.toggle('hidden');
+                    }
+                });
                 
                 container.appendChild(transactionEl);
             });
+        }
+
+        // Render category filters
+        function renderCategoryFilters() {
+            if (!jsonData) return;
+            
+            const container = document.getElementById('category-filters');
+            container.innerHTML = '';
+            
+            // Get all unique categories from transactions
+            const allCategories = {
+                fees: [...new Set(jsonData.transactions.filter(t => t.type === 'fee').map(t => t.category))],
+                expenses: [...new Set(jsonData.transactions.filter(t => t.type === 'expense').map(t => t.category))]
+            };
+            
+            // Create fee category filters
+            if (allCategories.fees.length > 0) {
+                container.innerHTML += `
+                    <div class="w-full text-xs text-slate-500 mb-1">Fee Categories:</div>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        ${allCategories.fees.map(category => `
+                            <button onclick="toggleCategoryFilter('fees', '${category}')" 
+                                class="px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${isCategoryActive('fees', category) ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white text-slate-600 border-slate-200'}">
+                                <i class="fa-solid fa-money-bill-wave mr-1"></i>${category}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            // Create expense category filters
+            if (allCategories.expenses.length > 0) {
+                container.innerHTML += `
+                    <div class="w-full text-xs text-slate-500 mb-1">Expense Categories:</div>
+                    <div class="flex flex-wrap gap-2">
+                        ${allCategories.expenses.map(category => `
+                            <button onclick="toggleCategoryFilter('expenses', '${category}')" 
+                                class="px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${isCategoryActive('expenses', category) ? 'bg-red-100 text-red-700 border-red-300' : 'bg-white text-slate-600 border-slate-200'}">
+                                <i class="fa-solid fa-cart-shopping mr-1"></i>${category}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        // Filter transactions based on active filters
+        function filterTransactions(transactions) {
+            let filtered = [...transactions];
+            
+            // Apply fee category filters
+            const feeFilters = activeCategoryFilters.fees;
+            const expenseFilters = activeCategoryFilters.expenses;
+            
+            if (feeFilters.length > 0 || expenseFilters.length > 0) {
+                filtered = filtered.filter(t => {
+                    if (t.type === 'fee' && feeFilters.length > 0) {
+                        return feeFilters.includes(t.category);
+                    }
+                    if (t.type === 'expense' && expenseFilters.length > 0) {
+                        return expenseFilters.includes(t.category);
+                    }
+                    // If no filters for this type, include it
+                    return true;
+                });
+            }
+            
+            return filtered;
+        }
+
+        // Toggle category filter
+        function toggleCategoryFilter(type, category) {
+            const index = activeCategoryFilters[type].indexOf(category);
+            
+            if (index === -1) {
+                // Add filter
+                activeCategoryFilters[type].push(category);
+            } else {
+                // Remove filter
+                activeCategoryFilters[type].splice(index, 1);
+            }
+            
+            // Update UI and rerender
+            renderCategoryFilters();
+            refreshTransactionLists();
+        }
+
+        // Check if category filter is active
+        function isCategoryActive(type, category) {
+            return activeCategoryFilters[type].includes(category);
+        }
+
+        // Clear all filters
+        function clearFilters() {
+            activeCategoryFilters = {
+                fees: [],
+                expenses: []
+            };
+            renderCategoryFilters();
+            refreshTransactionLists();
+        }
+
+        // Refresh all transaction lists
+        function refreshTransactionLists() {
+            renderAllTransactions();
+            renderFeeTransactions();
+            renderExpenseTransactions();
+        }
+
+        // Toggle filter panel visibility
+        function toggleFilters() {
+            const panel = document.getElementById('filter-panel');
+            panel.classList.toggle('hidden');
         }
 
         // Utility functions
@@ -279,6 +586,14 @@
                 return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
             }
             return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function getEmptyStateHTML(message) {
+            return `
+                <div class="flex flex-col items-center justify-center py-12 opacity-60">
+                    <i class="fa-solid fa-clipboard-list text-4xl text-slate-300 mb-2"></i>
+                    <p class="text-sm text-slate-400">${message}</p>
+                </div>`;
         }
 
         function showLoading(show) {
@@ -307,15 +622,12 @@
         }
 
         function goBackToMain() {
-            // If you have a main page, link to it
-            // window.location.href = 'index.html';
-            
-            // For now, just show an alert
-            alert('This would return to the main app. Replace with your actual main page URL.');
+            // Change this to your actual main page URL
+            window.location.href = 'index.html';
         }
 
-        // Optional: Auto-refresh every 30 seconds
-        // setInterval(refreshData, 30000);
+        // Initialize with first tab active
+        switchTab('all');
     </script>
 </body>
 </html>
