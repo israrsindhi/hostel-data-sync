@@ -27,11 +27,23 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .tab-indicator {
+            position: absolute;
+            left: 0.25rem;
+            top: 0.25rem;
+            bottom: 0.25rem;
+            width: calc(33.333% - 8px);
+            background: #4f46e5;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 0;
+        }
     </style>
 </head>
 <body class="text-slate-800 h-[100dvh] flex flex-col overflow-hidden bg-slate-50">
     <!-- Header -->
-    <header class="bg-indigo-600 text-white shadow-md z-30 shrink-0 pt-safe-top">
+    <header class="bg-indigo-600 text-white shadow-md z-30 shrink-0">
         <div class="w-full max-w-lg mx-auto px-4 py-3 flex justify-between items-center">
             <h1 class="text-lg font-bold flex items-center gap-2">
                 <i class="fa-solid fa-database text-indigo-200"></i> JSON Data Viewer
@@ -48,7 +60,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto relative w-full max-w-lg mx-auto pb-safe-bottom">
+    <main class="flex-1 overflow-y-auto w-full max-w-lg mx-auto">
         <!-- Loading/Error State -->
         <div id="loading-error" class="hidden p-6">
             <div class="bg-red-50 border border-red-200 rounded-2xl p-4 text-center">
@@ -61,45 +73,46 @@
             </div>
         </div>
 
-        <!-- Summary Cards -->
-        <div class="p-4 space-y-4" id="summary-section">
-            <div class="bg-indigo-600 text-white p-6 rounded-2xl shadow-lg">
-                <div class="flex justify-between items-center mb-4">
+        <!-- Summary Section -->
+        <div id="summary-section" class="p-4">
+            <!-- Summary Card -->
+            <div class="bg-indigo-600 text-white p-5 rounded-2xl shadow-lg mb-4">
+                <div class="flex justify-between items-start mb-4">
                     <div>
                         <h2 class="text-xl font-bold" id="hostel-name">Loading...</h2>
-                        <p class="text-indigo-200 text-sm" id="report-period"></p>
+                        <p class="text-indigo-200 text-sm mt-1" id="report-period"></p>
                     </div>
                     <div class="text-right">
-                        <p class="text-indigo-200 text-sm">Exported</p>
-                        <p class="font-bold" id="export-date">...</p>
+                        <p class="text-indigo-200 text-xs">Exported</p>
+                        <p class="font-bold text-sm" id="export-date">...</p>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="text-center bg-indigo-700/30 p-3 rounded-xl">
-                        <div class="text-green-300 font-bold text-xl" id="total-income">0</div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="text-center bg-indigo-700/40 p-3 rounded-xl">
+                        <div class="text-green-300 font-bold text-lg" id="total-income">0</div>
                         <div class="text-indigo-200 text-xs">Income</div>
                     </div>
-                    <div class="text-center bg-indigo-700/30 p-3 rounded-xl">
-                        <div class="text-red-300 font-bold text-xl" id="total-expense">0</div>
+                    <div class="text-center bg-indigo-700/40 p-3 rounded-xl">
+                        <div class="text-red-300 font-bold text-lg" id="total-expense">0</div>
                         <div class="text-indigo-200 text-xs">Expense</div>
                     </div>
-                    <div class="text-center bg-indigo-700/30 p-3 rounded-xl">
-                        <div class="text-white font-bold text-xl" id="net-balance">0</div>
+                    <div class="text-center bg-indigo-700/40 p-3 rounded-xl">
+                        <div class="text-white font-bold text-lg" id="net-balance">0</div>
                         <div class="text-indigo-200 text-xs">Balance</div>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Stats -->
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-3 mb-4">
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
-                            <i class="fa-solid fa-arrow-down"></i>
+                            <i class="fa-solid fa-arrow-down text-sm"></i>
                         </div>
                         <div>
-                            <div class="text-2xl font-bold text-slate-800" id="income-count">0</div>
+                            <div class="text-xl font-bold text-slate-800" id="income-count">0</div>
                             <div class="text-xs text-slate-500">Income Records</div>
                         </div>
                     </div>
@@ -107,10 +120,10 @@
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
-                            <i class="fa-solid fa-arrow-up"></i>
+                            <i class="fa-solid fa-arrow-up text-sm"></i>
                         </div>
                         <div>
-                            <div class="text-2xl font-bold text-slate-800" id="expense-count">0</div>
+                            <div class="text-xl font-bold text-slate-800" id="expense-count">0</div>
                             <div class="text-xs text-slate-500">Expense Records</div>
                         </div>
                     </div>
@@ -119,83 +132,95 @@
         </div>
 
         <!-- Tabs Navigation -->
-        <div class="px-4 mb-4">
-            <div class="bg-white p-1.5 rounded-2xl shadow-sm flex justify-between items-center border border-slate-100">
-                <div class="flex bg-slate-100 rounded-xl p-1 flex-1 relative">
-                    <!-- Tab Background Slider -->
-                    <div id="tab-indicator" class="absolute left-1 top-1 bottom-1 w-[calc(50%-4px)] bg-indigo-600 rounded-lg shadow transition-all duration-300 z-0"></div>
+        <div class="px-4 mb-3">
+            <div class="bg-white p-1 rounded-2xl shadow-sm border border-slate-100">
+                <div class="flex bg-slate-100 rounded-xl p-1 relative">
+                    <!-- Tab Indicator -->
+                    <div id="tab-indicator" class="tab-indicator"></div>
                     
                     <!-- All Tab -->
-                    <button onclick="switchTab('all')" id="tab-all" class="relative z-10 flex-1 py-2.5 text-sm font-semibold text-center transition-colors text-white">
+                    <button onclick="switchTab('all')" id="tab-all" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-white">
                         All
                     </button>
                     
                     <!-- Fees Tab -->
-                    <button onclick="switchTab('fees')" id="tab-fees" class="relative z-10 flex-1 py-2.5 text-sm font-semibold text-center transition-colors text-slate-500">
-                        <i class="fa-solid fa-money-bill-wave mr-1"></i> Fees
+                    <button onclick="switchTab('fees')" id="tab-fees" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
+                        <i class="fa-solid fa-money-bill-wave mr-1 text-xs"></i> Fees
                     </button>
                     
                     <!-- Expenses Tab -->
-                    <button onclick="switchTab('expenses')" id="tab-expenses" class="relative z-10 flex-1 py-2.5 text-sm font-semibold text-center transition-colors text-slate-500">
-                        <i class="fa-solid fa-cart-shopping mr-1"></i> Expenses
+                    <button onclick="switchTab('expenses')" id="tab-expenses" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
+                        <i class="fa-solid fa-cart-shopping mr-1 text-xs"></i> Expenses
                     </button>
                 </div>
-                
-                <!-- Filter Button -->
-                <button onclick="toggleFilters()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-10 h-10 rounded-xl ml-2 flex items-center justify-center transition">
-                    <i class="fa-solid fa-filter"></i>
-                </button>
-            </div>
-            
-            <!-- Category Filters (Hidden by default) -->
-            <div id="filter-panel" class="hidden mt-3 p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="font-bold text-slate-700">Filter by Category</h3>
-                    <button onclick="clearFilters()" class="text-xs text-indigo-600 font-medium">Clear All</button>
-                </div>
-                <div class="flex flex-wrap gap-2" id="category-filters"></div>
             </div>
         </div>
 
-        <!-- Transaction Lists (Separated by tabs) -->
-        <div class="px-4 pb-24">
+        <!-- Filter Panel -->
+        <div id="filter-panel" class="hidden px-4 mb-3">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-3">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-slate-700 text-sm">Filter by Category</h3>
+                    <button onclick="clearFilters()" class="text-xs text-indigo-600 font-medium hover:text-indigo-800">Clear All</button>
+                </div>
+                <div class="space-y-3">
+                    <!-- Fee Categories -->
+                    <div>
+                        <div class="text-xs text-slate-500 mb-1">Fee Categories</div>
+                        <div class="flex flex-wrap gap-1.5" id="fee-categories"></div>
+                    </div>
+                    
+                    <!-- Expense Categories -->
+                    <div>
+                        <div class="text-xs text-slate-500 mb-1">Expense Categories</div>
+                        <div class="flex flex-wrap gap-1.5" id="expense-categories"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Button -->
+        <div class="px-4 mb-4 flex justify-end">
+            <button onclick="toggleFilters()" class="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium transition">
+                <i class="fa-solid fa-filter text-xs"></i>
+                <span>Filters</span>
+                <span id="active-filter-count" class="bg-indigo-600 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[18px]">0</span>
+            </button>
+        </div>
+
+        <!-- Transaction Lists -->
+        <div class="px-4 pb-6">
             <!-- All Transactions Tab -->
             <div id="tab-all-content" class="tab-content active">
                 <div class="flex justify-between items-baseline mb-3">
-                    <h2 class="font-bold text-slate-700 text-lg">All Transactions</h2>
+                    <h2 class="font-bold text-slate-700">All Transactions</h2>
                     <span class="text-xs text-slate-400 font-medium" id="all-count">0 Records</span>
                 </div>
-                <div id="all-transactions" class="space-y-3">
-                    <!-- All transactions will be loaded here -->
-                </div>
+                <div id="all-transactions" class="space-y-3"></div>
             </div>
 
             <!-- Fees Tab -->
             <div id="tab-fees-content" class="tab-content">
                 <div class="flex justify-between items-baseline mb-3">
-                    <h2 class="font-bold text-slate-700 text-lg">Fee Collections</h2>
+                    <h2 class="font-bold text-slate-700">Fee Collections</h2>
                     <span class="text-xs text-slate-400 font-medium" id="fees-count">0 Records</span>
                 </div>
-                <div id="fees-transactions" class="space-y-3">
-                    <!-- Fee transactions will be loaded here -->
-                </div>
+                <div id="fees-transactions" class="space-y-3"></div>
             </div>
 
             <!-- Expenses Tab -->
             <div id="tab-expenses-content" class="tab-content">
                 <div class="flex justify-between items-baseline mb-3">
-                    <h2 class="font-bold text-slate-700 text-lg">Expenses</h2>
+                    <h2 class="font-bold text-slate-700">Expenses</h2>
                     <span class="text-xs text-slate-400 font-medium" id="expenses-count">0 Records</span>
                 </div>
-                <div id="expenses-transactions" class="space-y-3">
-                    <!-- Expense transactions will be loaded here -->
-                </div>
+                <div id="expenses-transactions" class="space-y-3"></div>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <div class="bg-white border-t border-slate-200 p-4 text-center text-sm text-slate-500">
+    <div class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500 shrink-0">
         <p id="footer-info">Loading data...</p>
     </div>
 
@@ -244,6 +269,7 @@
                 jsonData = await response.json();
                 renderData();
                 renderCategoryFilters();
+                updateFilterCount();
                 showLoading(false);
                 
             } catch (error) {
@@ -280,27 +306,25 @@
 
         // Tab switching function
         function switchTab(tabName) {
-            // Update current tab
             currentTab = tabName;
             
             // Update tab indicator position
             const indicator = document.getElementById('tab-indicator');
+            const positions = {
+                'all': 'translateX(0)',
+                'fees': 'translateX(100%)',
+                'expenses': 'translateX(200%)'
+            };
+            
+            indicator.style.transform = positions[tabName];
+            
+            // Update tab button colors
             const tabButtons = {
                 'all': document.getElementById('tab-all'),
                 'fees': document.getElementById('tab-fees'),
                 'expenses': document.getElementById('tab-expenses')
             };
             
-            // Move indicator based on selected tab
-            if (tabName === 'all') {
-                indicator.style.transform = 'translateX(0)';
-            } else if (tabName === 'fees') {
-                indicator.style.transform = 'translateX(100%)';
-            } else if (tabName === 'expenses') {
-                indicator.style.transform = 'translateX(200%)';
-            }
-            
-            // Update tab button colors
             Object.keys(tabButtons).forEach(tab => {
                 if (tab === tabName) {
                     tabButtons[tab].classList.remove('text-slate-500');
@@ -397,12 +421,12 @@
                                      { icon: 'fa-circle', color: 'bg-gray-100 text-gray-500' };
                 
                 const transactionEl = document.createElement('div');
-                transactionEl.className = 'bg-white p-4 rounded-2xl shadow-sm border border-slate-100 hover:bg-slate-50 transition cursor-pointer';
+                transactionEl.className = 'bg-white p-4 rounded-2xl shadow-sm border border-slate-100';
                 
                 transactionEl.innerHTML = `
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3 overflow-hidden">
-                            <div class="${categoryConfig.color} category-icon shrink-0 text-lg">
+                            <div class="${categoryConfig.color} category-icon shrink-0">
                                 <i class="fa-solid ${categoryConfig.icon}"></i>
                             </div>
                             <div class="min-w-0 flex-1">
@@ -420,43 +444,12 @@
                             <span class="font-bold ${isFee ? 'text-green-600' : 'text-red-600'} text-base">
                                 ${isFee ? '+' : '-'} ${formatCurrency(transaction.amount)}
                             </span>
-                            <div class="flex gap-2 mt-1">
-                                <span class="text-xs px-2 py-1 rounded-full ${isFee ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                                    ${isFee ? 'FEE' : 'EXPENSE'}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Additional details (hidden by default) -->
-                    <div class="mt-3 pt-3 border-t border-slate-100 hidden" id="details-${transaction.id}">
-                        <div class="grid grid-cols-2 gap-3 text-sm">
-                            <div>
-                                <span class="text-slate-500">ID:</span>
-                                <span class="font-medium ml-2">${transaction.id.toString().slice(-6)}</span>
-                            </div>
-                            <div>
-                                <span class="text-slate-500">Full Date:</span>
-                                <span class="font-medium ml-2">${formatDate(transaction.date)}</span>
-                            </div>
-                            ${isFee ? `
-                            <div class="col-span-2">
-                                <span class="text-slate-500">Student:</span>
-                                <span class="font-medium ml-2">${transaction.studentName}</span>
-                            </div>
-                            ` : ''}
+                            <span class="text-xs text-slate-400 mt-1">
+                                ${isFee ? 'Fee' : 'Expense'}
+                            </span>
                         </div>
                     </div>
                 `;
-                
-                // Add click event to show details
-                transactionEl.addEventListener('click', (e) => {
-                    // Don't trigger if clicking on a button inside
-                    if (!e.target.closest('button')) {
-                        const detailsEl = transactionEl.querySelector(`#details-${transaction.id}`);
-                        detailsEl.classList.toggle('hidden');
-                    }
-                });
                 
                 container.appendChild(transactionEl);
             });
@@ -466,8 +459,11 @@
         function renderCategoryFilters() {
             if (!jsonData) return;
             
-            const container = document.getElementById('category-filters');
-            container.innerHTML = '';
+            const feeContainer = document.getElementById('fee-categories');
+            const expenseContainer = document.getElementById('expense-categories');
+            
+            feeContainer.innerHTML = '';
+            expenseContainer.innerHTML = '';
             
             // Get all unique categories from transactions
             const allCategories = {
@@ -476,41 +472,28 @@
             };
             
             // Create fee category filters
-            if (allCategories.fees.length > 0) {
-                container.innerHTML += `
-                    <div class="w-full text-xs text-slate-500 mb-1">Fee Categories:</div>
-                    <div class="flex flex-wrap gap-2 mb-3">
-                        ${allCategories.fees.map(category => `
-                            <button onclick="toggleCategoryFilter('fees', '${category}')" 
-                                class="px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${isCategoryActive('fees', category) ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white text-slate-600 border-slate-200'}">
-                                <i class="fa-solid fa-money-bill-wave mr-1"></i>${category}
-                            </button>
-                        `).join('')}
-                    </div>
-                `;
-            }
+            allCategories.fees.forEach(category => {
+                const button = document.createElement('button');
+                button.className = `px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${isCategoryActive('fees', category) ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`;
+                button.innerHTML = `<i class="fa-solid fa-money-bill-wave mr-1 text-xs"></i>${category}`;
+                button.onclick = () => toggleCategoryFilter('fees', category);
+                feeContainer.appendChild(button);
+            });
             
             // Create expense category filters
-            if (allCategories.expenses.length > 0) {
-                container.innerHTML += `
-                    <div class="w-full text-xs text-slate-500 mb-1">Expense Categories:</div>
-                    <div class="flex flex-wrap gap-2">
-                        ${allCategories.expenses.map(category => `
-                            <button onclick="toggleCategoryFilter('expenses', '${category}')" 
-                                class="px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${isCategoryActive('expenses', category) ? 'bg-red-100 text-red-700 border-red-300' : 'bg-white text-slate-600 border-slate-200'}">
-                                <i class="fa-solid fa-cart-shopping mr-1"></i>${category}
-                            </button>
-                        `).join('')}
-                    </div>
-                `;
-            }
+            allCategories.expenses.forEach(category => {
+                const button = document.createElement('button');
+                button.className = `px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${isCategoryActive('expenses', category) ? 'bg-red-100 text-red-700 border-red-300' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`;
+                button.innerHTML = `<i class="fa-solid fa-cart-shopping mr-1 text-xs"></i>${category}`;
+                button.onclick = () => toggleCategoryFilter('expenses', category);
+                expenseContainer.appendChild(button);
+            });
         }
 
         // Filter transactions based on active filters
         function filterTransactions(transactions) {
             let filtered = [...transactions];
             
-            // Apply fee category filters
             const feeFilters = activeCategoryFilters.fees;
             const expenseFilters = activeCategoryFilters.expenses;
             
@@ -522,7 +505,6 @@
                     if (t.type === 'expense' && expenseFilters.length > 0) {
                         return expenseFilters.includes(t.category);
                     }
-                    // If no filters for this type, include it
                     return true;
                 });
             }
@@ -535,16 +517,20 @@
             const index = activeCategoryFilters[type].indexOf(category);
             
             if (index === -1) {
-                // Add filter
                 activeCategoryFilters[type].push(category);
             } else {
-                // Remove filter
                 activeCategoryFilters[type].splice(index, 1);
             }
             
-            // Update UI and rerender
             renderCategoryFilters();
+            updateFilterCount();
             refreshTransactionLists();
+        }
+
+        // Update active filter count
+        function updateFilterCount() {
+            const totalFilters = activeCategoryFilters.fees.length + activeCategoryFilters.expenses.length;
+            document.getElementById('active-filter-count').textContent = totalFilters;
         }
 
         // Check if category filter is active
@@ -559,6 +545,7 @@
                 expenses: []
             };
             renderCategoryFilters();
+            updateFilterCount();
             refreshTransactionLists();
         }
 
@@ -599,7 +586,8 @@
         function showLoading(show) {
             document.getElementById('loading-error').classList.toggle('hidden', !show);
             document.getElementById('summary-section').classList.toggle('hidden', show);
-            document.querySelector('.px-4.pb-24').classList.toggle('hidden', show);
+            document.querySelector('.px-4.pb-6').classList.toggle('hidden', show);
+            document.getElementById('filter-panel').classList.add('hidden');
             
             if (show) {
                 document.getElementById('error-title').textContent = 'Loading Data...';
@@ -610,7 +598,8 @@
         function showError(title, message) {
             document.getElementById('loading-error').classList.remove('hidden');
             document.getElementById('summary-section').classList.add('hidden');
-            document.querySelector('.px-4.pb-24').classList.add('hidden');
+            document.querySelector('.px-4.pb-6').classList.add('hidden');
+            document.getElementById('filter-panel').classList.add('hidden');
             
             document.getElementById('error-title').textContent = title;
             document.getElementById('error-message').textContent = message;
@@ -622,7 +611,6 @@
         }
 
         function goBackToMain() {
-            // Change this to your actual main page URL
             window.location.href = 'index.html';
         }
 
