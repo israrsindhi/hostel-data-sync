@@ -1,0 +1,38 @@
+{
+  "metadata": {
+    "exportDate": "2025-12-12",
+    "reportPeriod": "December 2025",
+    "reportType": "monthly",
+    "hostelName": "Indus Boys Hostel Services",
+    "address": "Hostel Street, DHA Phase 1, Karachi",
+    "contact": "0333-1234567"
+  },
+  "summary": {
+    "totalTransactions": 2,
+    "totalIncome": 2000,
+    "totalExpense": 2000,
+    "netBalance": 0,
+    "incomeRecords": 1,
+    "expenseRecords": 1
+  },
+  "transactions": [
+    {
+      "id": 1765558279928,
+      "type": "fee",
+      "amount": 2000,
+      "description": "Month to faheem",
+      "category": "Monthly Fee",
+      "date": "2025-12-12",
+      "studentName": "Abdul Qadir"
+    },
+    {
+      "id": 1765558260547,
+      "type": "expense",
+      "amount": 2000,
+      "description": "Ok",
+      "category": "Food",
+      "date": "2025-12-12",
+      "studentName": ""
+    }
+  ]
+}
