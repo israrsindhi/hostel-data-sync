@@ -1,0 +1,27 @@
+{
+  "users": [
+    {
+      "username": "israrsindhi",
+      "password": "israrali01",
+      "name": "Israr Sindhi",
+      "permissions": ["view"]
+    },
+    {
+      "username": "manager",
+      "password": "manager123",
+      "name": "Hostel Manager",
+      "permissions": ["view"]
+    },
+    {
+      "username": "accountant",
+      "password": "accountant123",
+      "name": "Accountant",
+      "permissions": ["view"]
+    }
+  ],
+  "metadata": {
+    "portalName": "Indus Boys Hostel Management Portal",
+    "version": "1.0",
+    "created": "2025-12-12"
+  }
+}
