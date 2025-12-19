@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Indus Boys Hostel Management Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            overscroll-behavior-y: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .category-icon {
+            display: flex; align-items: center; justify-content: center;
+            width: 42px; height: 42px; border-radius: 50%; font-size: 1.2rem;
+        }
+        .tab-indicator {
+            position: absolute;
+            left: 0.25rem;
+            top: 0.25rem;
+            bottom: 0.25rem;
+            width: calc(33.333% - 8px);
+            background: #4f46e5;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 0;
+        }
+        .login-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+            animation: slideUp 0.5s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        input, select, textarea { font-size: 16px !important; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="text-slate-800">
+    <!-- Login Screen (Initially Visible) -->
+    <div id="login-screen" class="login-bg">
+        <div class="login-card">
+            <!-- Header -->
+            <div class="bg-indigo-600 text-white p-8 text-center">
+                <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-building-user text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold">Indus Boys Hostel</h1>
+                <p class="text-indigo-200 text-sm mt-1">Management Portal</p>
+            </div>
+            
+            <!-- Login Form -->
+            <div class="p-8">
+                <h2 class="text-xl font-bold text-slate-800 mb-1">Welcome Back</h2>
+                <p class="text-slate-500 text-sm mb-6">Sign in to access the management portal</p>
+                
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Username</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="login-username" required 
+                                   class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
+                                   placeholder="Enter your username">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="password" id="login-password" required 
+                                   class="w-full pl-12 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
+                                   placeholder="Enter your password">
+                            <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between pt-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="remember-me" class="w-4 h-4 text-indigo-600 rounded border-slate-300">
+                            <span class="text-sm text-slate-600">Remember me</span>
+                        </label>
+                        <button type="button" onclick="showForgotPassword()" class="text-sm text-indigo-600 hover:text-indigo-700">
+                            Forgot password?
+                        </button>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all mt-6">
+                        <i class="fa-solid fa-right-to-bracket mr-2"></i>Sign In
+                    </button>
+                </form>
+                
+                <!-- Error Message -->
+                <div id="login-error" class="hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm text-center">
+                    <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                    <span id="error-text">Invalid username or password</span>
+                </div>
+                
+                <!-- Login Info -->
+                <div class="mt-8 pt-6 border-t border-slate-100">
+                    <p class="text-xs text-slate-500 text-center">
+                        <i class="fa-solid fa-info-circle mr-1"></i>
+                        Demo credentials: admin/admin123, manager/manager123
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application (Initially Hidden) -->
+    <div id="app-container" class="hidden h-[100dvh] flex flex-col overflow-hidden bg-slate-50">
+        <!-- Header -->
+        <header class="bg-indigo-600 text-white shadow-md z-30 shrink-0">
+            <div class="w-full max-w-lg mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-building-user text-indigo-200 text-lg"></i>
+                    <h1 class="text-lg font-bold">Indus Boys Hostel</h1>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-indigo-200 hidden md:inline" id="welcome-user"></span>
+                    <button onclick="handleLogout()" class="w-9 h-9 flex items-center justify-center hover:bg-indigo-500 rounded-full transition" title="Logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto w-full max-w-lg mx-auto">
+            <!-- Loading State -->
+            <div id="loading-state" class="p-6">
+                <div class="flex flex-col items-center justify-center py-12">
+                    <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mb-4">
+                        <i class="fa-solid fa-spinner fa-spin text-indigo-600 text-xl"></i>
+                    </div>
+                    <p class="text-sm text-slate-500">Loading transaction data...</p>
+                </div>
+            </div>
+
+            <!-- Error State -->
+            <div id="error-state" class="hidden p-6">
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-4 text-center">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-3xl mb-3"></i>
+                    <h3 class="font-bold text-red-700 mb-1">Error Loading Data</h3>
+                    <p class="text-red-600 text-sm mb-4" id="error-message"></p>
+                    <button onclick="loadData()" class="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition">
+                        <i class="fa-solid fa-rotate mr-2"></i>Retry
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content (Initially Hidden) -->
+            <div id="content-area" class="hidden">
+                <!-- Summary Section -->
+                <div class="p-4">
+                    <div class="bg-indigo-600 text-white p-5 rounded-2xl shadow-lg mb-4">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h2 class="text-xl font-bold" id="hostel-name">Indus Boys Hostel</h2>
+                                <p class="text-indigo-200 text-sm mt-1" id="report-period"></p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-indigo-200 text-xs">Current Balance</p>
+                                <p class="font-bold text-lg" id="net-balance">Rs 0</p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="text-center bg-indigo-700/40 p-3 rounded-xl">
+                                <div class="text-green-300 font-bold text-lg" id="total-income">0</div>
+                                <div class="text-indigo-200 text-xs">Total Income</div>
+                            </div>
+                            <div class="text-center bg-indigo-700/40 p-3 rounded-xl">
+                                <div class="text-red-300 font-bold text-lg" id="total-expense">0</div>
+                                <div class="text-indigo-200 text-xs">Total Expense</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-arrow-down text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xl font-bold text-slate-800" id="income-count">0</div>
+                                    <div class="text-xs text-slate-500">Fee Records</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-arrow-up text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xl font-bold text-slate-800" id="expense-count">0</div>
+                                    <div class="text-xs text-slate-500">Expense Records</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <div class="px-4 mb-3">
+                    <div class="bg-white p-1 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex bg-slate-100 rounded-xl p-1 relative">
+                            <!-- Tab Indicator -->
+                            <div id="tab-indicator" class="tab-indicator"></div>
+                            
+                            <!-- All Tab -->
+                            <button onclick="switchTab('all')" id="tab-all" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-white">
+                                All
+                            </button>
+                            
+                            <!-- Fees Tab -->
+                            <button onclick="switchTab('fees')" id="tab-fees" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
+                                <i class="fa-solid fa-money-bill-wave mr-1 text-xs"></i> Fees
+                            </button>
+                            
+                            <!-- Expenses Tab -->
+                            <button onclick="switchTab('expenses')" id="tab-expenses" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
+                                <i class="fa-solid fa-cart-shopping mr-1 text-xs"></i> Expenses
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction Lists -->
+                <div class="px-4 pb-6">
+                    <!-- All Transactions Tab -->
+                    <div id="tab-all-content" class="tab-content active">
+                        <div class="flex justify-between items-baseline mb-3">
+                            <h2 class="font-bold text-slate-700">All Transactions</h2>
+                            <span class="text-xs text-slate-400 font-medium" id="all-count">0 Records</span>
+                        </div>
+                        <div id="all-transactions" class="space-y-3"></div>
+                    </div>
+
+                    <!-- Fees Tab -->
+                    <div id="tab-fees-content" class="tab-content">
+                        <div class="flex justify-between items-baseline mb-3">
+                            <h2 class="font-bold text-slate-700">Fee Collections</h2>
+                            <span class="text-xs text-slate-400 font-medium" id="fees-count">0 Records</span>
+                        </div>
+                        <div id="fees-transactions" class="space-y-3"></div>
+                    </div>
+
+                    <!-- Expenses Tab -->
+                    <div id="tab-expenses-content" class="tab-content">
+                        <div class="flex justify-between items-baseline mb-3">
+                            <h2 class="font-bold text-slate-700">Expenses</h2>
+                            <span class="text-xs text-slate-400 font-medium" id="expenses-count">0 Records</span>
+                        </div>
+                        <div id="expenses-transactions" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <div class="bg-white border-t border-slate-200 p-3 text-center text-xs text-slate-500 shrink-0">
+            <p id="footer-info">Indus Boys Hostel Management Portal © 2025</p>
+        </div>
+    </div>
+
+    <script>
+        // Category configurations
+        const expenseCategories = {
+            'Food': { icon: 'fa-utensils', color: 'bg-orange-100 text-orange-600' },
+            'Rent': { icon: 'fa-house', color: 'bg-blue-100 text-blue-600' },
+            'Transport': { icon: 'fa-bus', color: 'bg-purple-100 text-purple-600' },
+            'Utilities': { icon: 'fa-bolt', color: 'bg-yellow-100 text-yellow-600' },
+            'Staff Salary': { icon: 'fa-users', color: 'bg-cyan-100 text-cyan-600' }, 
+            'Daily Expenses': { icon: 'fa-shopping-bag', color: 'bg-fuchsia-100 text-fuchsia-600' },
+            'Others': { icon: 'fa-box-open', color: 'bg-gray-100 text-gray-600' }
+        };
+        
+        const feeCategories = {
+            'Monthly Fee': { icon: 'fa-calendar-check', color: 'bg-green-100 text-green-600' },
+            'Admission': { icon: 'fa-id-card', color: 'bg-teal-100 text-teal-600' },
+            'Security': { icon: 'fa-shield-halved', color: 'bg-indigo-100 text-indigo-600' },
+            'Others': { icon: 'fa-money-bill', color: 'bg-gray-100 text-gray-600' }
+        };
+
+        // App state
+        let currentUser = null;
+        let jsonData = null;
+        let currentTab = 'all';
+
+        // Storage keys
+        const USER_STORAGE_KEY = 'indus_hostel_user_session';
+        const SESSION_TIMEOUT = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkExistingSession();
+        });
+
+        // Check for existing session
+        function checkExistingSession() {
+            try {
+                const savedSession = localStorage.getItem(USER_STORAGE_KEY);
+                if (savedSession) {
+                    const session = JSON.parse(savedSession);
+                    
+                    // Check if session is still valid (not expired)
+                    const now = Date.now();
+                    if (session.timestamp && (now - session.timestamp < SESSION_TIMEOUT)) {
+                        // Session is valid, auto-login
+                        currentUser = session.user;
+                        showApp();
+                        return;
+                    } else {
+                        // Session expired, clear it
+                        localStorage.removeItem(USER_STORAGE_KEY);
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking session:', error);
+                localStorage.removeItem(USER_STORAGE_KEY);
+            }
+            
+            // No valid session found, show login
+            showLogin();
+        }
+
+        // Show login screen
+        function showLogin() {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('login-error').classList.add('hidden');
+            
+            // Clear form
+            document.getElementById('login-form').reset();
+        }
+
+        // Show main application
+        function showApp() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            
+            // Update welcome message
+            if (currentUser) {
+                document.getElementById('welcome-user').textContent = `Welcome, ${currentUser.name}`;
+            }
+            
+            // Load data
+            loadData();
+        }
+
+        // Handle login
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+            
+            // Show loading
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Authenticating...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Load credentials
+                const response = await fetch('profiles_data.json');
+                if (!response.ok) throw new Error('Failed to load credentials');
+                
+                const credentials = await response.json();
+                
+                // Find user
+                const user = credentials.users.find(u => 
+                    u.username.toLowerCase() === username.toLowerCase() && 
+                    u.password === password
+                );
+                
+                if (user) {
+                    // Successful login
+                    currentUser = {
+                        username: user.username,
+                        name: user.name,
+                        permissions: user.permissions
+                    };
+                    
+                    // Save session if "Remember me" is checked
+                    if (rememberMe) {
+                        const session = {
+                            user: currentUser,
+                            timestamp: Date.now()
+                        };
+                        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(session));
+                    } else {
+                        // For current session only (cleared on browser close)
+                        sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify({
+                            user: currentUser,
+                            timestamp: Date.now()
+                        }));
+                    }
+                    
+                    showApp();
+                } else {
+                    // Invalid credentials
+                    document.getElementById('error-text').textContent = 'Invalid username or password';
+                    document.getElementById('login-error').classList.remove('hidden');
+                    
+                    // Shake animation
+                    document.getElementById('login-form').classList.add('animate-shake');
+                    setTimeout(() => {
+                        document.getElementById('login-form').classList.remove('animate-shake');
+                    }, 500);
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                document.getElementById('error-text').textContent = 'Network error. Please try again.';
+                document.getElementById('login-error').classList.remove('hidden');
+            } finally {
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Handle logout
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear all session data
+                localStorage.removeItem(USER_STORAGE_KEY);
+                sessionStorage.removeItem(USER_STORAGE_KEY);
+                currentUser = null;
+                showLogin();
+            }
+        }
+
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('login-password');
+            const eyeIcon = passwordInput.nextElementSibling.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Show forgot password (simplified)
+        function showForgotPassword() {
+            alert('Please contact the system administrator to reset your password.\nEmail: admin@indushostel.com\nPhone: 0333-1234567');
+        }
+
+        // Load transaction data
+        async function loadData() {
+            try {
+                showLoading(true);
+                
+                const response = await fetch('data.json');
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                
+                jsonData = await response.json();
+                renderData();
+                showLoading(false);
+                showContent();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('Failed to load transaction data', error.message);
+            }
+        }
+
+        // Render the loaded data
+        function renderData() {
+            if (!jsonData) return;
+            
+            // Update metadata
+            document.getElementById('hostel-name').textContent = jsonData.metadata.hostelName;
+            document.getElementById('report-period').textContent = jsonData.metadata.reportPeriod;
+            
+            // Calculate totals
+            const income = jsonData.transactions.filter(t => t.type === 'fee')
+                .reduce((sum, t) => sum + t.amount, 0);
+            const expense = jsonData.transactions.filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            const netBalance = income - expense;
+            
+            // Update summary
+            document.getElementById('total-income').textContent = formatCurrency(income);
+            document.getElementById('total-expense').textContent = formatCurrency(expense);
+            document.getElementById('net-balance').textContent = formatCurrency(netBalance);
+            
+            // Update counts
+            const incomeCount = jsonData.transactions.filter(t => t.type === 'fee').length;
+            const expenseCount = jsonData.transactions.filter(t => t.type === 'expense').length;
+            
+            document.getElementById('income-count').textContent = incomeCount;
+            document.getElementById('expense-count').textContent = expenseCount;
+            
+            // Render all transaction tabs
+            renderAllTransactions();
+            renderFeeTransactions();
+            renderExpenseTransactions();
+        }
+
+        // Tab switching function
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tab indicator position
+            const indicator = document.getElementById('tab-indicator');
+            const positions = {
+                'all': 'translateX(0)',
+                'fees': 'translateX(100%)',
+                'expenses': 'translateX(200%)'
+            };
+            
+            indicator.style.transform = positions[tabName];
+            
+            // Update tab button colors
+            const tabButtons = {
+                'all': document.getElementById('tab-all'),
+                'fees': document.getElementById('tab-fees'),
+                'expenses': document.getElementById('tab-expenses')
+            };
+            
+            Object.keys(tabButtons).forEach(tab => {
+                if (tab === tabName) {
+                    tabButtons[tab].classList.remove('text-slate-500');
+                    tabButtons[tab].classList.add('text-white');
+                } else {
+                    tabButtons[tab].classList.remove('text-white');
+                    tabButtons[tab].classList.add('text-slate-500');
+                }
+            });
+            
+            // Show/hide tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`tab-${tabName}-content`).classList.add('active');
+        }
+
+        // Render all transactions (mixed)
+        function renderAllTransactions() {
+            const container = document.getElementById('all-transactions');
+            if (!jsonData.transactions || jsonData.transactions.length === 0) {
+                container.innerHTML = getEmptyStateHTML('No transactions found');
+                document.getElementById('all-count').textContent = '0 Records';
+                return;
+            }
+            
+            const transactions = [...jsonData.transactions].sort((a, b) => 
+                new Date(b.date) - new Date(a.date)
+            );
+            
+            renderTransactionList(container, transactions, 'mixed');
+            document.getElementById('all-count').textContent = `${transactions.length} Records`;
+        }
+
+        // Render only fee transactions
+        function renderFeeTransactions() {
+            const container = document.getElementById('fees-transactions');
+            if (!jsonData.transactions) {
+                container.innerHTML = getEmptyStateHTML('No fee records found');
+                document.getElementById('fees-count').textContent = '0 Records';
+                return;
+            }
+            
+            let feeTransactions = jsonData.transactions
+                .filter(t => t.type === 'fee')
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            renderTransactionList(container, feeTransactions, 'fee');
+            document.getElementById('fees-count').textContent = `${feeTransactions.length} Records`;
+        }
+
+        // Render only expense transactions
+        function renderExpenseTransactions() {
+            const container = document.getElementById('expenses-transactions');
+            if (!jsonData.transactions) {
+                container.innerHTML = getEmptyStateHTML('No expense records found');
+                document.getElementById('expenses-count').textContent = '0 Records';
+                return;
+            }
+            
+            let expenseTransactions = jsonData.transactions
+                .filter(t => t.type === 'expense')
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            renderTransactionList(container, expenseTransactions, 'expense');
+            document.getElementById('expenses-count').textContent = `${expenseTransactions.length} Records`;
+        }
+
+        // Generic transaction list renderer
+        function renderTransactionList(container, transactions, type) {
+            container.innerHTML = '';
+            
+            if (!transactions || transactions.length === 0) {
+                container.innerHTML = getEmptyStateHTML(`No ${type} records found`);
+                return;
+            }
+            
+            transactions.forEach(transaction => {
+                const isFee = transaction.type === 'fee';
+                const categories = isFee ? feeCategories : expenseCategories;
+                const categoryConfig = categories[transaction.category] || 
+                                     { icon: 'fa-circle', color: 'bg-gray-100 text-gray-500' };
+                
+                const transactionEl = document.createElement('div');
+                transactionEl.className = 'bg-white p-4 rounded-2xl shadow-sm border border-slate-100';
+                
+                transactionEl.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <div class="${categoryConfig.color} category-icon shrink-0">
+                                <i class="fa-solid ${categoryConfig.icon}"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <h4 class="font-semibold text-slate-800 text-sm truncate leading-tight">
+                                    ${transaction.description}
+                                </h4>
+                                <div class="text-xs text-slate-400 mt-0.5 truncate flex items-center gap-1">
+                                    <span>${formatDate(transaction.date, 'short')}</span>
+                                    <span>•</span>
+                                    <span>${isFee ? transaction.studentName : transaction.category}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end shrink-0 pl-2">
+                            <span class="font-bold ${isFee ? 'text-green-600' : 'text-red-600'} text-base">
+                                ${isFee ? '+' : '-'} ${formatCurrency(transaction.amount)}
+                            </span>
+                            <span class="text-xs text-slate-400 mt-1">
+                                ${isFee ? 'Fee' : 'Expense'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(transactionEl);
+            });
+        }
+
+        // Utility functions
+        function formatCurrency(amount) {
+            return `Rs ${amount.toLocaleString()}`;
+        }
+
+        function formatDate(dateString, format = 'full') {
+            const date = new Date(dateString);
+            if (format === 'short') {
+                return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            }
+            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function getEmptyStateHTML(message) {
+            return `
+                <div class="flex flex-col items-center justify-center py-12 opacity-60">
+                    <i class="fa-solid fa-clipboard-list text-4xl text-slate-300 mb-2"></i>
+                    <p class="text-sm text-slate-400">${message}</p>
+                </div>`;
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading-state').classList.toggle('hidden', !show);
+        }
+
+        function showContent() {
+            document.getElementById('content-area').classList.remove('hidden');
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('error-state').classList.add('hidden');
+        }
+
+        function showError(title, message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('content-area').classList.add('hidden');
+            document.getElementById('error-state').classList.remove('hidden');
+        }
+
+        // Initialize with first tab active
+        switchTab('all');
+
+        // Add shake animation for login error
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            .animate-shake {
+                animation: shake 0.5s ease-in-out;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
