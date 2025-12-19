@@ -1,0 +1,137 @@
+{
+  "metadata": {
+    "exportDate": "2025-12-19",
+    "reportType": "student_profiles",
+    "hostelName": "Indus Boys Hostel Services",
+    "address": "Hostel Street, DHA Phase 1, Karachi",
+    "contact": "0333-1234567",
+    "generatedBy": "Hostel Manager System"
+  },
+  "summary": {
+    "totalStudents": 3,
+    "totalMonthlyFee": 41000,
+    "studentsWithImage": 0
+  },
+  "students": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "phone": "0300-1234567",
+      "email": "john.doe@example.com",
+      "room": "A-101",
+      "emergencyContact": "Father: 0300-7654321",
+      "monthlyFee": 15000,
+      "notes": "Regular student, pays on time",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-19T19:16:28.458Z",
+      "feeSummary": {
+        "totalPaid": 15000,
+        "totalTransactions": 1,
+        "lastPayment": "2023-02-05",
+        "currentMonthStatus": "pending",
+        "previousMonthStatus": "pending"
+      },
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "pending",
+          "amount": 15000,
+          "paid": false
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 15000,
+          "paid": false
+        }
+      },
+      "transactions": [
+        {
+          "id": 1678886400000,
+          "date": "2023-02-05",
+          "amount": 15000,
+          "description": "Feb Rent",
+          "category": "Monthly Fee",
+          "receivedBy": "Faiq Ali"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Basheer Ali",
+      "phone": "0312-3456789",
+      "email": "alice.smith@example.com",
+      "room": "FR -01",
+      "emergencyContact": "Mother: 0312-9876543",
+      "monthlyFee": 12000,
+      "notes": "New admission",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-19T19:16:28.459Z",
+      "feeSummary": {
+        "totalPaid": 20000,
+        "totalTransactions": 1,
+        "lastPayment": "2025-12-19",
+        "currentMonthStatus": "paid",
+        "previousMonthStatus": "pending"
+      },
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "paid",
+          "amount": 12000,
+          "paid": true
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 12000,
+          "paid": false
+        }
+      },
+      "transactions": [
+        {
+          "id": 1766171931001,
+          "date": "2025-12-19",
+          "amount": 20000,
+          "description": "December",
+          "category": "Monthly Fee",
+          "receivedBy": "Ali Faheem"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Robert Johnson",
+      "phone": "0333-9876543",
+      "email": "robert.j@example.com",
+      "room": "C-312",
+      "emergencyContact": "Brother: 0333-1234567",
+      "monthlyFee": 14000,
+      "notes": "VIP student",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-19T19:16:28.459Z",
+      "feeSummary": {
+        "totalPaid": 0,
+        "totalTransactions": 0,
+        "lastPayment": null,
+        "currentMonthStatus": "pending",
+        "previousMonthStatus": "pending"
+      },
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "pending",
+          "amount": 14000,
+          "paid": false
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 14000,
+          "paid": false
+        }
+      },
+      "transactions": []
+    }
+  ]
+}
