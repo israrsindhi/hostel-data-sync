@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student Portal - Hostel Fee Status</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            overscroll-behavior-y: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+        
+        /* Safe areas for mobile */
+        .pt-safe-top { padding-top: env(safe-area-inset-top); }
+        .pb-safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+        
+        /* Student image styles */
+        .student-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        /* Status badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-paid {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .status-pending {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .status-overdue {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        /* Receipt card */
+        .receipt-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        
+        .receipt-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        /* Dashboard cards */
+        .dashboard-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+        
+        .dashboard-card:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        /* Glow effect for paid status */
+        .glow-paid {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Print styles */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .container { max-width: 100%; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-[100dvh] bg-gradient-to-b from-slate-50 to-indigo-50">
+    
+    <!-- Login Screen -->
+    <div id="login-screen" class="min-h-[100dvh] flex flex-col items-center justify-center px-4 py-8">
+        <div class="w-full max-w-md mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8 animate-fade-in">
+                <div class="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i class="fa-solid fa-building-user text-white text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-slate-800 mb-2">Student Portal</h1>
+                <p class="text-slate-600">Check your fee status and download receipts</p>
+                <div class="mt-4 text-sm text-slate-500">
+                    <i class="fa-solid fa-lock mr-1"></i> Secure Login Required
+                </div>
+            </div>
+            
+            <!-- Login Form -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 mb-6 dashboard-card animate-fade-in" style="animation-delay: 0.1s;">
+                <h2 class="text-xl font-bold text-slate-800 mb-6 text-center">Student Login</h2>
+                
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            <i class="fa-solid fa-user mr-2 text-indigo-500"></i>Full Name
+                        </label>
+                        <input type="text" id="login-name" required 
+                               class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 font-medium placeholder-slate-400 transition"
+                               placeholder="Enter your full name as registered">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            <i class="fa-solid fa-phone mr-2 text-indigo-500"></i>Phone Number
+                        </label>
+                        <input type="tel" id="login-phone" required 
+                               class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 font-medium placeholder-slate-400 transition"
+                               placeholder="03xx-xxxxxxx" pattern="[0-9]{4}-[0-9]{7}">
+                        <p class="text-xs text-slate-400 mt-2">Format: 0300-1234567</p>
+                    </div>
+                    
+                    <div class="pt-2">
+                        <button type="submit" id="login-button" 
+                                class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-right-to-bracket"></i> Access Dashboard
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-6 pt-6 border-t border-slate-100">
+                    <div class="flex items-center text-sm text-slate-500">
+                        <i class="fa-solid fa-circle-info mr-2 text-indigo-400"></i>
+                        <span>Use the exact name and phone number registered with the hostel</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="text-center animate-fade-in" style="animation-delay: 0.2s;">
+                <p class="text-sm text-slate-500">
+                    <i class="fa-solid fa-shield-check mr-1"></i> Your data is secure and private
+                </p>
+                <div class="mt-4 text-xs text-slate-400">
+                    Indus Boys Hostel Services © 2025
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dashboard Screen (Hidden by default) -->
+    <div id="dashboard-screen" class="hidden min-h-[100dvh] flex flex-col">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg z-30 shrink-0 pt-safe-top">
+            <div class="w-full max-w-4xl mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <button onclick="logout()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/20 transition" title="Logout">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+                        <div>
+                            <h1 class="text-lg font-bold">Student Dashboard</h1>
+                            <p class="text-indigo-200 text-xs">View your fee status and receipts</p>
+                        </div>
+                    </div>
+                    <button onclick="window.print()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition no-print" title="Print Dashboard">
+                        <i class="fa-solid fa-print"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto py-6 px-4">
+            <div class="w-full max-w-4xl mx-auto">
+                <!-- Student Profile Header -->
+                <div id="student-header" class="mb-8 animate-fade-in">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <!-- Fee Status Overview -->
+                <div class="mb-8 animate-fade-in" style="animation-delay: 0.1s;">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-indigo-500"></i> Fee Status Overview
+                    </h2>
+                    <div id="fee-status-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Recent Transactions -->
+                <div class="mb-8 animate-fade-in" style="animation-delay: 0.2s;">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-receipt text-indigo-500"></i> Payment History
+                        </h2>
+                        <span class="text-sm text-slate-500" id="transaction-count">0 payments</span>
+                    </div>
+                    <div id="transactions-list" class="space-y-3">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Download Section -->
+                <div class="animate-fade-in no-print" style="animation-delay: 0.3s;">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-download text-indigo-500"></i> Download Documents
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button onclick="downloadFeeSummary()" class="dashboard-card p-5 text-left hover:bg-slate-50 transition group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center group-hover:scale-110 transition">
+                                    <i class="fa-solid fa-file-invoice text-xl"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-slate-800">Fee Summary PDF</div>
+                                    <div class="text-sm text-slate-500 mt-1">Download complete fee history</div>
+                                </div>
+                            </div>
+                        </button>
+                        
+                        <button onclick="downloadAllReceipts()" class="dashboard-card p-5 text-left hover:bg-slate-50 transition group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition">
+                                    <i class="fa-solid fa-folder text-xl"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-slate-800">All Receipts ZIP</div>
+                                    <div class="text-sm text-slate-500 mt-1">Download all payment receipts</div>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="mt-10 pt-8 border-t border-slate-200 animate-fade-in no-print">
+                    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl p-6 border border-indigo-100">
+                        <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-question text-indigo-500"></i> Need Help?
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <div class="text-sm text-slate-600 mb-1">Hostel Office Contact:</div>
+                                <div class="font-semibold text-slate-800">
+                                    <i class="fa-solid fa-phone mr-2 text-indigo-500"></i>0333-1234567
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-slate-600 mb-1">Office Hours:</div>
+                                <div class="font-semibold text-slate-800">
+                                    <i class="fa-solid fa-clock mr-2 text-indigo-500"></i>9:00 AM - 5:00 PM
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-slate-600">
+                            <i class="fa-solid fa-location-dot mr-2 text-indigo-500"></i>
+                            Hostel Street, DHA Phase 1, Karachi
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="bg-white border-t border-slate-200 py-4 px-4 shrink-0 no-print">
+            <div class="w-full max-w-4xl mx-auto text-center text-sm text-slate-500">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div>Indus Boys Hostel Services Student Portal</div>
+                    <div class="mt-2 md:mt-0">
+                        <span id="last-update">Data last updated: Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] transform -translate-y-32 transition-transform duration-500 bg-slate-800 text-white px-6 py-3.5 rounded-full shadow-2xl flex items-center gap-3 text-sm font-semibold max-w-[90%] whitespace-nowrap">
+        <i class="fa-solid fa-check-circle text-green-400 text-lg"></i><span id="toast-message">Operation successful</span>
+    </div>
+
+    <script>
+        // Global variables
+        let studentData = null;
+        let allStudentsData = null;
+        
+        // Constants
+        const JSON_DATA_URL = 'student_data.json'; // Change this to your actual JSON file URL
+        const HOSTEL_NAME = 'Indus Boys Hostel Services';
+        const ADDRESS = 'Hostel Street, DHA Phase 1, Karachi';
+        const CONTACT = '0333-1234567';
+        
+        // Initialize the app
+        window.addEventListener('DOMContentLoaded', () => {
+            // Load student data from JSON file
+            loadStudentData();
+            
+            // Check if student is already logged in (from session storage)
+            const savedStudent = sessionStorage.getItem('loggedInStudent');
+            if (savedStudent) {
+                try {
+                    const student = JSON.parse(savedStudent);
+                    if (student.name && student.phone) {
+                        document.getElementById('login-name').value = student.name;
+                        document.getElementById('login-phone').value = student.phone;
+                        // Auto-login if session is still valid
+                        setTimeout(() => document.getElementById('login-button').click(), 100);
+                    }
+                } catch (e) {
+                    console.error('Error parsing saved student:', e);
+                }
+            }
+        });
+        
+        // Load student data from external JSON file
+        async function loadStudentData() {
+            try {
+                showToast('Loading student data...');
+                const response = await fetch(JSON_DATA_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                allStudentsData = await response.json();
+                showToast('Data loaded successfully');
+                
+                // Update last update time
+                const lastUpdateEl = document.getElementById('last-update');
+                if (lastUpdateEl && allStudentsData.metadata && allStudentsData.metadata.exportDate) {
+                    lastUpdateEl.textContent = `Data last updated: ${allStudentsData.metadata.exportDate}`;
+                }
+                
+            } catch (error) {
+                console.error('Error loading student data:', error);
+                showToast('Error loading data. Using sample data instead.', true);
+                
+                // Fallback to sample data if fetch fails
+                allStudentsData = {
+                    metadata: {
+                        exportDate: new Date().toISOString().split('T')[0],
+                        reportType: "student_profiles",
+                        hostelName: HOSTEL_NAME,
+                        address: ADDRESS,
+                        contact: CONTACT,
+                        generatedBy: "Hostel Manager System"
+                    },
+                    summary: {
+                        totalStudents: 3,
+                        totalMonthlyFee: 41000,
+                        studentsWithImage: 0
+                    },
+                    students: [
+                        {
+                            "id": 1,
+                            "name": "John Doe",
+                            "phone": "0300-1234567",
+                            "email": "john.doe@example.com",
+                            "room": "A-101",
+                            "emergencyContact": "Father: 0300-7654321",
+                            "monthlyFee": 15000,
+                            "notes": "Regular student, pays on time",
+                            "image": "base64_encoded_image",
+                            "createdAt": new Date().toISOString(),
+                            "feeSummary": {
+                                "totalPaid": 15000,
+                                "totalTransactions": 1,
+                                "lastPayment": "2023-02-05",
+                                "currentMonthStatus": "pending",
+                                "previousMonthStatus": "pending"
+                            },
+                            "feeStatus": {
+                                "currentMonth": {
+                                    "month": new Date().getFullYear() + "-" + (new Date().getMonth() + 1).toString().padStart(2, '0'),
+                                    "status": "pending",
+                                    "amount": 15000,
+                                    "paid": false
+                                },
+                                "previousMonth": {
+                                    "month": new Date().getFullYear() + "-" + (new Date().getMonth()).toString().padStart(2, '0'),
+                                    "status": "pending",
+                                    "amount": 15000,
+                                    "paid": false
+                                }
+                            },
+                            "transactions": [
+                                {
+                                    "id": 1678886400000,
+                                    "date": "2023-02-05",
+                                    "amount": 15000,
+                                    "description": "Feb Rent",
+                                    "category": "Monthly Fee",
+                                    "receivedBy": "Faiq Ali"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 2,
+                            "name": "Basheer Ali",
+                            "phone": "0312-3456789",
+                            "email": "alice.smith@example.com",
+                            "room": "FR -01",
+                            "emergencyContact": "Mother: 0312-9876543",
+                            "monthlyFee": 12000,
+                            "notes": "New admission",
+                            "image": "base64_encoded_image",
+                            "createdAt": new Date().toISOString(),
+                            "feeSummary": {
+                                "totalPaid": 20000,
+                                "totalTransactions": 1,
+                                "lastPayment": new Date().toISOString().split('T')[0],
+                                "currentMonthStatus": "paid",
+                                "previousMonthStatus": "pending"
+                            },
+                            "feeStatus": {
+                                "currentMonth": {
+                                    "month": new Date().getFullYear() + "-" + (new Date().getMonth() + 1).toString().padStart(2, '0'),
+                                    "status": "paid",
+                                    "amount": 12000,
+                                    "paid": true
+                                },
+                                "previousMonth": {
+                                    "month": new Date().getFullYear() + "-" + (new Date().getMonth()).toString().padStart(2, '0'),
+                                    "status": "pending",
+                                    "amount": 12000,
+                                    "paid": false
+                                }
+                            },
+                            "transactions": [
+                                {
+                                    "id": Date.now(),
+                                    "date": new Date().toISOString().split('T')[0],
+                                    "amount": 20000,
+                                    "description": "December Fee",
+                                    "category": "Monthly Fee",
+                                    "receivedBy": "Ali Faheem"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 3,
+                            "name": "Robert Johnson",
+                            "phone": "0333-9876543",
+                            "email": "robert.j@example.com",
+                            "room": "C-312",
+                            "emergencyContact": "Brother: 0333-1234567",
+                            "monthlyFee": 14000,
+                            "notes": "VIP student",
+                            "image": "base64_encoded_image",
+                            "createdAt": new Date().toISOString(),
+                            "feeSummary": {
+                                "totalPaid": 0,
+                                "totalTransactions": 0,
+                                "lastPayment": null,
+                                "currentMonthStatus": "pending",
+                                "previousMonthStatus": "pending"
+                            },
+                            "feeStatus": {
+                                "currentMonth": {
+                                    "month": new Date().getFullYear() + "-" + (new Date().getMonth() + 1).toString().padStart(2, '0'),
+                                    "status": "pending",
+                                    "amount": 14000,
+                                    "paid": false
+                                },
+                                "previousMonth": {
+                                    "month": new Date().getFullYear() + "-" + (new Date().getMonth()).toString().padStart(2, '0'),
+                                    "status": "pending",
+                                    "amount": 14000,
+                                    "paid": false
+                                }
+                            },
+                            "transactions": []
+                        }
+                    ]
+                };
+            }
+        }
+        
+        // Handle login form submission
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('login-name').value.trim();
+            const phone = document.getElementById('login-phone').value.trim();
+            
+            if (!name || !phone) {
+                showToast('Please enter both name and phone number', true);
+                return;
+            }
+            
+            // Validate phone format
+            const phoneRegex = /^\d{4}-\d{7}$/;
+            if (!phoneRegex.test(phone)) {
+                showToast('Please enter phone in format: 03xx-xxxxxxx', true);
+                return;
+            }
+            
+            // Find student in the data
+            if (!allStudentsData || !allStudentsData.students) {
+                showToast('Student data not loaded yet. Please try again.', true);
+                return;
+            }
+            
+            const student = allStudentsData.students.find(s => 
+                s.name.toLowerCase() === name.toLowerCase() && s.phone === phone
+            );
+            
+            if (!student) {
+                showToast('Student not found. Please check your details.', true);
+                return;
+            }
+            
+            // Login successful
+            studentData = student;
+            sessionStorage.setItem('loggedInStudent', JSON.stringify({
+                name: student.name,
+                phone: student.phone
+            }));
+            
+            showToast(`Welcome ${student.name}!`);
+            renderDashboard();
+        }
+        
+        // Render the student dashboard
+        function renderDashboard() {
+            if (!studentData) return;
+            
+            // Switch screens
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+            
+            // Render student header
+            renderStudentHeader();
+            
+            // Render fee status cards
+            renderFeeStatusCards();
+            
+            // Render transactions
+            renderTransactions();
+        }
+        
+        // Render student header with profile info
+        function renderStudentHeader() {
+            const headerEl = document.getElementById('student-header');
+            const student = studentData;
+            
+            // Default avatar (if no image provided)
+            const defaultAvatar = `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiNFMEUyRjYiLz48cGF0aCBkPSJNNTAgNTVDNTUuNTIyOCA1NSA2MCA1MC41MjI4IDYwIDQ1QzYwIDM5LjQ3NzIgNTUuNTIyOCAzNSA1MCAzNUM0NC40NzcyIDM1IDQwIDM5LjQ3NzIgNDAgNDVDNDAgNTAuNTIyOCA0NC40NzcyIDU1IDUwIDU1Wk01MCA2MEMzOS4wNzM2IDYwIDMwIDY1LjQ4MzUgMzAgNzJWNzVINzBWNzJDNzAgNjUuNDgzNSA2MC45MjY0IDYwIDUwIDYwWiIgZmlsbD0iIzkwOTVBRSIvPjwvc3ZnPg==`;
+            
+            headerEl.innerHTML = `
+                <div class="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+                    <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
+                    
+                    <div class="relative flex flex-col md:flex-row items-center md:items-start gap-6">
+                        <div class="flex-shrink-0">
+                            <img src="${student.image && student.image !== 'base64_encoded_image' ? student.image : defaultAvatar}" 
+                                 alt="${student.name}" 
+                                 class="student-avatar">
+                        </div>
+                        <div class="flex-1 text-center md:text-left">
+                            <h2 class="text-2xl font-bold mb-2">${student.name}</h2>
+                            <div class="flex flex-wrap gap-4 mb-4">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-id-card text-indigo-200"></i>
+                                    <span>Student ID: ${student.id}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-door-closed text-indigo-200"></i>
+                                    <span>Room: ${student.room || 'Not assigned'}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-phone text-indigo-200"></i>
+                                    <span>${student.phone}</span>
+                                </div>
+                            </div>
+                            <div class="inline-flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full">
+                                <i class="fa-solid fa-calendar-check"></i>
+                                <span>Joined: ${new Date(student.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                            </div>
+                        </div>
+                        <div class="text-center md:text-right">
+                            <div class="text-3xl font-bold mb-1">Rs ${student.monthlyFee.toLocaleString()}</div>
+                            <div class="text-indigo-200">Monthly Fee</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Render fee status cards
+        function renderFeeStatusCards() {
+            const cardsEl = document.getElementById('fee-status-cards');
+            const student = studentData;
+            
+            const currentMonthStatus = student.feeStatus?.currentMonth?.status || 'pending';
+            const previousMonthStatus = student.feeStatus?.previousMonth?.status || 'pending';
+            
+            // Calculate total paid
+            const totalPaid = student.feeSummary?.totalPaid || 0;
+            const totalTransactions = student.feeSummary?.totalTransactions || 0;
+            
+            cardsEl.innerHTML = `
+                <div class="dashboard-card p-6 ${currentMonthStatus === 'paid' ? 'glow-paid' : ''}">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="text-sm text-slate-500 mb-1">Current Month</div>
+                            <div class="text-2xl font-bold text-slate-800">
+                                ${student.feeStatus?.currentMonth?.month || 'N/A'}
+                            </div>
+                        </div>
+                        <span class="status-badge ${currentMonthStatus === 'paid' ? 'status-paid' : currentMonthStatus === 'pending' ? 'status-pending' : 'status-overdue'}">
+                            ${currentMonthStatus === 'paid' ? 'Paid' : currentMonthStatus === 'pending' ? 'Pending' : 'Not Paid'}
+                        </span>
+                    </div>
+                    <div class="text-sm text-slate-600">
+                        <div class="flex justify-between mb-1">
+                            <span>Amount Due:</span>
+                            <span class="font-semibold">Rs ${student.monthlyFee.toLocaleString()}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Status:</span>
+                            <span class="font-semibold ${currentMonthStatus === 'paid' ? 'text-green-600' : currentMonthStatus === 'pending' ? 'text-amber-600' : 'text-red-600'}">
+                                ${currentMonthStatus === 'paid' ? 'Fee Cleared' : 'Payment Due'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="text-sm text-slate-500 mb-1">Previous Month</div>
+                            <div class="text-2xl font-bold text-slate-800">
+                                ${student.feeStatus?.previousMonth?.month || 'N/A'}
+                            </div>
+                        </div>
+                        <span class="status-badge ${previousMonthStatus === 'paid' ? 'status-paid' : previousMonthStatus === 'pending' ? 'status-pending' : 'status-overdue'}">
+                            ${previousMonthStatus === 'paid' ? 'Paid' : previousMonthStatus === 'pending' ? 'Pending' : 'Not Paid'}
+                        </span>
+                    </div>
+                    <div class="text-sm text-slate-600">
+                        <div class="flex justify-between mb-1">
+                            <span>Amount:</span>
+                            <span class="font-semibold">Rs ${student.monthlyFee.toLocaleString()}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Status:</span>
+                            <span class="font-semibold ${previousMonthStatus === 'paid' ? 'text-green-600' : previousMonthStatus === 'pending' ? 'text-amber-600' : 'text-red-600'}">
+                                ${previousMonthStatus === 'paid' ? 'Cleared' : 'Outstanding'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card p-6 md:col-span-2">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-indigo-600 mb-1">${totalTransactions}</div>
+                            <div class="text-sm text-slate-600">Total Payments</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-green-600 mb-1">Rs ${totalPaid.toLocaleString()}</div>
+                            <div class="text-sm text-slate-600">Total Paid</div>
+                        </div>
+                    </div>
+                    ${student.feeSummary?.lastPayment ? `
+                        <div class="mt-4 pt-4 border-t border-slate-100 text-center">
+                            <div class="text-sm text-slate-500">Last Payment</div>
+                            <div class="font-semibold text-slate-800">
+                                ${new Date(student.feeSummary.lastPayment).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        // Render transactions list
+        function renderTransactions() {
+            const transactionsEl = document.getElementById('transactions-list');
+            const countEl = document.getElementById('transaction-count');
+            const student = studentData;
+            const transactions = student.transactions || [];
+            
+            // Update count
+            countEl.textContent = `${transactions.length} payment${transactions.length !== 1 ? 's' : ''}`;
+            
+            if (transactions.length === 0) {
+                transactionsEl.innerHTML = `
+                    <div class="dashboard-card p-8 text-center">
+                        <i class="fa-solid fa-receipt text-4xl text-slate-300 mb-3"></i>
+                        <div class="font-medium text-slate-700">No payment records found</div>
+                        <div class="text-sm text-slate-500 mt-1">Your payment history will appear here</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort transactions by date (newest first)
+            const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            transactionsEl.innerHTML = sortedTransactions.map(transaction => `
+                <div class="receipt-card p-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <div class="font-bold text-slate-800">${transaction.description}</div>
+                            <div class="text-sm text-slate-500 mt-1">
+                                <i class="fa-solid fa-calendar-day mr-1"></i>
+                                ${new Date(transaction.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                <span class="mx-2">•</span>
+                                <i class="fa-solid fa-user-check mr-1"></i>
+                                ${transaction.receivedBy || 'Not specified'}
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xl font-bold text-green-600">Rs ${transaction.amount.toLocaleString()}</div>
+                            <div class="text-xs text-slate-500 mt-1">Receipt #${transaction.id.toString().slice(-6)}</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm">
+                            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-medium">
+                                ${transaction.category}
+                            </span>
+                        </div>
+                        <button onclick="downloadReceipt(${transaction.id})" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+                            <i class="fa-solid fa-download"></i> Download Receipt
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Logout function
+        function logout() {
+            studentData = null;
+            sessionStorage.removeItem('loggedInStudent');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('login-form').reset();
+            showToast('Logged out successfully');
+        }
+        
+        // Download receipt for a specific transaction
+        function downloadReceipt(transactionId) {
+            const student = studentData;
+            const transaction = student.transactions.find(t => t.id === transactionId);
+            
+            if (!transaction) {
+                showToast('Receipt not found', true);
+                return;
+            }
+            
+            // Create receipt HTML
+            const receiptHTML = createReceiptHTML(student, transaction);
+            
+            // Create a blob and download
+            const blob = new Blob([receiptHTML], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Receipt_${student.name.replace(/\s+/g, '_')}_${transaction.date}.html`;
+            a.click();
+            
+            showToast('Receipt download started');
+        }
+        
+        // Download fee summary PDF
+        function downloadFeeSummary() {
+            const student = studentData;
+            
+            // Create summary HTML
+            const summaryHTML = createFeeSummaryHTML(student);
+            
+            // Create a blob and download
+            const blob = new Blob([summaryHTML], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Fee_Summary_${student.name.replace(/\s+/g, '_')}.html`;
+            a.click();
+            
+            showToast('Fee summary download started');
+        }
+        
+        // Download all receipts as ZIP (simulated)
+        function downloadAllReceipts() {
+            const student = studentData;
+            
+            if (!student.transactions || student.transactions.length === 0) {
+                showToast('No receipts available to download', true);
+                return;
+            }
+            
+            // For demo purposes, we'll create a single HTML file with all receipts
+            const allReceiptsHTML = createAllReceiptsHTML(student);
+            
+            const blob = new Blob([allReceiptsHTML], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `All_Receipts_${student.name.replace(/\s+/g, '_')}.html`;
+            a.click();
+            
+            showToast(`Downloading ${student.transactions.length} receipt(s)`);
+        }
+        
+        // Create receipt HTML for a transaction
+        function createReceiptHTML(student, transaction) {
+            const dateStr = new Date().toLocaleDateString('en-GB');
+            const receiptDate = new Date(transaction.date).toLocaleDateString('en-GB');
+            
+            // Signature URLs for different receivers
+            const signatureUrls = {
+                'Faiq Ali': 'faiqsign.jpg',
+                'Ali Faheem': 'alifaheemsign.jpg',
+                'Saeed Bapar': 'Saeedsign.jpg'
+            };
+            
+            const signUrl = signatureUrls[transaction.receivedBy] || '';
+            
+            return `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Fee Receipt - ${HOSTEL_NAME}</title>
+                <style>
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    }
+                    
+                    body {
+                        padding: 40px;
+                        background: white;
+                        color: #333;
+                        line-height: 1.6;
+                    }
+                    
+                    .container {
+                        max-width: 210mm;
+                        margin: 0 auto;
+                        border: 2px solid #e5e7eb;
+                        border-radius: 16px;
+                        overflow: hidden;
+                        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+                    }
+                    
+                    /* Header */
+                    .header {
+                        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+                        color: white;
+                        padding: 30px;
+                        text-align: center;
+                    }
+                    
+                    .hostel-name {
+                        font-size: 28px;
+                        font-weight: bold;
+                        margin-bottom: 8px;
+                    }
+                    
+                    .receipt-title {
+                        font-size: 18px;
+                        opacity: 0.9;
+                        margin-bottom: 5px;
+                    }
+                    
+                    .receipt-id {
+                        font-size: 16px;
+                        background: rgba(255,255,255,0.2);
+                        padding: 6px 16px;
+                        border-radius: 20px;
+                        display: inline-block;
+                        margin-top: 10px;
+                        font-weight: 600;
+                    }
+                    
+                    /* Body */
+                    .receipt-body {
+                        padding: 30px;
+                    }
+                    
+                    .receipt-details {
+                        background: #f9fafb;
+                        border-radius: 12px;
+                        padding: 25px;
+                        margin-bottom: 30px;
+                        border: 1px solid #e5e7eb;
+                    }
+                    
+                    .detail-row {
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 15px;
+                        padding-bottom: 15px;
+                        border-bottom: 1px dashed #d1d5db;
+                    }
+                    
+                    .detail-row:last-child {
+                        margin-bottom: 0;
+                        padding-bottom: 0;
+                        border-bottom: none;
+                    }
+                    
+                    .detail-label {
+                        color: #6b7280;
+                        font-weight: 500;
+                        font-size: 15px;
+                    }
+                    
+                    .detail-value {
+                        font-weight: 600;
+                        color: #374151;
+                        font-size: 15px;
+                    }
+                    
+                    /* Amount Section */
+                    .amount-section {
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        padding: 30px;
+                        border-radius: 12px;
+                        text-align: center;
+                        margin-bottom: 30px;
+                    }
+                    
+                    .amount-label {
+                        font-size: 16px;
+                        opacity: 0.9;
+                        margin-bottom: 10px;
+                        font-weight: 600;
+                    }
+                    
+                    .amount-value {
+                        font-size: 48px;
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                    }
+                    
+                    .amount-words {
+                        font-size: 16px;
+                        opacity: 0.9;
+                        font-style: italic;
+                    }
+                    
+                    /* Footer with Signature */
+                    .receipt-footer {
+                        padding: 25px 30px;
+                        background: #f9fafb;
+                        border-top: 1px solid #e5e7eb;
+                        text-align: center;
+                    }
+                    
+                    .thank-you {
+                        color: #6b7280;
+                        margin-bottom: 20px;
+                        font-style: italic;
+                        font-size: 16px;
+                    }
+                    
+                    .signature-section {
+                        margin-top: 30px;
+                        text-align: center;
+                    }
+                    
+                    .signature-image {
+                        max-width: 200px;
+                        max-height: 80px;
+                        margin: 15px auto;
+                        display: block;
+                        border-bottom: 2px solid #374151;
+                        padding-bottom: 10px;
+                    }
+                    
+                    .signature-label {
+                        color: #374151;
+                        font-size: 16px;
+                        font-weight: 600;
+                        margin-top: 10px;
+                    }
+                    
+                    .receiver-name {
+                        color: #4f46e5;
+                        font-weight: bold;
+                        margin-top: 5px;
+                        font-size: 18px;
+                    }
+                    
+                    .receipt-meta {
+                        font-size: 14px;
+                        color: #9ca3af;
+                        margin-top: 30px;
+                        line-height: 1.8;
+                    }
+                    
+                    /* Print styles */
+                    @media print {
+                        body {
+                            padding: 0;
+                        }
+                        
+                        .container {
+                            border: none;
+                            box-shadow: none;
+                            max-width: 100%;
+                        }
+                    }
+                </style>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            </head>
+            <body>
+                <div class="container">
+                    <!-- Header -->
+                    <div class="header">
+                        <div class="hostel-name">${HOSTEL_NAME}</div>
+                        <div class="receipt-title">OFFICIAL FEE RECEIPT</div>
+                        <div class="receipt-id">Receipt No: ${transaction.id.toString().slice(-8)}</div>
+                    </div>
+                    
+                    <!-- Body -->
+                    <div class="receipt-body">
+                        <!-- Details -->
+                        <div class="receipt-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Date of Receipt:</span>
+                                <span class="detail-value">${receiptDate}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Receipt Number:</span>
+                                <span class="detail-value">${transaction.id.toString().slice(-8)}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Received From:</span>
+                                <span class="detail-value">${student.name}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Student ID:</span>
+                                <span class="detail-value">${student.id}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Room Number:</span>
+                                <span class="detail-value">${student.room || 'N/A'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Category:</span>
+                                <span class="detail-value">${transaction.category}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Description:</span>
+                                <span class="detail-value">${transaction.description}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Received By:</span>
+                                <span class="detail-value">${transaction.receivedBy || 'N/A'}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Amount -->
+                        <div class="amount-section">
+                            <div class="amount-label">AMOUNT RECEIVED</div>
+                            <div class="amount-value">Rs ${transaction.amount.toLocaleString()}/-</div>
+                            <div class="amount-words">${amountToWords(transaction.amount)} Pakistani Rupees Only</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer with Signature -->
+                    <div class="receipt-footer">
+                        <div class="thank-you">
+                            <i class="fas fa-check-circle"></i> Payment received successfully. Thank you for your payment!
+                        </div>
+                        
+                        <div class="signature-section">
+                            <div class="signature-label">AUTHORIZED SIGNATURE</div>
+                            ${signUrl ? `
+                                <img src="${signUrl}" alt="Signature" class="signature-image">
+                            ` : `
+                                <div style="height: 60px; border-bottom: 2px solid #374151; width: 200px; margin: 15px auto;"></div>
+                            `}
+                            <div class="receiver-name">${transaction.receivedBy || 'Authorized Signatory'}</div>
+                            <div style="margin-top: 10px; color: #6b7280; font-size: 14px;">
+                                ${HOSTEL_NAME}
+                            </div>
+                        </div>
+                        
+                        <div class="receipt-meta">
+                            <div><strong>Address:</strong> ${ADDRESS}</div>
+                            <div><strong>Contact:</strong> ${CONTACT}</div>
+                            <div><strong>Generated on:</strong> ${dateStr}</div>
+                            <div style="margin-top: 15px; font-style: italic;">
+                                This is a computer-generated receipt. Valid without signature.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <script>
+                    // Auto-print after delay
+                    setTimeout(() => {
+                        window.print();
+                    }, 1000);
+                <\/script>
+            </body>
+            </html>
+            `;
+        }
+        
+        // Create fee summary HTML
+        function createFeeSummaryHTML(student) {
+            const dateStr = new Date().toLocaleDateString('en-GB');
+            const currentMonth = student.feeStatus?.currentMonth;
+            const previousMonth = student.feeStatus?.previousMonth;
+            
+            return `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Fee Summary - ${student.name}</title>
+                <style>
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    }
+                    
+                    body {
+                        padding: 40px;
+                        background: white;
+                        color: #333;
+                        line-height: 1.6;
+                    }
+                    
+                    .container {
+                        max-width: 210mm;
+                        margin: 0 auto;
+                    }
+                    
+                    /* Header */
+                    .header {
+                        text-align: center;
+                        margin-bottom: 40px;
+                        border-bottom: 3px solid #4f46e5;
+                        padding-bottom: 20px;
+                    }
+                    
+                    .hostel-name {
+                        font-size: 32px;
+                        font-weight: bold;
+                        color: #4f46e5;
+                        margin-bottom: 10px;
+                    }
+                    
+                    .report-title {
+                        font-size: 24px;
+                        color: #333;
+                        margin-bottom: 5px;
+                    }
+                    
+                    .student-info {
+                        font-size: 18px;
+                        color: #666;
+                        margin-bottom: 15px;
+                    }
+                    
+                    .generated-date {
+                        font-size: 16px;
+                        color: #888;
+                    }
+                    
+                    /* Summary Section */
+                    .summary-section {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        padding: 25px;
+                        border-radius: 12px;
+                        margin-bottom: 30px;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                    }
+                    
+                    .summary-title {
+                        font-size: 20px;
+                        margin-bottom: 20px;
+                        text-align: center;
+                        font-weight: bold;
+                    }
+                    
+                    .summary-grid {
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 20px;
+                    }
+                    
+                    .summary-item {
+                        text-align: center;
+                        padding: 15px;
+                        background: rgba(255,255,255,0.1);
+                        border-radius: 8px;
+                        backdrop-filter: blur(10px);
+                    }
+                    
+                    .summary-label {
+                        font-size: 14px;
+                        margin-bottom: 5px;
+                        opacity: 0.9;
+                    }
+                    
+                    .summary-value {
+                        font-size: 24px;
+                        font-weight: bold;
+                    }
+                    
+                    /* Status Section */
+                    .status-section {
+                        margin-bottom: 30px;
+                    }
+                    
+                    .section-title {
+                        font-size: 20px;
+                        font-weight: bold;
+                        color: #4f46e5;
+                        margin-bottom: 20px;
+                        padding-bottom: 10px;
+                        border-bottom: 2px solid #e5e7eb;
+                    }
+                    
+                    .status-grid {
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 20px;
+                    }
+                    
+                    .status-box {
+                        background: #f9fafb;
+                        border: 1px solid #e5e7eb;
+                        border-radius: 12px;
+                        padding: 20px;
+                    }
+                    
+                    .status-title {
+                        font-size: 18px;
+                        font-weight: bold;
+                        color: #374151;
+                        margin-bottom: 15px;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                    }
+                    
+                    .status-items {
+                        list-style: none;
+                    }
+                    
+                    .status-item {
+                        display: flex;
+                        justify-content: space-between;
+                        padding: 10px 0;
+                        border-bottom: 1px solid #e5e7eb;
+                    }
+                    
+                    .status-item:last-child {
+                        border-bottom: none;
+                    }
+                    
+                    .status-name {
+                        color: #6b7280;
+                    }
+                    
+                    .status-amount {
+                        font-weight: 600;
+                    }
+                    
+                    /* Tables */
+                    .table-section {
+                        margin-bottom: 30px;
+                    }
+                    
+                    .data-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 10px;
+                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    }
+                    
+                    .data-table th {
+                        background: #4f46e5;
+                        color: white;
+                        padding: 12px 15px;
+                        text-align: left;
+                        font-weight: 600;
+                        border: none;
+                    }
+                    
+                    .data-table td {
+                        padding: 12px 15px;
+                        border-bottom: 1px solid #e5e7eb;
+                        vertical-align: top;
+                    }
+                    
+                    .data-table tr:nth-child(even) {
+                        background: #f9fafb;
+                    }
+                    
+                    .amount-cell {
+                        text-align: right;
+                        font-weight: 600;
+                        color: #10b981;
+                    }
+                    
+                    /* Footer */
+                    .footer {
+                        margin-top: 50px;
+                        padding-top: 20px;
+                        border-top: 2px solid #e5e7eb;
+                        text-align: center;
+                        color: #6b7280;
+                        font-size: 14px;
+                    }
+                    
+                    .signature-section {
+                        margin-top: 40px;
+                        display: flex;
+                        justify-content: space-between;
+                    }
+                    
+                    .signature {
+                        text-align: center;
+                    }
+                    
+                    .signature-line {
+                        width: 200px;
+                        border-top: 1px solid #333;
+                        margin: 20px auto 5px;
+                    }
+                    
+                    /* Print styles */
+                    @media print {
+                        body {
+                            padding: 15px;
+                        }
+                        
+                        .no-print {
+                            display: none !important;
+                        }
+                    }
+                </style>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            </head>
+            <body>
+                <div class="container">
+                    <!-- Header -->
+                    <div class="header">
+                        <div class="hostel-name">${HOSTEL_NAME}</div>
+                        <div class="report-title">FEE SUMMARY REPORT</div>
+                        <div class="student-info">${student.name} | ID: ${student.id} | Room: ${student.room || 'N/A'}</div>
+                        <div class="generated-date">Generated on: ${dateStr}</div>
+                    </div>
+                    
+                    <!-- Summary Section -->
+                    <div class="summary-section">
+                        <div class="summary-title">Financial Summary</div>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div class="summary-label">Monthly Fee</div>
+                                <div class="summary-value">Rs ${student.monthlyFee.toLocaleString()}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">Total Paid</div>
+                                <div class="summary-value" style="color: #10b981;">Rs ${(student.feeSummary?.totalPaid || 0).toLocaleString()}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">Total Payments</div>
+                                <div class="summary-value">${student.feeSummary?.totalTransactions || 0}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">Last Payment</div>
+                                <div class="summary-value">${student.feeSummary?.lastPayment ? new Date(student.feeSummary.lastPayment).toLocaleDateString('en-GB') : 'None'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fee Status -->
+                    <div class="status-section">
+                        <div class="section-title">
+                            <i class="fas fa-chart-pie"></i> Fee Status
+                        </div>
+                        <div class="status-grid">
+                            <!-- Current Month -->
+                            <div class="status-box">
+                                <div class="status-title">
+                                    <i class="fas fa-calendar-week"></i> Current Month
+                                </div>
+                                <ul class="status-items">
+                                    <li class="status-item">
+                                        <span class="status-name">Month:</span>
+                                        <span class="status-amount">${currentMonth?.month || 'N/A'}</span>
+                                    </li>
+                                    <li class="status-item">
+                                        <span class="status-name">Amount:</span>
+                                        <span class="status-amount">Rs ${student.monthlyFee.toLocaleString()}</span>
+                                    </li>
+                                    <li class="status-item">
+                                        <span class="status-name">Status:</span>
+                                        <span class="status-amount" style="color: ${currentMonth?.status === 'paid' ? '#10b981' : currentMonth?.status === 'pending' ? '#f59e0b' : '#ef4444'}">
+                                            ${currentMonth?.status === 'paid' ? 'Paid' : currentMonth?.status === 'pending' ? 'Pending' : 'Not Paid'}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Previous Month -->
+                            <div class="status-box">
+                                <div class="status-title">
+                                    <i class="fas fa-calendar-alt"></i> Previous Month
+                                </div>
+                                <ul class="status-items">
+                                    <li class="status-item">
+                                        <span class="status-name">Month:</span>
+                                        <span class="status-amount">${previousMonth?.month || 'N/A'}</span>
+                                    </li>
+                                    <li class="status-item">
+                                        <span class="status-name">Amount:</span>
+                                        <span class="status-amount">Rs ${student.monthlyFee.toLocaleString()}</span>
+                                    </li>
+                                    <li class="status-item">
+                                        <span class="status-name">Status:</span>
+                                        <span class="status-amount" style="color: ${previousMonth?.status === 'paid' ? '#10b981' : previousMonth?.status === 'pending' ? '#f59e0b' : '#ef4444'}">
+                                            ${previousMonth?.status === 'paid' ? 'Paid' : previousMonth?.status === 'pending' ? 'Pending' : 'Not Paid'}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Transactions Table -->
+                    ${student.transactions && student.transactions.length > 0 ? `
+                    <div class="table-section">
+                        <div class="section-title">
+                            <i class="fas fa-receipt"></i> Payment History (${student.transactions.length} records)
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Receipt No</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Received By</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${student.transactions.map(transaction => `
+                                    <tr>
+                                        <td>${new Date(transaction.date).toLocaleDateString('en-GB')}</td>
+                                        <td>${transaction.id.toString().slice(-8)}</td>
+                                        <td>${transaction.description}</td>
+                                        <td>${transaction.category}</td>
+                                        <td>${transaction.receivedBy || 'N/A'}</td>
+                                        <td class="amount-cell">Rs ${transaction.amount.toLocaleString()}</td>
+                                    </tr>
+                                `).join('')}
+                                <tr style="background: #f1f5f9; font-weight: bold;">
+                                    <td colspan="5" style="text-align: right;">Total Paid:</td>
+                                    <td class="amount-cell">Rs ${(student.feeSummary?.totalPaid || 0).toLocaleString()}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    ` : ''}
+                    
+                    <!-- Footer -->
+                    <div class="footer">
+                        <div style="margin-bottom: 20px;">
+                            <strong>${HOSTEL_NAME}</strong><br>
+                            ${ADDRESS}<br>
+                            Contact: ${CONTACT}
+                        </div>
+                        
+                        <div class="signature-section">
+                            <div class="signature">
+                                <div class="signature-line"></div>
+                                <div>Student Signature</div>
+                            </div>
+                            <div class="signature">
+                                <div class="signature-line"></div>
+                                <div>Hostel Authority Signature</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 30px; font-size: 12px; color: #9ca3af;">
+                            This is a computer-generated report. No signature is required.
+                        </div>
+                    </div>
+                </div>
+                
+                <script>
+                    // Auto-print after delay
+                    setTimeout(() => {
+                        window.print();
+                    }, 1000);
+                <\/script>
+            </body>
+            </html>
+            `;
+        }
+        
+        // Create HTML with all receipts
+        function createAllReceiptsHTML(student) {
+            const dateStr = new Date().toLocaleDateString('en-GB');
+            
+            return `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>All Receipts - ${student.name}</title>
+                <style>
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    }
+                    
+                    body {
+                        padding: 20px;
+                        background: white;
+                        color: #333;
+                        line-height: 1.6;
+                    }
+                    
+                    .page-break {
+                        page-break-before: always;
+                    }
+                    
+                    .receipt-container {
+                        max-width: 210mm;
+                        margin: 0 auto 40px;
+                        border: 1px solid #e5e7eb;
+                        border-radius: 12px;
+                        overflow: hidden;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                    }
+                    
+                    @media print {
+                        .page-break {
+                            page-break-before: always;
+                        }
+                        
+                        .receipt-container {
+                            box-shadow: none;
+                            border: 1px solid #ccc;
+                            margin-bottom: 20px;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: #4f46e5; font-size: 28px; margin-bottom: 10px;">${HOSTEL_NAME}</h1>
+                    <h2 style="color: #666; font-size: 20px;">All Payment Receipts for ${student.name}</h2>
+                    <p style="color: #888; margin-top: 10px;">Generated on: ${dateStr}</p>
+                </div>
+                
+                ${student.transactions.map((transaction, index) => `
+                    ${index > 0 ? '<div class="page-break"></div>' : ''}
+                    ${createReceiptHTML(student, transaction)}
+                `).join('')}
+                
+                <script>
+                    // Auto-print after delay
+                    setTimeout(() => {
+                        window.print();
+                    }, 1000);
+                <\/script>
+            </body>
+            </html>
+            `;
+        }
+        
+        // Helper function to convert amount to words
+        function amountToWords(amount) {
+            const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+            const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+            const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+            
+            if (amount === 0) return 'Zero';
+            
+            let words = '';
+            
+            if (amount >= 100000) {
+                const lakhs = Math.floor(amount / 100000);
+                words += amountToWords(lakhs) + ' Lakh ';
+                amount %= 100000;
+            }
+            
+            if (amount >= 1000) {
+                const thousands = Math.floor(amount / 1000);
+                words += amountToWords(thousands) + ' Thousand ';
+                amount %= 1000;
+            }
+            
+            if (amount >= 100) {
+                const hundreds = Math.floor(amount / 100);
+                words += ones[hundreds] + ' Hundred ';
+                amount %= 100;
+            }
+            
+            if (amount >= 20) {
+                const ten = Math.floor(amount / 10);
+                words += tens[ten] + ' ';
+                amount %= 10;
+            } else if (amount >= 10) {
+                words += teens[amount - 10] + ' ';
+                amount = 0;
+            }
+            
+            if (amount > 0) {
+                words += ones[amount] + ' ';
+            }
+            
+            return words.trim() + ' Rupees';
+        }
+        
+        // Show toast notification
+        function showToast(message, isError = false) {
+            const el = document.getElementById('toast');
+            const messageEl = document.getElementById('toast-message');
+            const iconEl = el.querySelector('i');
+            
+            messageEl.textContent = message;
+            
+            if (isError) {
+                el.style.background = '#dc2626';
+                iconEl.className = 'fa-solid fa-circle-exclamation text-yellow-300 text-lg';
+            } else {
+                el.style.background = '#1e293b';
+                iconEl.className = 'fa-solid fa-check-circle text-green-400 text-lg';
+            }
+            
+            el.classList.remove('-translate-y-32');
+            el.classList.add('translate-y-6');
+            
+            setTimeout(() => {
+                el.classList.remove('translate-y-6');
+                el.classList.add('-translate-y-32');
+            }, 3000);
+        }
+        
+        // Auto-focus on name field
+        document.getElementById('login-name').focus();
+        
+        // Add enter key support
+        document.getElementById('login-form').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.target.id !== 'login-button') {
+                document.getElementById('login-button').click();
+            }
+        });
+        
+    </script>
+</body>
+</html>
