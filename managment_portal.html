@@ -156,12 +156,21 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .animate-shake {
+            animation: shake 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body class="text-slate-800">
     <!-- Login Screen -->
     <div id="login-screen" class="login-bg">
-        <!-- ... Login screen code remains exactly the same as before ... -->
         <div class="login-card">
             <div class="bg-indigo-600 text-white p-8 text-center">
                 <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
@@ -183,7 +192,8 @@
                         <input type="text" id="login-username" required 
                                class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
                                placeholder="Enter your username"
-                               autocomplete="username">
+                               autocomplete="username"
+                               value="admin">
                     </div>
                     
                     <div>
@@ -194,7 +204,8 @@
                             <input type="password" id="login-password" required 
                                    class="w-full px-4 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
                                    placeholder="Enter your password"
-                                   autocomplete="current-password">
+                                   autocomplete="current-password"
+                                   value="admin123">
                             <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
@@ -203,7 +214,7 @@
                     
                     <div class="flex items-center justify-between pt-2">
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="remember-me" class="w-4 h-4 text-indigo-600 rounded border-slate-300">
+                            <input type="checkbox" id="remember-me" class="w-4 h-4 text-indigo-600 rounded border-slate-300" checked>
                             <span class="text-sm text-slate-600">Remember this device</span>
                         </label>
                     </div>
@@ -223,6 +234,14 @@
                         <i class="fa-solid fa-shield mr-1"></i>
                         Secure access • Encrypted connection • Activity logged
                     </p>
+                    <div class="mt-3 text-center">
+                        <p class="text-xs text-slate-400">Demo Credentials:</p>
+                        <p class="text-xs text-slate-500 mt-1">
+                            <strong>admin/admin123</strong> • 
+                            <strong>manager/manager123</strong> • 
+                            <strong>accountant/accountant123</strong>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -297,7 +316,7 @@
         <!-- Main Content -->
         <main class="flex-1 overflow-y-auto w-full max-w-6xl mx-auto">
             <!-- Loading State -->
-            <div id="loading-state" class="p-6">
+            <div id="loading-state" class="hidden p-6">
                 <div class="flex flex-col items-center justify-center py-20">
                     <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mb-4">
                         <i class="fa-solid fa-spinner fa-spin text-indigo-600 text-2xl"></i>
@@ -866,14 +885,23 @@
                     const session = JSON.parse(savedSession);
                     const now = Date.now();
                     
-                    if (session.expiresAt && now < session.expiresAt) {
-                        currentUser = session.user;
-                        await loadUserProfile();
-                        showApp();
-                        trackSessionActivity();
-                        return;
-                    } else {
-                        localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_SESSION);
+                    // Check if session exists and is not expired
+                    if (session && session.user) {
+                        // Check expiration
+                        if (session.expiresAt && now < session.expiresAt) {
+                            currentUser = session.user;
+                            await loadUserProfile();
+                            showApp();
+                            trackSessionActivity();
+                            return;
+                        } else if (!session.expiresAt) {
+                            // No expiration set, just use it
+                            currentUser = session.user;
+                            await loadUserProfile();
+                            showApp();
+                            trackSessionActivity();
+                            return;
+                        }
                     }
                 }
             } catch (error) {
@@ -909,50 +937,94 @@
             const password = document.getElementById('login-password').value;
             const rememberMe = document.getElementById('remember-me').checked;
             
+            // Show loading state
             const loginBtn = document.getElementById('login-btn');
             const originalText = loginBtn.innerHTML;
             loginBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Authenticating...';
             loginBtn.disabled = true;
             
             try {
+                // Load credentials from profiles_data.json
                 const response = await fetch('profiles_data.json');
-                if (!response.ok) throw new Error('Network error');
+                if (!response.ok) {
+                    throw new Error('Failed to load credentials file');
+                }
                 
-                const credentials = await response.json();
-                const user = credentials.users.find(u => 
-                    u.username.toLowerCase() === username.toLowerCase() && 
-                    u.password === password
-                );
+                const credentialsData = await response.json();
+                
+                if (!credentialsData.users || !Array.isArray(credentialsData.users)) {
+                    throw new Error('Invalid credentials format');
+                }
+                
+                // Debug: Log what we're checking
+                console.log('Looking for user:', username);
+                console.log('Available users:', credentialsData.users.map(u => u.username));
+                
+                // Find user with exact username match (case-sensitive as per your JSON)
+                const user = credentialsData.users.find(u => {
+                    // Check exact username match
+                    const usernameMatch = u.username === username;
+                    // Check password match
+                    const passwordMatch = u.password === password;
+                    
+                    console.log(`Checking ${u.username}: usernameMatch=${usernameMatch}, passwordMatch=${passwordMatch}`);
+                    
+                    return usernameMatch && passwordMatch;
+                });
                 
                 if (user) {
+                    console.log('Login successful for:', user.username);
+                    
+                    // Successful login
                     currentUser = {
                         username: user.username,
                         defaultProfile: user.defaultProfile,
-                        role: user.defaultProfile.role
+                        role: user.defaultProfile.role || 'User'
                     };
                     
+                    // Create session
                     const session = {
                         user: currentUser,
                         expiresAt: rememberMe ? Date.now() + CONFIG.SESSION_TIMEOUT : null,
                         createdAt: Date.now()
                     };
                     
+                    // Save session
                     localStorage.setItem(CONFIG.STORAGE_KEYS.USER_SESSION, JSON.stringify(session));
+                    
+                    // Load user profile
                     await loadUserProfile();
+                    
+                    // Show app
                     showApp();
                     trackSessionActivity();
                     
                 } else {
-                    showLoginError('Invalid username or password');
+                    console.log('Login failed: No matching user found');
+                    showLoginError('Invalid username or password. Try: admin/admin123');
                 }
                 
             } catch (error) {
                 console.error('Login error:', error);
-                showLoginError('Network error. Please try again.');
+                showLoginError('Login error: ' + error.message);
             } finally {
+                // Reset button
                 loginBtn.innerHTML = originalText;
                 loginBtn.disabled = false;
             }
+        }
+
+        function showLoginError(message) {
+            const errorElement = document.getElementById('login-error');
+            const errorText = document.getElementById('error-text');
+            
+            errorText.textContent = message;
+            errorElement.classList.remove('hidden');
+            
+            // Shake animation
+            const form = document.getElementById('login-form');
+            form.classList.add('animate-shake');
+            setTimeout(() => form.classList.remove('animate-shake'), 500);
         }
 
         function handleLogout() {
@@ -968,6 +1040,21 @@
             userProfile = null;
         }
 
+        function togglePassword() {
+            const passwordInput = document.getElementById('login-password');
+            const eyeIcon = passwordInput.nextElementSibling.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
         // ========== PROFILE MANAGEMENT ==========
         async function loadUserProfile() {
             if (!currentUser) return;
@@ -976,58 +1063,105 @@
             const savedProfile = localStorage.getItem(profileKey);
             
             if (savedProfile) {
-                userProfile = JSON.parse(savedProfile);
+                try {
+                    userProfile = JSON.parse(savedProfile);
+                } catch (e) {
+                    console.error('Error parsing saved profile:', e);
+                    userProfile = { ...currentUser.defaultProfile };
+                }
             } else {
+                // Use default profile
                 userProfile = { ...currentUser.defaultProfile };
                 userProfile.isDefault = true;
                 userProfile.createdAt = Date.now();
+                
+                // Save default profile
                 localStorage.setItem(profileKey, JSON.stringify(userProfile));
             }
             
             // Show admin features if user is admin
-            if (currentUser.role === 'System Admin' || currentUser.username === 'admin') {
+            if (currentUser.username === 'admin' || currentUser.role === 'System Admin') {
                 document.getElementById('admin-features').classList.remove('hidden');
             }
             
+            // Apply theme
             applyTheme(userProfile.theme || 'indigo');
+            
+            // Update UI
             updateProfileUI();
         }
 
         function updateProfileUI() {
             if (!userProfile) return;
             
-            document.getElementById('welcome-user').textContent = userProfile.name;
-            document.getElementById('user-role').textContent = userProfile.role;
-            document.getElementById('dropdown-name').textContent = userProfile.name;
-            document.getElementById('dropdown-role').textContent = userProfile.role;
+            // Update header
+            document.getElementById('welcome-user').textContent = userProfile.name || userProfile.username;
+            document.getElementById('user-role').textContent = userProfile.role || 'User';
+            document.getElementById('dropdown-name').textContent = userProfile.name || userProfile.username;
+            document.getElementById('dropdown-role').textContent = userProfile.role || 'User';
             
+            // Update avatar
+            const avatarUrl = userProfile.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile.name || userProfile.username)}&background=4f46e5&color=fff&size=128`;
             const avatarElements = document.querySelectorAll('#user-avatar, #profile-avatar, #profile-preview');
             avatarElements.forEach(el => {
-                el.src = userProfile.image || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(userProfile.name) + '&background=4f46e5&color=fff&size=128';
+                el.src = avatarUrl;
+                el.onerror = function() {
+                    this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile.name || userProfile.username)}&background=4f46e5&color=fff&size=128`;
+                };
             });
             
-            document.getElementById('profile-name').textContent = userProfile.name;
-            document.getElementById('profile-role').textContent = userProfile.role;
+            // Update profile card
+            document.getElementById('profile-name').textContent = userProfile.name || userProfile.username;
+            document.getElementById('profile-role').textContent = userProfile.role || 'User';
             document.getElementById('profile-department').textContent = userProfile.department || 'Not specified';
             document.getElementById('profile-joined').textContent = new Date(userProfile.createdAt).getFullYear();
             
-            document.getElementById('footer-address').textContent = jsonData?.metadata?.address || 'Hostel Street, DHA Phase 1, Karachi';
-            document.getElementById('footer-contact').textContent = jsonData?.metadata?.contact || '0333-1234567';
+            // Update footer if data is loaded
+            if (jsonData?.metadata) {
+                document.getElementById('footer-address').textContent = jsonData.metadata.address || 'Hostel Street, DHA Phase 1, Karachi';
+                document.getElementById('footer-contact').textContent = jsonData.metadata.contact || '0333-1234567';
+            }
         }
 
-        // ========== PROFILE SETTINGS MODAL ==========
+        // ========== UI CONTROLS ==========
+        function toggleProfileMenu() {
+            const menu = document.getElementById('profile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function toggleThemeMenu() {
+            openProfileSettings();
+            document.getElementById('profile-menu').classList.add('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('login-error').classList.add('hidden');
+        }
+
+        function showApp() {
+            console.log('Showing app for user:', currentUser?.username);
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            showLoading(true);
+            loadData();
+        }
+
         function openProfileSettings() {
             if (!userProfile) return;
             
-            document.getElementById('profile-name-input').value = userProfile.name;
-            document.getElementById('profile-role-input').value = userProfile.role;
+            // Populate form with current profile data
+            document.getElementById('profile-name-input').value = userProfile.name || '';
+            document.getElementById('profile-role-input').value = userProfile.role || '';
             document.getElementById('profile-dept-input').value = userProfile.department || '';
             document.getElementById('profile-email-input').value = userProfile.email || '';
             document.getElementById('profile-phone-input').value = userProfile.phone || '';
             document.getElementById('profile-signature-input').value = userProfile.signature || '';
             document.getElementById('profile-notifications').checked = userProfile.notifications !== false;
-            document.getElementById('profile-preview').src = userProfile.image;
+            document.getElementById('profile-preview').src = userProfile.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile.name || userProfile.username)}&background=4f46e5&color=fff&size=128`;
             
+            // Set active theme
             const theme = userProfile.theme || 'indigo';
             document.querySelectorAll('.theme-option').forEach(btn => {
                 const btnTheme = btn.onclick.toString().match(/'([^']+)'/)[1];
@@ -1035,6 +1169,7 @@
                 btn.classList.toggle('border-2', btnTheme !== theme);
             });
             
+            // Show modal
             document.getElementById('profile-modal').classList.remove('hidden');
             document.getElementById('profile-menu').classList.add('hidden');
         }
@@ -1043,11 +1178,53 @@
             document.getElementById('profile-modal').classList.add('hidden');
         }
 
+        function previewProfileImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-preview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function selectTheme(theme) {
+            // Update UI buttons
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                const btnTheme = btn.onclick.toString().match(/'([^']+)'/)[1];
+                btn.classList.toggle('border-4', btnTheme === theme);
+                btn.classList.toggle('border-2', btnTheme !== theme);
+            });
+            
+            // Apply immediately for preview
+            applyTheme(theme);
+        }
+
+        function applyTheme(theme) {
+            const themeColors = CONFIG.THEMES[theme] || CONFIG.THEMES.indigo;
+            
+            // Update CSS variables
+            document.documentElement.style.setProperty('--primary-color', themeColors.primary);
+            document.documentElement.style.setProperty('--primary-dark', themeColors.dark);
+            
+            // Update header background
+            const header = document.querySelector('header');
+            if (header) {
+                header.style.background = `linear-gradient(135deg, ${themeColors.primary} 0%, ${themeColors.dark} 100%)`;
+            }
+            
+            // Update body class
+            document.body.classList.remove('theme-indigo', 'theme-green', 'theme-purple', 'theme-blue', 'theme-orange');
+            document.body.classList.add(`theme-${theme}`);
+        }
+
         function saveProfileSettings(event) {
             event.preventDefault();
             
             if (!userProfile || !currentUser) return;
             
+            // Update profile from form
             userProfile.name = document.getElementById('profile-name-input').value;
             userProfile.role = document.getElementById('profile-role-input').value;
             userProfile.department = document.getElementById('profile-dept-input').value;
@@ -1058,12 +1235,14 @@
             userProfile.updatedAt = Date.now();
             userProfile.isDefault = false;
             
+            // Get selected theme
             const activeThemeBtn = document.querySelector('.theme-option.border-4');
             if (activeThemeBtn) {
                 const theme = activeThemeBtn.onclick.toString().match(/'([^']+)'/)[1];
                 userProfile.theme = theme;
             }
             
+            // Handle profile image
             const imageInput = document.getElementById('profile-image-input');
             if (imageInput.files[0]) {
                 const reader = new FileReader();
@@ -1077,12 +1256,39 @@
             }
             
             function saveProfileToStorage() {
+                // Save to localStorage
                 const profileKey = CONFIG.STORAGE_KEYS.USER_PROFILE + currentUser.username;
                 localStorage.setItem(profileKey, JSON.stringify(userProfile));
+                
+                // Update UI
                 updateProfileUI();
                 applyTheme(userProfile.theme || 'indigo');
+                
+                // Show success message
                 alert('Profile updated successfully! Changes saved locally.');
                 closeProfileSettings();
+            }
+        }
+
+        function resetProfileToDefault() {
+            if (confirm('Reset profile to default settings? Your customizations will be lost.')) {
+                if (!currentUser) return;
+                
+                // Reset to default
+                userProfile = { ...currentUser.defaultProfile };
+                userProfile.isDefault = true;
+                userProfile.resetAt = Date.now();
+                
+                // Save
+                const profileKey = CONFIG.STORAGE_KEYS.USER_PROFILE + currentUser.username;
+                localStorage.setItem(profileKey, JSON.stringify(userProfile));
+                
+                // Update UI and close modal
+                updateProfileUI();
+                applyTheme(userProfile.theme || 'indigo');
+                closeProfileSettings();
+                
+                alert('Profile reset to default settings.');
             }
         }
 
@@ -1155,35 +1361,45 @@
             
             // Update tab indicator
             const positions = { 'all': 'translateX(0)', 'fees': 'translateX(100%)', 'expenses': 'translateX(200%)' };
-            document.getElementById('tab-indicator').style.transform = positions[tabName];
+            const indicator = document.getElementById('tab-indicator');
+            if (indicator) {
+                indicator.style.transform = positions[tabName];
+            }
             
             // Update tab buttons
             const tabs = ['all', 'fees', 'expenses'];
             tabs.forEach(tab => {
                 const btn = document.getElementById(`tab-${tab}`);
-                if (tab === tabName) {
-                    btn.classList.remove('text-slate-500');
-                    btn.classList.add('text-white');
-                } else {
-                    btn.classList.remove('text-white');
-                    btn.classList.add('text-slate-500');
+                if (btn) {
+                    if (tab === tabName) {
+                        btn.classList.remove('text-slate-500');
+                        btn.classList.add('text-white');
+                    } else {
+                        btn.classList.remove('text-white');
+                        btn.classList.add('text-slate-500');
+                    }
                 }
             });
             
             // Show/hide collector filters
             const collectorSection = document.getElementById('collector-filter-section');
-            if (tabName === 'fees') {
-                collectorSection.classList.remove('hidden');
-            } else {
-                collectorSection.classList.add('hidden');
-                activeFilters.collector = 'All Collectors';
+            if (collectorSection) {
+                if (tabName === 'fees') {
+                    collectorSection.classList.remove('hidden');
+                } else {
+                    collectorSection.classList.add('hidden');
+                    activeFilters.collector = 'All Collectors';
+                }
             }
             
             // Show/hide content
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
-            document.getElementById(`tab-${tabName}-content`).classList.add('active');
+            const activeTab = document.getElementById(`tab-${tabName}-content`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
             
             refreshTransactionLists();
         }
@@ -1211,9 +1427,27 @@
             }
         }
 
+        function useOfflineData() {
+            const savedData = localStorage.getItem('offline_data');
+            if (savedData) {
+                try {
+                    jsonData = JSON.parse(savedData);
+                    feeTransactions = jsonData.transactions.filter(t => t.type === 'fee');
+                    renderData();
+                    showContent();
+                    showLoading(false);
+                } catch (e) {
+                    showError('Invalid offline data', 'Please check your internet connection.');
+                }
+            } else {
+                showError('No offline data available', 'Please check your internet connection.');
+            }
+        }
+
         function renderData() {
             if (!jsonData) return;
             
+            // Save for offline use
             localStorage.setItem('offline_data', JSON.stringify(jsonData));
             
             const feeTransactions = jsonData.transactions.filter(t => t.type === 'fee');
@@ -1223,6 +1457,7 @@
             const totalExpense = expenseTransactions.reduce((sum, t) => sum + t.amount, 0);
             const netBalance = totalIncome - totalExpense;
             
+            // Update summary cards
             document.getElementById('total-income').textContent = formatCurrency(totalIncome);
             document.getElementById('total-expense').textContent = formatCurrency(totalExpense);
             document.getElementById('net-balance').textContent = formatCurrency(netBalance);
@@ -1238,6 +1473,52 @@
             updateInsights(feeTransactions, expenseTransactions);
             refreshTransactionLists();
             updateDataUpdatedTime();
+            
+            // Update footer with data from JSON
+            if (jsonData.metadata) {
+                document.getElementById('footer-address').textContent = jsonData.metadata.address;
+                document.getElementById('footer-contact').textContent = jsonData.metadata.contact;
+            }
+        }
+
+        function updateInsights(feeTransactions, expenseTransactions) {
+            // Find top student
+            const studentTotals = {};
+            feeTransactions.forEach(t => {
+                if (t.studentName) {
+                    studentTotals[t.studentName] = (studentTotals[t.studentName] || 0) + t.amount;
+                }
+            });
+            
+            let topStudent = '-';
+            let topStudentAmount = 0;
+            Object.entries(studentTotals).forEach(([student, amount]) => {
+                if (amount > topStudentAmount) {
+                    topStudentAmount = amount;
+                    topStudent = student;
+                }
+            });
+            
+            document.getElementById('insight-top-student').textContent = topStudent;
+            document.getElementById('insight-top-amount').textContent = formatCurrency(topStudentAmount);
+            
+            // Find largest category
+            const categoryTotals = {};
+            jsonData.transactions.forEach(t => {
+                categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+            });
+            
+            let topCategory = '-';
+            let topCategoryAmount = 0;
+            Object.entries(categoryTotals).forEach(([category, amount]) => {
+                if (amount > topCategoryAmount) {
+                    topCategoryAmount = amount;
+                    topCategory = category;
+                }
+            });
+            
+            document.getElementById('insight-top-category').textContent = topCategory;
+            document.getElementById('insight-category-amount').textContent = formatCurrency(topCategoryAmount);
         }
 
         function refreshTransactionLists() {
@@ -1284,6 +1565,8 @@
 
         function renderTransactionList(containerId, transactions) {
             const container = document.getElementById(containerId);
+            if (!container) return;
+            
             container.innerHTML = '';
             
             if (!transactions || transactions.length === 0) {
@@ -1546,30 +1829,6 @@
             }
         }
 
-        function applyTheme(theme) {
-            const themeColors = CONFIG.THEMES[theme] || CONFIG.THEMES.indigo;
-            
-            document.documentElement.style.setProperty('--primary-color', themeColors.primary);
-            document.documentElement.style.setProperty('--primary-dark', themeColors.dark);
-            
-            const header = document.querySelector('header');
-            if (header) {
-                header.style.background = `linear-gradient(135deg, ${themeColors.primary} 0%, ${themeColors.dark} 100%)`;
-            }
-            
-            document.body.classList.remove('theme-indigo', 'theme-green', 'theme-purple', 'theme-blue', 'theme-orange');
-            document.body.classList.add(`theme-${theme}`);
-        }
-
-        function selectTheme(theme) {
-            document.querySelectorAll('.theme-option').forEach(btn => {
-                const btnTheme = btn.onclick.toString().match(/'([^']+)'/)[1];
-                btn.classList.toggle('border-4', btnTheme === theme);
-                btn.classList.toggle('border-2', btnTheme !== theme);
-            });
-            applyTheme(theme);
-        }
-
         function updateDataUpdatedTime() {
             const element = document.getElementById('data-updated');
             if (element) {
@@ -1579,16 +1838,49 @@
             }
         }
 
+        function showLoading(show) {
+            const loadingElement = document.getElementById('loading-state');
+            const contentElement = document.getElementById('content-area');
+            
+            if (loadingElement) {
+                loadingElement.classList.toggle('hidden', !show);
+            }
+            if (contentElement) {
+                contentElement.classList.toggle('hidden', show);
+            }
+        }
+
+        function showContent() {
+            document.getElementById('content-area').classList.remove('hidden');
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('error-state').classList.add('hidden');
+        }
+
+        function showError(title, message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('content-area').classList.add('hidden');
+            document.getElementById('error-state').classList.remove('hidden');
+        }
+
+        function refreshData() {
+            loadData();
+        }
+
         function formatCurrency(amount) {
             return `Rs ${amount.toLocaleString()}`;
         }
 
         function formatDate(dateString, format = 'full') {
-            const date = new Date(dateString);
-            if (format === 'short') {
-                return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            try {
+                const date = new Date(dateString);
+                if (format === 'short') {
+                    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+                }
+                return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+            } catch (e) {
+                return dateString;
             }
-            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
         }
 
         function getEmptyStateHTML(message) {
@@ -1637,7 +1929,7 @@
                                 </span>
                                 <span class="mx-2">•</span>
                                 ${isFee ? 
-                                    `<span><i class="fa-solid fa-user-graduate mr-1"></i>${transaction.studentName}</span>` : 
+                                    `<span><i class="fa-solid fa-user-graduate mr-1"></i>${transaction.studentName || 'Unknown'}</span>` : 
                                     `<span><i class="fa-solid fa-store mr-1"></i>${transaction.vendor || transaction.category}</span>`
                                 }
                             </div>
@@ -1686,22 +1978,8 @@
             'Others': { icon: 'fa-box-open', color: 'bg-gray-100 text-gray-600' }
         };
 
-        // Initialize
+        // Initialize tabs
         switchTab('all');
-        
-        // Add shake animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-                20%, 40%, 60%, 80% { transform: translateX(5px); }
-            }
-            .animate-shake {
-                animation: shake 0.5s ease-in-out;
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
