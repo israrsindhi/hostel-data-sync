@@ -1,38 +1,531 @@
 {
   "metadata": {
-    "exportDate": "2025-12-12",
-    "reportPeriod": "December 2025",
-    "reportType": "monthly",
+    "exportDate": "2025-12-20",
+    "reportType": "complete_dataset",
     "hostelName": "Indus Boys Hostel Services",
     "address": "Hostel Street, DHA Phase 1, Karachi",
-    "contact": "0333-1234567"
+    "contact": "0333-1234567",
+    "generatedBy": "Hostel Manager System"
   },
   "summary": {
-    "totalTransactions": 2,
-    "totalIncome": 2000,
-    "totalExpense": 2000,
-    "netBalance": 0,
-    "incomeRecords": 1,
-    "expenseRecords": 1
+    "totalStudents": 10,
+    "totalTransactions": 7,
+    "totalIncome": 55500,
+    "totalExpense": 43500,
+    "netBalance": 12000,
+    "incomeRecords": 4,
+    "expenseRecords": 3
   },
-  "transactions": [
+  "students": [
     {
-      "id": 1765558279928,
-      "type": "fee",
-      "amount": 2000,
-      "description": "Month to faheem",
-      "category": "Monthly Fee",
-      "date": "2025-12-12",
-      "studentName": "Abdul Qadir"
+      "id": 1,
+      "name": "Basheer Ali",
+      "phone": "",
+      "email": "",
+      "room": "FR-01",
+      "emergencyContact": "",
+      "monthlyFee": 0,
+      "notes": "",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-20T13:33:55.191Z",
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "paid",
+          "amount": 0,
+          "paid": true
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "detailed": {
+          "2025-12": {
+            "paid": true,
+            "amount": 14500,
+            "date": "2025-12-20",
+            "status": "paid"
+          },
+          "2025-11": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          }
+        }
+      }
     },
     {
-      "id": 1765558260547,
-      "type": "expense",
-      "amount": 2000,
-      "description": "Ok",
-      "category": "Food",
-      "date": "2025-12-12",
-      "studentName": ""
+      "id": 2,
+      "name": "Zulfiqar Ali",
+      "phone": "",
+      "email": "",
+      "room": "FR-01",
+      "emergencyContact": "",
+      "monthlyFee": 0,
+      "notes": "",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-20T13:33:55.195Z",
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "paid",
+          "amount": 0,
+          "paid": true
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "detailed": {
+          "2025-12": {
+            "paid": true,
+            "amount": 13000,
+            "date": "2025-12-20",
+            "status": "paid"
+          },
+          "2025-11": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "Abdul Qadir",
+      "phone": "",
+      "email": "",
+      "room": "GF-01",
+      "emergencyContact": "",
+      "monthlyFee": 0,
+      "notes": "",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-20T13:33:55.195Z",
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "paid",
+          "amount": 0,
+          "paid": true
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "detailed": {
+          "2025-12": {
+            "paid": true,
+            "amount": 13000,
+            "date": "2025-12-20",
+            "status": "paid"
+          },
+          "2025-11": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Shan Ali",
+      "phone": "",
+      "email": "",
+      "room": "FF-02",
+      "emergencyContact": "",
+      "monthlyFee": 0,
+      "notes": "",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-20T13:33:55.195Z",
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "detailed": {
+          "2025-12": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          },
+          "2025-11": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "Noor Nabi",
+      "phone": "",
+      "email": "",
+      "room": "FF-02",
+      "emergencyContact": "",
+      "monthlyFee": 0,
+      "notes": "",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-20T13:33:55.195Z",
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "detailed": {
+          "2025-12": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          },
+          "2025-11": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          }
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "Syed",
+      "phone": "",
+      "email": "",
+      "room": "FF-02",
+      "emergencyContact": "",
+      "monthlyFee": 0,
+      "notes": "",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-20T13:33:55.195Z",
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "detailed": {
+          "2025-12": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          },
+          "2025-11": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          }
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "Farooq Ahmed",
+      "phone": "",
+      "email": "",
+      "room": "FF-01",
+      "emergencyContact": "",
+      "monthlyFee": 0,
+      "notes": "",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-20T13:33:55.195Z",
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "detailed": {
+          "2025-12": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          },
+          "2025-11": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          }
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "Afaq Ahmed",
+      "phone": "",
+      "email": "",
+      "room": "FF-01",
+      "emergencyContact": "",
+      "monthlyFee": 0,
+      "notes": "",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-20T13:33:55.195Z",
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "detailed": {
+          "2025-12": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          },
+          "2025-11": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          }
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "Mazari",
+      "phone": "",
+      "email": "",
+      "room": "FF-02",
+      "emergencyContact": "",
+      "monthlyFee": 0,
+      "notes": "",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-20T13:33:55.195Z",
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "detailed": {
+          "2025-12": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          },
+          "2025-11": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          }
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "Shar",
+      "phone": "",
+      "email": "",
+      "room": "FF-02",
+      "emergencyContact": "",
+      "monthlyFee": 0,
+      "notes": "",
+      "image": "base64_encoded_image",
+      "createdAt": "2025-12-20T13:33:55.195Z",
+      "feeStatus": {
+        "currentMonth": {
+          "month": "2025-12",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "previousMonth": {
+          "month": "2025-11",
+          "status": "pending",
+          "amount": 0,
+          "paid": false
+        },
+        "detailed": {
+          "2025-12": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          },
+          "2025-11": {
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
+          }
+        }
+      }
     }
-  ]
+  ],
+  "transactions": [
+    {
+      "id": 1766237873991,
+      "type": "expense",
+      "amount": 20000,
+      "description": "watchman",
+      "category": "Staff Salary",
+      "date": "2025-12-20",
+      "studentName": "",
+      "receivedBy": "",
+      "receivedBySignUrl": ""
+    },
+    {
+      "id": 1766237860454,
+      "type": "expense",
+      "amount": 20000,
+      "description": "Cook",
+      "category": "Staff Salary",
+      "date": "2025-12-20",
+      "studentName": "",
+      "receivedBy": "",
+      "receivedBySignUrl": ""
+    },
+    {
+      "id": 1766237835742,
+      "type": "fee",
+      "amount": 13000,
+      "description": "December",
+      "category": "Monthly Fee",
+      "date": "2025-12-20",
+      "studentName": "Zulfiqar Ali",
+      "receivedBy": "Faiq Ali",
+      "receivedBySignUrl": "faiqsign.jpg"
+    },
+    {
+      "id": 1766237804291,
+      "type": "fee",
+      "amount": 14500,
+      "description": "December",
+      "category": "Monthly Fee",
+      "date": "2025-12-20",
+      "studentName": "Basheer Ali",
+      "receivedBy": "Ali Faheem",
+      "receivedBySignUrl": "alifaheemsign.jpg"
+    },
+    {
+      "id": 1766237777534,
+      "type": "fee",
+      "amount": 13000,
+      "description": "December",
+      "category": "Monthly Fee",
+      "date": "2025-12-20",
+      "studentName": "Abdul Qadir",
+      "receivedBy": "Ali Faheem",
+      "receivedBySignUrl": "alifaheemsign.jpg"
+    },
+    {
+      "id": 1678886400000,
+      "type": "fee",
+      "amount": 15000,
+      "description": "Feb Rent",
+      "category": "Monthly Fee",
+      "date": "2023-02-05",
+      "studentName": "John Doe",
+      "receivedBy": "Faiq Ali",
+      "receivedBySignUrl": "faiqsign.jpg"
+    },
+    {
+      "id": 1678886400001,
+      "type": "expense",
+      "amount": 3500,
+      "description": "Electricity Bill",
+      "category": "Utilities",
+      "date": "2023-02-15",
+      "studentName": "",
+      "receivedBy": "",
+      "receivedBySignUrl": ""
+    }
+  ],
+  "receivers": [
+    {
+      "name": "Faiq Ali",
+      "signUrl": "faiqsign.jpg"
+    },
+    {
+      "name": "Ali Faheem",
+      "signUrl": "alifaheemsign.jpg"
+    },
+    {
+      "name": "Saeed Bapar",
+      "signUrl": "Saeedsign.jpg"
+    }
+  ],
+  "categories": {
+    "expenses": [
+      "Food",
+      "Rent",
+      "Transport",
+      "Utilities",
+      "Staff Salary",
+      "Daily Expenses",
+      "Others"
+    ],
+    "fees": [
+      "Monthly Fee",
+      "Admission",
+      "Security",
+      "Others"
+    ]
+  }
 }
