@@ -1,20 +1,21 @@
 {
   "metadata": {
     "exportDate": "2025-12-20",
-    "reportType": "complete_dataset",
+    "reportType": "management_dataset",
     "hostelName": "Indus Boys Hostel Services",
     "address": "Hostel Street, DHA Phase 1, Karachi",
     "contact": "0333-1234567",
-    "generatedBy": "Hostel Manager System"
+    "generatedBy": "Hostel Manager System",
+    "note": "This export includes receiver information for each fee transaction"
   },
   "summary": {
     "totalStudents": 10,
-    "totalTransactions": 7,
-    "totalIncome": 55500,
-    "totalExpense": 43500,
-    "netBalance": 12000,
-    "incomeRecords": 4,
-    "expenseRecords": 3
+    "totalTransactions": 1,
+    "totalIncome": 10000,
+    "totalExpense": 0,
+    "netBalance": 10000,
+    "incomeRecords": 1,
+    "expenseRecords": 0
   },
   "students": [
     {
@@ -27,7 +28,7 @@
       "monthlyFee": 0,
       "notes": "",
       "image": "base64_encoded_image",
-      "createdAt": "2025-12-20T13:33:55.191Z",
+      "createdAt": "2025-12-20T10:50:05.814Z",
       "feeStatus": {
         "currentMonth": {
           "month": "2025-12",
@@ -44,7 +45,7 @@
         "detailed": {
           "2025-12": {
             "paid": true,
-            "amount": 14500,
+            "amount": 10000,
             "date": "2025-12-20",
             "status": "paid"
           },
@@ -67,13 +68,13 @@
       "monthlyFee": 0,
       "notes": "",
       "image": "base64_encoded_image",
-      "createdAt": "2025-12-20T13:33:55.195Z",
+      "createdAt": "2025-12-20T10:50:05.814Z",
       "feeStatus": {
         "currentMonth": {
           "month": "2025-12",
-          "status": "paid",
+          "status": "pending",
           "amount": 0,
-          "paid": true
+          "paid": false
         },
         "previousMonth": {
           "month": "2025-11",
@@ -83,10 +84,10 @@
         },
         "detailed": {
           "2025-12": {
-            "paid": true,
-            "amount": 13000,
-            "date": "2025-12-20",
-            "status": "paid"
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
           },
           "2025-11": {
             "paid": false,
@@ -107,13 +108,13 @@
       "monthlyFee": 0,
       "notes": "",
       "image": "base64_encoded_image",
-      "createdAt": "2025-12-20T13:33:55.195Z",
+      "createdAt": "2025-12-20T10:50:05.814Z",
       "feeStatus": {
         "currentMonth": {
           "month": "2025-12",
-          "status": "paid",
+          "status": "pending",
           "amount": 0,
-          "paid": true
+          "paid": false
         },
         "previousMonth": {
           "month": "2025-11",
@@ -123,10 +124,10 @@
         },
         "detailed": {
           "2025-12": {
-            "paid": true,
-            "amount": 13000,
-            "date": "2025-12-20",
-            "status": "paid"
+            "paid": false,
+            "amount": 0,
+            "date": null,
+            "status": "pending"
           },
           "2025-11": {
             "paid": false,
@@ -147,7 +148,7 @@
       "monthlyFee": 0,
       "notes": "",
       "image": "base64_encoded_image",
-      "createdAt": "2025-12-20T13:33:55.195Z",
+      "createdAt": "2025-12-20T10:50:05.814Z",
       "feeStatus": {
         "currentMonth": {
           "month": "2025-12",
@@ -187,7 +188,7 @@
       "monthlyFee": 0,
       "notes": "",
       "image": "base64_encoded_image",
-      "createdAt": "2025-12-20T13:33:55.195Z",
+      "createdAt": "2025-12-20T10:50:05.814Z",
       "feeStatus": {
         "currentMonth": {
           "month": "2025-12",
@@ -227,7 +228,7 @@
       "monthlyFee": 0,
       "notes": "",
       "image": "base64_encoded_image",
-      "createdAt": "2025-12-20T13:33:55.195Z",
+      "createdAt": "2025-12-20T10:50:05.814Z",
       "feeStatus": {
         "currentMonth": {
           "month": "2025-12",
@@ -267,7 +268,7 @@
       "monthlyFee": 0,
       "notes": "",
       "image": "base64_encoded_image",
-      "createdAt": "2025-12-20T13:33:55.195Z",
+      "createdAt": "2025-12-20T10:50:05.814Z",
       "feeStatus": {
         "currentMonth": {
           "month": "2025-12",
@@ -307,7 +308,7 @@
       "monthlyFee": 0,
       "notes": "",
       "image": "base64_encoded_image",
-      "createdAt": "2025-12-20T13:33:55.195Z",
+      "createdAt": "2025-12-20T10:50:05.814Z",
       "feeStatus": {
         "currentMonth": {
           "month": "2025-12",
@@ -347,7 +348,7 @@
       "monthlyFee": 0,
       "notes": "",
       "image": "base64_encoded_image",
-      "createdAt": "2025-12-20T13:33:55.195Z",
+      "createdAt": "2025-12-20T10:50:05.814Z",
       "feeStatus": {
         "currentMonth": {
           "month": "2025-12",
@@ -387,7 +388,7 @@
       "monthlyFee": 0,
       "notes": "",
       "image": "base64_encoded_image",
-      "createdAt": "2025-12-20T13:33:55.195Z",
+      "createdAt": "2025-12-20T10:50:05.814Z",
       "feeStatus": {
         "currentMonth": {
           "month": "2025-12",
@@ -420,81 +421,20 @@
   ],
   "transactions": [
     {
-      "id": 1766237873991,
-      "type": "expense",
-      "amount": 20000,
-      "description": "watchman",
-      "category": "Staff Salary",
-      "date": "2025-12-20",
-      "studentName": "",
-      "receivedBy": "",
-      "receivedBySignUrl": ""
-    },
-    {
-      "id": 1766237860454,
-      "type": "expense",
-      "amount": 20000,
-      "description": "Cook",
-      "category": "Staff Salary",
-      "date": "2025-12-20",
-      "studentName": "",
-      "receivedBy": "",
-      "receivedBySignUrl": ""
-    },
-    {
-      "id": 1766237835742,
+      "id": 1766263037502,
       "type": "fee",
-      "amount": 13000,
-      "description": "December",
-      "category": "Monthly Fee",
-      "date": "2025-12-20",
-      "studentName": "Zulfiqar Ali",
-      "receivedBy": "Faiq Ali",
-      "receivedBySignUrl": "faiqsign.jpg"
-    },
-    {
-      "id": 1766237804291,
-      "type": "fee",
-      "amount": 14500,
+      "amount": 10000,
       "description": "December",
       "category": "Monthly Fee",
       "date": "2025-12-20",
       "studentName": "Basheer Ali",
-      "receivedBy": "Ali Faheem",
-      "receivedBySignUrl": "alifaheemsign.jpg"
-    },
-    {
-      "id": 1766237777534,
-      "type": "fee",
-      "amount": 13000,
-      "description": "December",
-      "category": "Monthly Fee",
-      "date": "2025-12-20",
-      "studentName": "Abdul Qadir",
-      "receivedBy": "Ali Faheem",
-      "receivedBySignUrl": "alifaheemsign.jpg"
-    },
-    {
-      "id": 1678886400000,
-      "type": "fee",
-      "amount": 15000,
-      "description": "Feb Rent",
-      "category": "Monthly Fee",
-      "date": "2023-02-05",
-      "studentName": "John Doe",
       "receivedBy": "Faiq Ali",
-      "receivedBySignUrl": "faiqsign.jpg"
-    },
-    {
-      "id": 1678886400001,
-      "type": "expense",
-      "amount": 3500,
-      "description": "Electricity Bill",
-      "category": "Utilities",
-      "date": "2023-02-15",
-      "studentName": "",
-      "receivedBy": "",
-      "receivedBySignUrl": ""
+      "receivedBySignUrl": "faiqsign.jpg",
+      "receiverDetails": {
+        "name": "Faiq Ali",
+        "signUrl": "faiqsign.jpg",
+        "signatureAvailable": true
+      }
     }
   ],
   "receivers": [
@@ -526,6 +466,30 @@
       "Admission",
       "Security",
       "Others"
+    ]
+  },
+  "feeAnalysis": {
+    "totalFeeCollections": 10000,
+    "feeTransactions": 1,
+    "receiverBreakdown": [
+      {
+        "receiver": "Faiq Ali",
+        "totalReceived": 10000,
+        "transactionCount": 1,
+        "signatureUrl": "faiqsign.jpg"
+      },
+      {
+        "receiver": "Ali Faheem",
+        "totalReceived": 0,
+        "transactionCount": 0,
+        "signatureUrl": "alifaheemsign.jpg"
+      },
+      {
+        "receiver": "Saeed Bapar",
+        "totalReceived": 0,
+        "transactionCount": 0,
+        "signatureUrl": "Saeedsign.jpg"
+      }
     ]
   }
 }
