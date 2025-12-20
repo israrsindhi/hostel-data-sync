@@ -8,93 +8,172 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-dark: #4338ca;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
             overscroll-behavior-y: none;
             -webkit-tap-highlight-color: transparent;
         }
+        
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
         .category-icon {
             display: flex; align-items: center; justify-content: center;
             width: 42px; height: 42px; border-radius: 50%; font-size: 1.2rem;
         }
+        
         .tab-indicator {
             position: absolute;
             left: 0.25rem;
             top: 0.25rem;
             bottom: 0.25rem;
             width: calc(33.333% - 8px);
-            background: #4f46e5;
+            background: var(--primary-color);
             border-radius: 0.5rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 0;
         }
+        
         .login-bg {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, #7c3aed 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
+        
         .login-card {
             background: white;
             border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.15);
             overflow: hidden;
-            max-width: 400px;
+            max-width: 420px;
             width: 100%;
             animation: slideUp 0.5s ease;
         }
+        
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        input, select, textarea { font-size: 16px !important; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .stat-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .transaction-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .transaction-card:hover {
+            transform: translateX(4px);
+            border-left-color: var(--primary-color);
+        }
+        
+        .modal-overlay {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            animation: slideUp 0.4s ease;
+        }
+        
+        .profile-image-upload {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .profile-image-upload:hover .profile-overlay {
+            opacity: 1;
+        }
+        
+        .profile-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .theme-indigo { --primary-color: #4f46e5; --primary-dark: #4338ca; }
+        .theme-green { --primary-color: #10b981; --primary-dark: #059669; }
+        .theme-purple { --primary-color: #7c3aed; --primary-dark: #6d28d9; }
+        .theme-blue { --primary-color: #3b82f6; --primary-dark: #2563eb; }
+        .theme-orange { --primary-color: #f59e0b; --primary-dark: #d97706; }
     </style>
 </head>
 <body class="text-slate-800">
-    <!-- Login Screen (Initially Visible) -->
+    <!-- Login Screen -->
     <div id="login-screen" class="login-bg">
         <div class="login-card">
-            <!-- Header -->
             <div class="bg-indigo-600 text-white p-8 text-center">
-                <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-building-user text-2xl"></i>
+                <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-building-columns text-3xl"></i>
                 </div>
                 <h1 class="text-2xl font-bold">Indus Boys Hostel</h1>
-                <p class="text-indigo-200 text-sm mt-1">Management Portal</p>
+                <p class="text-indigo-200 text-sm mt-1">Management Portal v2.0</p>
             </div>
             
-            <!-- Login Form -->
             <div class="p-8">
-                <h2 class="text-xl font-bold text-slate-800 mb-1">Welcome Back</h2>
-                <p class="text-slate-500 text-sm mb-6">Sign in to access the management portal</p>
+                <h2 class="text-xl font-bold text-slate-800 mb-1">Secure Access Portal</h2>
+                <p class="text-slate-500 text-sm mb-6">Enter your credentials to continue</p>
                 
                 <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Username</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="text" id="login-username" required 
-                                   class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
-                                   placeholder="Enter your username">
-                        </div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">
+                            <i class="fa-solid fa-user mr-1"></i>Username
+                        </label>
+                        <input type="text" id="login-username" required 
+                               class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
+                               placeholder="Enter your username"
+                               autocomplete="username">
                     </div>
                     
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">
+                            <i class="fa-solid fa-lock mr-1"></i>Password
+                        </label>
                         <div class="relative">
-                            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                             <input type="password" id="login-password" required 
-                                   class="w-full pl-12 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
-                                   placeholder="Enter your password">
-                            <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                   class="w-full px-4 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
+                                   placeholder="Enter your password"
+                                   autocomplete="current-password">
+                            <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
                         </div>
@@ -103,281 +182,566 @@
                     <div class="flex items-center justify-between pt-2">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" id="remember-me" class="w-4 h-4 text-indigo-600 rounded border-slate-300">
-                            <span class="text-sm text-slate-600">Remember me</span>
+                            <span class="text-sm text-slate-600">Remember this device</span>
                         </label>
-                        <button type="button" onclick="showForgotPassword()" class="text-sm text-indigo-600 hover:text-indigo-700">
-                            Forgot password?
-                        </button>
                     </div>
                     
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all mt-6">
-                        <i class="fa-solid fa-right-to-bracket mr-2"></i>Sign In
+                    <button type="submit" id="login-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all mt-6">
+                        <i class="fa-solid fa-right-to-bracket mr-2"></i>Sign In to Dashboard
                     </button>
                 </form>
                 
-                <!-- Error Message -->
                 <div id="login-error" class="hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm text-center">
                     <i class="fa-solid fa-circle-exclamation mr-2"></i>
                     <span id="error-text">Invalid username or password</span>
                 </div>
                 
-                <!-- Login Info -->
                 <div class="mt-8 pt-6 border-t border-slate-100">
                     <p class="text-xs text-slate-500 text-center">
-                        <i class="fa-solid fa-info-circle mr-1"></i>
-                        Demo credentials: admin/admin123, manager/manager123
+                        <i class="fa-solid fa-shield mr-1"></i>
+                        Secure access • Encrypted connection • Activity logged
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Main Application (Initially Hidden) -->
+    <!-- Main Application -->
     <div id="app-container" class="hidden h-[100dvh] flex flex-col overflow-hidden bg-slate-50">
         <!-- Header -->
         <header class="bg-indigo-600 text-white shadow-md z-30 shrink-0">
-            <div class="w-full max-w-lg mx-auto px-4 py-3 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-building-user text-indigo-200 text-lg"></i>
-                    <h1 class="text-lg font-bold">Indus Boys Hostel</h1>
+            <div class="w-full max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                        <i class="fa-solid fa-building-columns text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold">Indus Boys Hostel</h1>
+                        <p class="text-indigo-200 text-xs">Management Portal</p>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-sm text-indigo-200 hidden md:inline" id="welcome-user"></span>
-                    <button onclick="handleLogout()" class="w-9 h-9 flex items-center justify-center hover:bg-indigo-500 rounded-full transition" title="Logout">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
+                
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full">
+                        <i class="fa-solid fa-calendar-day text-xs"></i>
+                        <span class="text-sm" id="current-date"></span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <div class="text-right hidden md:block">
+                            <div class="text-sm font-medium" id="welcome-user"></div>
+                            <div class="text-indigo-200 text-xs" id="user-role"></div>
+                        </div>
+                        
+                        <div class="relative group">
+                            <button onclick="toggleProfileMenu()" class="w-10 h-10 rounded-full overflow-hidden border-2 border-white/30 hover:border-white transition">
+                                <img id="user-avatar" src="" alt="Profile" class="w-full h-full object-cover">
+                            </button>
+                            
+                            <!-- Profile Dropdown -->
+                            <div id="profile-menu" class="hidden absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-2 z-50">
+                                <div class="px-4 py-3 border-b border-slate-100">
+                                    <div class="font-medium text-slate-800 text-sm" id="dropdown-name"></div>
+                                    <div class="text-slate-500 text-xs" id="dropdown-role"></div>
+                                </div>
+                                <button onclick="openProfileSettings()" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                                    <i class="fa-solid fa-user-gear text-slate-500"></i>
+                                    <span>Profile Settings</span>
+                                </button>
+                                <button onclick="toggleThemeMenu()" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                                    <i class="fa-solid fa-palette text-slate-500"></i>
+                                    <span>Change Theme</span>
+                                </button>
+                                <div class="border-t border-slate-100 mt-2 pt-2">
+                                    <button onclick="handleLogout()" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                        <i class="fa-solid fa-right-from-bracket"></i>
+                                        <span>Logout</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto w-full max-w-lg mx-auto">
+        <main class="flex-1 overflow-y-auto w-full max-w-6xl mx-auto">
             <!-- Loading State -->
             <div id="loading-state" class="p-6">
-                <div class="flex flex-col items-center justify-center py-12">
+                <div class="flex flex-col items-center justify-center py-20">
                     <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mb-4">
-                        <i class="fa-solid fa-spinner fa-spin text-indigo-600 text-xl"></i>
+                        <i class="fa-solid fa-spinner fa-spin text-indigo-600 text-2xl"></i>
                     </div>
-                    <p class="text-sm text-slate-500">Loading transaction data...</p>
+                    <h3 class="font-bold text-slate-700 mb-2">Loading Dashboard</h3>
+                    <p class="text-sm text-slate-500">Fetching latest hostel data...</p>
                 </div>
             </div>
 
             <!-- Error State -->
             <div id="error-state" class="hidden p-6">
-                <div class="bg-red-50 border border-red-200 rounded-2xl p-4 text-center">
-                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-3xl mb-3"></i>
-                    <h3 class="font-bold text-red-700 mb-1">Error Loading Data</h3>
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center max-w-md mx-auto">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-4xl mb-4"></i>
+                    <h3 class="font-bold text-red-700 mb-2">Connection Error</h3>
                     <p class="text-red-600 text-sm mb-4" id="error-message"></p>
-                    <button onclick="loadData()" class="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition">
-                        <i class="fa-solid fa-rotate mr-2"></i>Retry
-                    </button>
+                    <div class="flex gap-3 justify-center">
+                        <button onclick="loadData()" class="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition flex items-center gap-2">
+                            <i class="fa-solid fa-rotate"></i>
+                            <span>Retry</span>
+                        </button>
+                        <button onclick="useOfflineData()" class="bg-slate-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-700 transition flex items-center gap-2">
+                            <i class="fa-solid fa-wifi-slash"></i>
+                            <span>Use Offline Data</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Content (Initially Hidden) -->
+            <!-- Dashboard Content -->
             <div id="content-area" class="hidden">
-                <!-- Summary Section -->
-                <div class="p-4">
-                    <div class="bg-indigo-600 text-white p-5 rounded-2xl shadow-lg mb-4">
-                        <div class="flex justify-between items-start mb-4">
+                <!-- Quick Stats Row -->
+                <div class="p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="stat-card bg-gradient-to-br from-indigo-500 to-indigo-600 text-white p-5 rounded-2xl shadow-lg">
+                        <div class="flex items-center justify-between">
                             <div>
-                                <h2 class="text-xl font-bold" id="hostel-name">Indus Boys Hostel</h2>
-                                <p class="text-indigo-200 text-sm mt-1" id="report-period"></p>
+                                <div class="text-2xl font-bold" id="total-income">Rs 0</div>
+                                <div class="text-indigo-100 text-sm mt-1">Total Income</div>
                             </div>
-                            <div class="text-right">
-                                <p class="text-indigo-200 text-xs">Current Balance</p>
-                                <p class="font-bold text-lg" id="net-balance">Rs 0</p>
+                            <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                <i class="fa-solid fa-arrow-down text-xl"></i>
                             </div>
                         </div>
-                        
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="text-center bg-indigo-700/40 p-3 rounded-xl">
-                                <div class="text-green-300 font-bold text-lg" id="total-income">0</div>
-                                <div class="text-indigo-200 text-xs">Total Income</div>
-                            </div>
-                            <div class="text-center bg-indigo-700/40 p-3 rounded-xl">
-                                <div class="text-red-300 font-bold text-lg" id="total-expense">0</div>
-                                <div class="text-indigo-200 text-xs">Total Expense</div>
-                            </div>
+                        <div class="mt-3 text-xs text-indigo-200">
+                            <i class="fa-solid fa-calendar mr-1"></i>
+                            <span id="income-period">This Month</span>
                         </div>
                     </div>
-
-                    <!-- Quick Stats -->
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
-                                    <i class="fa-solid fa-arrow-down text-sm"></i>
-                                </div>
-                                <div>
-                                    <div class="text-xl font-bold text-slate-800" id="income-count">0</div>
-                                    <div class="text-xs text-slate-500">Fee Records</div>
-                                </div>
+                    
+                    <div class="stat-card bg-gradient-to-br from-red-500 to-red-600 text-white p-5 rounded-2xl shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-2xl font-bold" id="total-expense">Rs 0</div>
+                                <div class="text-red-100 text-sm mt-1">Total Expenses</div>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                <i class="fa-solid fa-arrow-up text-xl"></i>
                             </div>
                         </div>
-                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
-                                    <i class="fa-solid fa-arrow-up text-sm"></i>
-                                </div>
-                                <div>
-                                    <div class="text-xl font-bold text-slate-800" id="expense-count">0</div>
-                                    <div class="text-xs text-slate-500">Expense Records</div>
-                                </div>
+                        <div class="mt-3 text-xs text-red-200">
+                            <i class="fa-solid fa-calendar mr-1"></i>
+                            <span id="expense-period">This Month</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card bg-gradient-to-br from-green-500 to-green-600 text-white p-5 rounded-2xl shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-2xl font-bold" id="net-balance">Rs 0</div>
+                                <div class="text-green-100 text-sm mt-1">Net Balance</div>
                             </div>
+                            <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                <i class="fa-solid fa-scale-balanced text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-xs text-green-200">
+                            <i class="fa-solid fa-chart-line mr-1"></i>
+                            <span id="balance-trend">Positive</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 text-white p-5 rounded-2xl shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-2xl font-bold" id="total-transactions">0</div>
+                                <div class="text-purple-100 text-sm mt-1">Transactions</div>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                <i class="fa-solid fa-receipt text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-xs text-purple-200">
+                            <i class="fa-solid fa-users mr-1"></i>
+                            <span id="active-students">4 Students</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tabs Navigation -->
-                <div class="px-4 mb-3">
-                    <div class="bg-white p-1 rounded-2xl shadow-sm border border-slate-100">
-                        <div class="flex bg-slate-100 rounded-xl p-1 relative">
-                            <!-- Tab Indicator -->
-                            <div id="tab-indicator" class="tab-indicator"></div>
-                            
-                            <!-- All Tab -->
-                            <button onclick="switchTab('all')" id="tab-all" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-white">
-                                All
-                            </button>
-                            
+                <!-- Main Content Area -->
+                <div class="p-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left Column - Tabs & Transactions -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Tabs Navigation -->
+                        <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
+                            <div class="flex bg-slate-100 rounded-xl p-1 relative">
+                                <div id="tab-indicator" class="tab-indicator"></div>
+                                
+                                <button onclick="switchTab('all')" id="tab-all" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-white">
+                                    <i class="fa-solid fa-list mr-2"></i>All
+                                </button>
+                                
+                                <button onclick="switchTab('fees')" id="tab-fees" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
+                                    <i class="fa-solid fa-money-bill-wave mr-2"></i>Fees
+                                </button>
+                                
+                                <button onclick="switchTab('expenses')" id="tab-expenses" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
+                                    <i class="fa-solid fa-cart-shopping mr-2"></i>Expenses
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Transaction Lists -->
+                        <div>
+                            <!-- All Transactions Tab -->
+                            <div id="tab-all-content" class="tab-content active space-y-3">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="font-bold text-slate-800 text-lg">Recent Transactions</h2>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-slate-400 font-medium" id="all-count">0 Records</span>
+                                        <button onclick="refreshData()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition">
+                                            <i class="fa-solid fa-rotate text-sm text-slate-600"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="all-transactions" class="space-y-3"></div>
+                            </div>
+
                             <!-- Fees Tab -->
-                            <button onclick="switchTab('fees')" id="tab-fees" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
-                                <i class="fa-solid fa-money-bill-wave mr-1 text-xs"></i> Fees
-                            </button>
-                            
+                            <div id="tab-fees-content" class="tab-content space-y-3">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="font-bold text-slate-800 text-lg">Fee Collections</h2>
+                                    <span class="text-xs text-slate-400 font-medium" id="fees-count">0 Records</span>
+                                </div>
+                                <div id="fees-transactions" class="space-y-3"></div>
+                            </div>
+
                             <!-- Expenses Tab -->
-                            <button onclick="switchTab('expenses')" id="tab-expenses" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
-                                <i class="fa-solid fa-cart-shopping mr-1 text-xs"></i> Expenses
-                            </button>
+                            <div id="tab-expenses-content" class="tab-content space-y-3">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="font-bold text-slate-800 text-lg">Expense Records</h2>
+                                    <span class="text-xs text-slate-400 font-medium" id="expenses-count">0 Records</span>
+                                </div>
+                                <div id="expenses-transactions" class="space-y-3"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Transaction Lists -->
-                <div class="px-4 pb-6">
-                    <!-- All Transactions Tab -->
-                    <div id="tab-all-content" class="tab-content active">
-                        <div class="flex justify-between items-baseline mb-3">
-                            <h2 class="font-bold text-slate-700">All Transactions</h2>
-                            <span class="text-xs text-slate-400 font-medium" id="all-count">0 Records</span>
+                    <!-- Right Column - Profile & Insights -->
+                    <div class="space-y-6">
+                        <!-- Profile Card -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-slate-800">Your Profile</h3>
+                                <button onclick="openProfileSettings()" class="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
+                                    <i class="fa-solid fa-pen mr-1"></i>Edit
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center gap-4">
+                                <div class="relative">
+                                    <img id="profile-avatar" src="" alt="Profile" class="w-16 h-16 rounded-full object-cover border-2 border-slate-200">
+                                    <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-green-500 border-2 border-white flex items-center justify-center">
+                                        <i class="fa-solid fa-check text-xs text-white"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800" id="profile-name">Loading...</h4>
+                                    <p class="text-slate-500 text-sm" id="profile-role">Role</p>
+                                    <p class="text-slate-400 text-xs mt-1" id="profile-department">Department</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 grid grid-cols-2 gap-3">
+                                <div class="text-center p-3 bg-slate-50 rounded-lg">
+                                    <div class="text-slate-500 text-xs">Joined</div>
+                                    <div class="font-medium text-sm mt-1" id="profile-joined">2025</div>
+                                </div>
+                                <div class="text-center p-3 bg-slate-50 rounded-lg">
+                                    <div class="text-slate-500 text-xs">Sessions</div>
+                                    <div class="font-medium text-sm mt-1" id="profile-sessions">0</div>
+                                </div>
+                            </div>
                         </div>
-                        <div id="all-transactions" class="space-y-3"></div>
-                    </div>
 
-                    <!-- Fees Tab -->
-                    <div id="tab-fees-content" class="tab-content">
-                        <div class="flex justify-between items-baseline mb-3">
-                            <h2 class="font-bold text-slate-700">Fee Collections</h2>
-                            <span class="text-xs text-slate-400 font-medium" id="fees-count">0 Records</span>
+                        <!-- Quick Insights -->
+                        <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-2xl p-5">
+                            <h3 class="font-bold text-lg mb-4">Quick Insights</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                                            <i class="fa-solid fa-user-graduate"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm">Top Student</div>
+                                            <div class="font-bold" id="insight-top-student">-</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-2xl font-bold text-green-400" id="insight-top-amount">Rs 0</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                                            <i class="fa-solid fa-chart-pie"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm">Largest Category</div>
+                                            <div class="font-bold" id="insight-top-category">-</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-2xl font-bold text-blue-400" id="insight-category-amount">Rs 0</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="pt-3 border-t border-white/10">
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                        <span>Data updated: </span>
+                                        <span class="font-medium" id="data-updated">Just now</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div id="fees-transactions" class="space-y-3"></div>
-                    </div>
-
-                    <!-- Expenses Tab -->
-                    <div id="tab-expenses-content" class="tab-content">
-                        <div class="flex justify-between items-baseline mb-3">
-                            <h2 class="font-bold text-slate-700">Expenses</h2>
-                            <span class="text-xs text-slate-400 font-medium" id="expenses-count">0 Records</span>
-                        </div>
-                        <div id="expenses-transactions" class="space-y-3"></div>
                     </div>
                 </div>
             </div>
         </main>
 
         <!-- Footer -->
-        <div class="bg-white border-t border-slate-200 p-3 text-center text-xs text-slate-500 shrink-0">
-            <p id="footer-info">Indus Boys Hostel Management Portal © 2025</p>
+        <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500 shrink-0">
+            <div class="max-w-6xl mx-auto">
+                <p class="mb-1">Indus Boys Hostel Management Portal v2.0 © 2025 • Secure Access Only</p>
+                <p class="text-slate-400">
+                    <i class="fa-solid fa-location-dot mr-1"></i>
+                    <span id="footer-address">Hostel Street, DHA Phase 1, Karachi</span>
+                    • 
+                    <i class="fa-solid fa-phone mr-1"></i>
+                    <span id="footer-contact">0333-1234567</span>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Profile Settings Modal -->
+    <div id="profile-modal" class="hidden fixed inset-0 z-50 modal-overlay">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeProfileSettings()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden">
+                <div class="p-6 border-b border-slate-100">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-slate-800">Profile Settings</h3>
+                        <button onclick="closeProfileSettings()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200 transition">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <p class="text-slate-500 text-sm mt-1">Customize your profile (saved locally)</p>
+                </div>
+                
+                <div class="p-6 overflow-y-auto">
+                    <form id="profile-form" onsubmit="saveProfileSettings(event)" class="space-y-5">
+                        <!-- Profile Image -->
+                        <div class="text-center">
+                            <div class="profile-image-upload inline-block relative">
+                                <img id="profile-preview" src="" alt="Profile" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg">
+                                <div class="profile-overlay">
+                                    <i class="fa-solid fa-camera text-white text-xl"></i>
+                                </div>
+                                <input type="file" id="profile-image-input" accept="image/*" class="hidden" onchange="previewProfileImage(event)">
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2">Click to change profile image</p>
+                        </div>
+                        
+                        <!-- Personal Info -->
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Full Name</label>
+                                <input type="text" id="profile-name-input" 
+                                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800">
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Role</label>
+                                    <input type="text" id="profile-role-input" 
+                                           class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Department</label>
+                                    <input type="text" id="profile-dept-input" 
+                                           class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
+                                <input type="email" id="profile-email-input" 
+                                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Phone Number</label>
+                                <input type="tel" id="profile-phone-input" 
+                                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Signature</label>
+                                <input type="text" id="profile-signature-input" 
+                                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
+                                       placeholder="Your official signature">
+                            </div>
+                        </div>
+                        
+                        <!-- Preferences -->
+                        <div class="pt-4 border-t border-slate-100">
+                            <h4 class="font-bold text-slate-700 mb-3">Preferences</h4>
+                            
+                            <div class="space-y-3">
+                                <label class="flex items-center gap-3 cursor-pointer">
+                                    <input type="checkbox" id="profile-notifications" class="w-4 h-4 text-indigo-600 rounded border-slate-300">
+                                    <span class="text-sm text-slate-700">Enable email notifications</span>
+                                </label>
+                                
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Theme Color</label>
+                                    <div class="flex gap-2 mt-2">
+                                        <button type="button" onclick="selectTheme('indigo')" class="theme-option w-8 h-8 rounded-full bg-indigo-500 border-2 border-white shadow"></button>
+                                        <button type="button" onclick="selectTheme('green')" class="theme-option w-8 h-8 rounded-full bg-green-500 border-2 border-white shadow"></button>
+                                        <button type="button" onclick="selectTheme('purple')" class="theme-option w-8 h-8 rounded-full bg-purple-500 border-2 border-white shadow"></button>
+                                        <button type="button" onclick="selectTheme('blue')" class="theme-option w-8 h-8 rounded-full bg-blue-500 border-2 border-white shadow"></button>
+                                        <button type="button" onclick="selectTheme('orange')" class="theme-option w-8 h-8 rounded-full bg-orange-500 border-2 border-white shadow"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="pt-6 border-t border-slate-100">
+                            <div class="flex gap-3">
+                                <button type="button" onclick="resetProfileToDefault()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3 rounded-xl transition">
+                                    Reset to Default
+                                </button>
+                                <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Category configurations
-        const expenseCategories = {
-            'Food': { icon: 'fa-utensils', color: 'bg-orange-100 text-orange-600' },
-            'Rent': { icon: 'fa-house', color: 'bg-blue-100 text-blue-600' },
-            'Transport': { icon: 'fa-bus', color: 'bg-purple-100 text-purple-600' },
-            'Utilities': { icon: 'fa-bolt', color: 'bg-yellow-100 text-yellow-600' },
-            'Staff Salary': { icon: 'fa-users', color: 'bg-cyan-100 text-cyan-600' }, 
-            'Daily Expenses': { icon: 'fa-shopping-bag', color: 'bg-fuchsia-100 text-fuchsia-600' },
-            'Others': { icon: 'fa-box-open', color: 'bg-gray-100 text-gray-600' }
-        };
-        
-        const feeCategories = {
-            'Monthly Fee': { icon: 'fa-calendar-check', color: 'bg-green-100 text-green-600' },
-            'Admission': { icon: 'fa-id-card', color: 'bg-teal-100 text-teal-600' },
-            'Security': { icon: 'fa-shield-halved', color: 'bg-indigo-100 text-indigo-600' },
-            'Others': { icon: 'fa-money-bill', color: 'bg-gray-100 text-gray-600' }
+        // ========== CONFIGURATION ==========
+        const CONFIG = {
+            STORAGE_KEYS: {
+                USER_SESSION: 'indus_hostel_user_session_v2',
+                USER_PROFILE: 'indus_hostel_user_profile_',
+                APP_SETTINGS: 'indus_hostel_app_settings'
+            },
+            SESSION_TIMEOUT: 30 * 24 * 60 * 60 * 1000, // 30 days
+            DATA_REFRESH_INTERVAL: 5 * 60 * 1000, // 5 minutes
+            THEMES: {
+                indigo: { primary: '#4f46e5', dark: '#4338ca' },
+                green: { primary: '#10b981', dark: '#059669' },
+                purple: { primary: '#7c3aed', dark: '#6d28d9' },
+                blue: { primary: '#3b82f6', dark: '#2563eb' },
+                orange: { primary: '#f59e0b', dark: '#d97706' }
+            }
         };
 
-        // App state
+        // ========== APP STATE ==========
         let currentUser = null;
+        let userProfile = null;
         let jsonData = null;
         let currentTab = 'all';
+        let sessionActivity = {
+            loginCount: 0,
+            lastActivity: null,
+            currentSessionStart: null
+        };
 
-        // Storage keys
-        const USER_STORAGE_KEY = 'indus_hostel_user_session';
-        const SESSION_TIMEOUT = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            checkExistingSession();
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Set current date
+            updateCurrentDate();
+            
+            // Check for existing session
+            await checkExistingSession();
+            
+            // Setup periodic data refresh
+            setInterval(updateDataUpdatedTime, 60000); // Update timestamp every minute
         });
 
-        // Check for existing session
-        function checkExistingSession() {
+        // ========== SESSION MANAGEMENT ==========
+        async function checkExistingSession() {
             try {
-                const savedSession = localStorage.getItem(USER_STORAGE_KEY);
+                const savedSession = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_SESSION);
                 if (savedSession) {
                     const session = JSON.parse(savedSession);
-                    
-                    // Check if session is still valid (not expired)
                     const now = Date.now();
-                    if (session.timestamp && (now - session.timestamp < SESSION_TIMEOUT)) {
-                        // Session is valid, auto-login
+                    
+                    // Check session expiry
+                    if (session.expiresAt && now < session.expiresAt) {
                         currentUser = session.user;
+                        await loadUserProfile();
                         showApp();
+                        trackSessionActivity();
                         return;
                     } else {
-                        // Session expired, clear it
-                        localStorage.removeItem(USER_STORAGE_KEY);
+                        // Session expired
+                        localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_SESSION);
                     }
                 }
             } catch (error) {
-                console.error('Error checking session:', error);
-                localStorage.removeItem(USER_STORAGE_KEY);
+                console.error('Session check error:', error);
+                clearUserSession();
             }
             
-            // No valid session found, show login
             showLogin();
         }
 
-        // Show login screen
-        function showLogin() {
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('app-container').classList.add('hidden');
-            document.getElementById('login-error').classList.add('hidden');
+        function trackSessionActivity() {
+            if (!currentUser) return;
             
-            // Clear form
-            document.getElementById('login-form').reset();
-        }
-
-        // Show main application
-        function showApp() {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app-container').classList.remove('hidden');
-            
-            // Update welcome message
-            if (currentUser) {
-                document.getElementById('welcome-user').textContent = `Welcome, ${currentUser.name}`;
+            // Load session activity
+            const activityKey = `session_activity_${currentUser.username}`;
+            const savedActivity = localStorage.getItem(activityKey);
+            if (savedActivity) {
+                sessionActivity = JSON.parse(savedActivity);
             }
             
-            // Load data
-            loadData();
+            // Update activity
+            sessionActivity.loginCount = (sessionActivity.loginCount || 0) + 1;
+            sessionActivity.lastActivity = Date.now();
+            sessionActivity.currentSessionStart = Date.now();
+            
+            // Save activity
+            localStorage.setItem(activityKey, JSON.stringify(sessionActivity));
+            
+            // Update UI
+            if (document.getElementById('profile-sessions')) {
+                document.getElementById('profile-sessions').textContent = sessionActivity.loginCount;
+            }
         }
 
-        // Handle login
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('en-US', options);
+            const dateElement = document.getElementById('current-date');
+            if (dateElement) {
+                dateElement.textContent = dateString;
+            }
+        }
+
+        // ========== LOGIN / LOGOUT ==========
         async function handleLogin(event) {
             event.preventDefault();
             
@@ -385,16 +749,16 @@
             const password = document.getElementById('login-password').value;
             const rememberMe = document.getElementById('remember-me').checked;
             
-            // Show loading
-            const submitBtn = event.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Authenticating...';
-            submitBtn.disabled = true;
+            // Show loading state
+            const loginBtn = document.getElementById('login-btn');
+            const originalText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Authenticating...';
+            loginBtn.disabled = true;
             
             try {
                 // Load credentials
                 const response = await fetch('profiles_data.json');
-                if (!response.ok) throw new Error('Failed to load credentials');
+                if (!response.ok) throw new Error('Network error');
                 
                 const credentials = await response.json();
                 
@@ -408,61 +772,65 @@
                     // Successful login
                     currentUser = {
                         username: user.username,
-                        name: user.name,
-                        permissions: user.permissions
+                        defaultProfile: user.defaultProfile
                     };
                     
-                    // Save session if "Remember me" is checked
-                    if (rememberMe) {
-                        const session = {
-                            user: currentUser,
-                            timestamp: Date.now()
-                        };
-                        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(session));
-                    } else {
-                        // For current session only (cleared on browser close)
-                        sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify({
-                            user: currentUser,
-                            timestamp: Date.now()
-                        }));
-                    }
+                    // Create session
+                    const session = {
+                        user: currentUser,
+                        expiresAt: rememberMe ? Date.now() + CONFIG.SESSION_TIMEOUT : null,
+                        createdAt: Date.now()
+                    };
                     
+                    localStorage.setItem(CONFIG.STORAGE_KEYS.USER_SESSION, JSON.stringify(session));
+                    
+                    // Load user profile
+                    await loadUserProfile();
+                    
+                    // Show app
                     showApp();
-                } else {
-                    // Invalid credentials
-                    document.getElementById('error-text').textContent = 'Invalid username or password';
-                    document.getElementById('login-error').classList.remove('hidden');
+                    trackSessionActivity();
                     
-                    // Shake animation
-                    document.getElementById('login-form').classList.add('animate-shake');
-                    setTimeout(() => {
-                        document.getElementById('login-form').classList.remove('animate-shake');
-                    }, 500);
+                } else {
+                    showLoginError('Invalid username or password');
                 }
                 
             } catch (error) {
                 console.error('Login error:', error);
-                document.getElementById('error-text').textContent = 'Network error. Please try again.';
-                document.getElementById('login-error').classList.remove('hidden');
+                showLoginError('Network error. Please try again.');
             } finally {
                 // Reset button
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
             }
         }
 
-        // Handle logout
+        function showLoginError(message) {
+            const errorElement = document.getElementById('login-error');
+            const errorText = document.getElementById('error-text');
+            
+            errorText.textContent = message;
+            errorElement.classList.remove('hidden');
+            
+            // Shake animation
+            const form = document.getElementById('login-form');
+            form.classList.add('animate-shake');
+            setTimeout(() => form.classList.remove('animate-shake'), 500);
+        }
+
         function handleLogout() {
             if (confirm('Are you sure you want to logout?')) {
-                // Clear all session data
-                localStorage.removeItem(USER_STORAGE_KEY);
-                sessionStorage.removeItem(USER_STORAGE_KEY);
-                currentUser = null;
+                clearUserSession();
                 showLogin();
             }
         }
 
-        // Toggle password visibility
+        function clearUserSession() {
+            localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_SESSION);
+            currentUser = null;
+            userProfile = null;
+        }
+
         function togglePassword() {
             const passwordInput = document.getElementById('login-password');
             const eyeIcon = passwordInput.nextElementSibling.querySelector('i');
@@ -478,203 +846,481 @@
             }
         }
 
-        // Show forgot password (simplified)
-        function showForgotPassword() {
-            alert('Please contact the system administrator to reset your password.\nEmail: admin@indushostel.com\nPhone: 0333-1234567');
+        // ========== USER PROFILE MANAGEMENT ==========
+        async function loadUserProfile() {
+            if (!currentUser) return;
+            
+            const profileKey = CONFIG.STORAGE_KEYS.USER_PROFILE + currentUser.username;
+            const savedProfile = localStorage.getItem(profileKey);
+            
+            if (savedProfile) {
+                userProfile = JSON.parse(savedProfile);
+            } else {
+                // Use default profile
+                userProfile = { ...currentUser.defaultProfile };
+                userProfile.isDefault = true;
+                userProfile.createdAt = Date.now();
+                
+                // Save default profile
+                localStorage.setItem(profileKey, JSON.stringify(userProfile));
+            }
+            
+            // Apply theme
+            applyTheme(userProfile.theme || 'indigo');
+            
+            // Update UI
+            updateProfileUI();
         }
 
-        // Load transaction data
+        function updateProfileUI() {
+            if (!userProfile) return;
+            
+            // Update header
+            document.getElementById('welcome-user').textContent = userProfile.name;
+            document.getElementById('user-role').textContent = userProfile.role;
+            document.getElementById('dropdown-name').textContent = userProfile.name;
+            document.getElementById('dropdown-role').textContent = userProfile.role;
+            
+            // Update avatar
+            const avatarElements = document.querySelectorAll('#user-avatar, #profile-avatar, #profile-preview');
+            avatarElements.forEach(el => {
+                el.src = userProfile.image || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(userProfile.name) + '&background=4f46e5&color=fff&size=128';
+            });
+            
+            // Update profile card
+            document.getElementById('profile-name').textContent = userProfile.name;
+            document.getElementById('profile-role').textContent = userProfile.role;
+            document.getElementById('profile-department').textContent = userProfile.department || 'Not specified';
+            document.getElementById('profile-joined').textContent = new Date(userProfile.createdAt).getFullYear();
+            
+            // Update footer
+            document.getElementById('footer-address').textContent = jsonData?.metadata?.address || 'Hostel Street, DHA Phase 1, Karachi';
+            document.getElementById('footer-contact').textContent = jsonData?.metadata?.contact || '0333-1234567';
+        }
+
+        // ========== PROFILE SETTINGS MODAL ==========
+        function openProfileSettings() {
+            if (!userProfile) return;
+            
+            // Populate form
+            document.getElementById('profile-name-input').value = userProfile.name;
+            document.getElementById('profile-role-input').value = userProfile.role;
+            document.getElementById('profile-dept-input').value = userProfile.department || '';
+            document.getElementById('profile-email-input').value = userProfile.email || '';
+            document.getElementById('profile-phone-input').value = userProfile.phone || '';
+            document.getElementById('profile-signature-input').value = userProfile.signature || '';
+            document.getElementById('profile-notifications').checked = userProfile.notifications !== false;
+            document.getElementById('profile-preview').src = userProfile.image;
+            
+            // Set active theme
+            const theme = userProfile.theme || 'indigo';
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                const btnTheme = btn.onclick.toString().match(/'([^']+)'/)[1];
+                btn.classList.toggle('border-4', btnTheme === theme);
+                btn.classList.toggle('border-2', btnTheme !== theme);
+            });
+            
+            // Show modal
+            document.getElementById('profile-modal').classList.remove('hidden');
+            document.getElementById('profile-menu').classList.add('hidden');
+        }
+
+        function closeProfileSettings() {
+            document.getElementById('profile-modal').classList.add('hidden');
+        }
+
+        function previewProfileImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-preview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function selectTheme(theme) {
+            // Update UI
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                const btnTheme = btn.onclick.toString().match(/'([^']+)'/)[1];
+                btn.classList.toggle('border-4', btnTheme === theme);
+                btn.classList.toggle('border-2', btnTheme !== theme);
+            });
+            
+            // Apply immediately for preview
+            applyTheme(theme);
+        }
+
+        function applyTheme(theme) {
+            const themeColors = CONFIG.THEMES[theme] || CONFIG.THEMES.indigo;
+            
+            // Update CSS variables
+            document.documentElement.style.setProperty('--primary-color', themeColors.primary);
+            document.documentElement.style.setProperty('--primary-dark', themeColors.dark);
+            
+            // Update header background
+            const header = document.querySelector('header');
+            if (header) {
+                header.style.background = `linear-gradient(135deg, ${themeColors.primary} 0%, ${themeColors.dark} 100%)`;
+            }
+            
+            // Update theme class
+            document.body.classList.remove('theme-indigo', 'theme-green', 'theme-purple', 'theme-blue', 'theme-orange');
+            document.body.classList.add(`theme-${theme}`);
+        }
+
+        function saveProfileSettings(event) {
+            event.preventDefault();
+            
+            if (!userProfile || !currentUser) return;
+            
+            // Update profile
+            userProfile.name = document.getElementById('profile-name-input').value;
+            userProfile.role = document.getElementById('profile-role-input').value;
+            userProfile.department = document.getElementById('profile-dept-input').value;
+            userProfile.email = document.getElementById('profile-email-input').value;
+            userProfile.phone = document.getElementById('profile-phone-input').value;
+            userProfile.signature = document.getElementById('profile-signature-input').value;
+            userProfile.notifications = document.getElementById('profile-notifications').checked;
+            userProfile.updatedAt = Date.now();
+            userProfile.isDefault = false;
+            
+            // Get selected theme
+            const activeThemeBtn = document.querySelector('.theme-option.border-4');
+            if (activeThemeBtn) {
+                const theme = activeThemeBtn.onclick.toString().match(/'([^']+)'/)[1];
+                userProfile.theme = theme;
+            }
+            
+            // Handle profile image
+            const imageInput = document.getElementById('profile-image-input');
+            if (imageInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    userProfile.image = e.target.result;
+                    saveProfileToStorage();
+                };
+                reader.readAsDataURL(imageInput.files[0]);
+            } else {
+                saveProfileToStorage();
+            }
+            
+            function saveProfileToStorage() {
+                // Save to localStorage
+                const profileKey = CONFIG.STORAGE_KEYS.USER_PROFILE + currentUser.username;
+                localStorage.setItem(profileKey, JSON.stringify(userProfile));
+                
+                // Update UI
+                updateProfileUI();
+                applyTheme(userProfile.theme || 'indigo');
+                
+                // Show success message
+                alert('Profile updated successfully! Changes saved locally.');
+                closeProfileSettings();
+            }
+        }
+
+        function resetProfileToDefault() {
+            if (confirm('Reset profile to default settings? Your customizations will be lost.')) {
+                if (!currentUser) return;
+                
+                // Reset to default
+                userProfile = { ...currentUser.defaultProfile };
+                userProfile.isDefault = true;
+                userProfile.resetAt = Date.now();
+                
+                // Save
+                const profileKey = CONFIG.STORAGE_KEYS.USER_PROFILE + currentUser.username;
+                localStorage.setItem(profileKey, JSON.stringify(userProfile));
+                
+                // Update UI and close modal
+                updateProfileUI();
+                applyTheme(userProfile.theme || 'indigo');
+                closeProfileSettings();
+                
+                alert('Profile reset to default settings.');
+            }
+        }
+
+        // ========== UI CONTROLS ==========
+        function toggleProfileMenu() {
+            const menu = document.getElementById('profile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function toggleThemeMenu() {
+            // For now, just open profile settings at theme section
+            openProfileSettings();
+            document.getElementById('profile-menu').classList.add('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('login-form').reset();
+        }
+
+        function showApp() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            loadData();
+        }
+
+        // ========== DATA MANAGEMENT ==========
         async function loadData() {
             try {
                 showLoading(true);
                 
                 const response = await fetch('data.json');
-                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 jsonData = await response.json();
                 renderData();
-                showLoading(false);
                 showContent();
+                showLoading(false);
                 
             } catch (error) {
-                console.error('Error loading data:', error);
-                showError('Failed to load transaction data', error.message);
+                console.error('Data loading error:', error);
+                showError('Failed to load data', error.message);
             }
         }
 
-        // Render the loaded data
+        function useOfflineData() {
+            // Try to load from localStorage
+            const savedData = localStorage.getItem('offline_data');
+            if (savedData) {
+                jsonData = JSON.parse(savedData);
+                renderData();
+                showContent();
+                showLoading(false);
+            } else {
+                showError('No offline data available', 'Please check your internet connection.');
+            }
+        }
+
         function renderData() {
             if (!jsonData) return;
             
-            // Update metadata
-            document.getElementById('hostel-name').textContent = jsonData.metadata.hostelName;
-            document.getElementById('report-period').textContent = jsonData.metadata.reportPeriod;
+            // Save for offline use
+            localStorage.setItem('offline_data', JSON.stringify(jsonData));
             
             // Calculate totals
-            const income = jsonData.transactions.filter(t => t.type === 'fee')
-                .reduce((sum, t) => sum + t.amount, 0);
-            const expense = jsonData.transactions.filter(t => t.type === 'expense')
-                .reduce((sum, t) => sum + t.amount, 0);
-            const netBalance = income - expense;
+            const feeTransactions = jsonData.transactions.filter(t => t.type === 'fee');
+            const expenseTransactions = jsonData.transactions.filter(t => t.type === 'expense');
             
-            // Update summary
-            document.getElementById('total-income').textContent = formatCurrency(income);
-            document.getElementById('total-expense').textContent = formatCurrency(expense);
+            const totalIncome = feeTransactions.reduce((sum, t) => sum + t.amount, 0);
+            const totalExpense = expenseTransactions.reduce((sum, t) => sum + t.amount, 0);
+            const netBalance = totalIncome - totalExpense;
+            
+            // Update summary cards
+            document.getElementById('total-income').textContent = formatCurrency(totalIncome);
+            document.getElementById('total-expense').textContent = formatCurrency(totalExpense);
             document.getElementById('net-balance').textContent = formatCurrency(netBalance);
+            document.getElementById('total-transactions').textContent = jsonData.transactions.length;
             
-            // Update counts
-            const incomeCount = jsonData.transactions.filter(t => t.type === 'fee').length;
-            const expenseCount = jsonData.transactions.filter(t => t.type === 'expense').length;
+            // Update periods
+            document.getElementById('income-period').textContent = jsonData.metadata.reportPeriod;
+            document.getElementById('expense-period').textContent = jsonData.metadata.reportPeriod;
+            document.getElementById('balance-trend').textContent = netBalance >= 0 ? 'Positive' : 'Negative';
             
-            document.getElementById('income-count').textContent = incomeCount;
-            document.getElementById('expense-count').textContent = expenseCount;
+            // Update student count
+            const uniqueStudents = [...new Set(feeTransactions.map(t => t.studentName).filter(Boolean))];
+            document.getElementById('active-students').textContent = `${uniqueStudents.length} Students`;
             
-            // Render all transaction tabs
+            // Update insights
+            updateInsights(feeTransactions, expenseTransactions);
+            
+            // Render transactions
             renderAllTransactions();
             renderFeeTransactions();
             renderExpenseTransactions();
+            
+            // Update data timestamp
+            updateDataUpdatedTime();
         }
 
-        // Tab switching function
-        function switchTab(tabName) {
-            currentTab = tabName;
-            
-            // Update tab indicator position
-            const indicator = document.getElementById('tab-indicator');
-            const positions = {
-                'all': 'translateX(0)',
-                'fees': 'translateX(100%)',
-                'expenses': 'translateX(200%)'
-            };
-            
-            indicator.style.transform = positions[tabName];
-            
-            // Update tab button colors
-            const tabButtons = {
-                'all': document.getElementById('tab-all'),
-                'fees': document.getElementById('tab-fees'),
-                'expenses': document.getElementById('tab-expenses')
-            };
-            
-            Object.keys(tabButtons).forEach(tab => {
-                if (tab === tabName) {
-                    tabButtons[tab].classList.remove('text-slate-500');
-                    tabButtons[tab].classList.add('text-white');
-                } else {
-                    tabButtons[tab].classList.remove('text-white');
-                    tabButtons[tab].classList.add('text-slate-500');
+        function updateInsights(feeTransactions, expenseTransactions) {
+            // Find top student
+            const studentTotals = {};
+            feeTransactions.forEach(t => {
+                if (t.studentName) {
+                    studentTotals[t.studentName] = (studentTotals[t.studentName] || 0) + t.amount;
                 }
             });
             
-            // Show/hide tab contents
+            let topStudent = '-';
+            let topStudentAmount = 0;
+            Object.entries(studentTotals).forEach(([student, amount]) => {
+                if (amount > topStudentAmount) {
+                    topStudentAmount = amount;
+                    topStudent = student;
+                }
+            });
+            
+            document.getElementById('insight-top-student').textContent = topStudent;
+            document.getElementById('insight-top-amount').textContent = formatCurrency(topStudentAmount);
+            
+            // Find largest category
+            const categoryTotals = {};
+            jsonData.transactions.forEach(t => {
+                categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+            });
+            
+            let topCategory = '-';
+            let topCategoryAmount = 0;
+            Object.entries(categoryTotals).forEach(([category, amount]) => {
+                if (amount > topCategoryAmount) {
+                    topCategoryAmount = amount;
+                    topCategory = category;
+                }
+            });
+            
+            document.getElementById('insight-top-category').textContent = topCategory;
+            document.getElementById('insight-category-amount').textContent = formatCurrency(topCategoryAmount);
+        }
+
+        // ========== TRANSACTION RENDERING ==========
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tab indicator
+            const positions = { 'all': 'translateX(0)', 'fees': 'translateX(100%)', 'expenses': 'translateX(200%)' };
+            document.getElementById('tab-indicator').style.transform = positions[tabName];
+            
+            // Update tab buttons
+            const tabs = ['all', 'fees', 'expenses'];
+            tabs.forEach(tab => {
+                const btn = document.getElementById(`tab-${tab}`);
+                if (tab === tabName) {
+                    btn.classList.remove('text-slate-500');
+                    btn.classList.add('text-white');
+                } else {
+                    btn.classList.remove('text-white');
+                    btn.classList.add('text-slate-500');
+                }
+            });
+            
+            // Show/hide content
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
             document.getElementById(`tab-${tabName}-content`).classList.add('active');
         }
 
-        // Render all transactions (mixed)
         function renderAllTransactions() {
-            const container = document.getElementById('all-transactions');
-            if (!jsonData.transactions || jsonData.transactions.length === 0) {
+            renderTransactionList('all-transactions', jsonData.transactions, 'all-count');
+        }
+
+        function renderFeeTransactions() {
+            const feeTransactions = jsonData.transactions.filter(t => t.type === 'fee');
+            renderTransactionList('fees-transactions', feeTransactions, 'fees-count');
+        }
+
+        function renderExpenseTransactions() {
+            const expenseTransactions = jsonData.transactions.filter(t => t.type === 'expense');
+            renderTransactionList('expenses-transactions', expenseTransactions, 'expenses-count');
+        }
+
+        function renderTransactionList(containerId, transactions, countId) {
+            const container = document.getElementById(containerId);
+            const countElement = document.getElementById(countId);
+            
+            if (!transactions || transactions.length === 0) {
                 container.innerHTML = getEmptyStateHTML('No transactions found');
-                document.getElementById('all-count').textContent = '0 Records';
+                if (countElement) countElement.textContent = '0 Records';
                 return;
             }
             
-            const transactions = [...jsonData.transactions].sort((a, b) => 
+            // Sort by date (newest first)
+            const sortedTransactions = [...transactions].sort((a, b) => 
                 new Date(b.date) - new Date(a.date)
             );
             
-            renderTransactionList(container, transactions, 'mixed');
-            document.getElementById('all-count').textContent = `${transactions.length} Records`;
-        }
-
-        // Render only fee transactions
-        function renderFeeTransactions() {
-            const container = document.getElementById('fees-transactions');
-            if (!jsonData.transactions) {
-                container.innerHTML = getEmptyStateHTML('No fee records found');
-                document.getElementById('fees-count').textContent = '0 Records';
-                return;
-            }
-            
-            let feeTransactions = jsonData.transactions
-                .filter(t => t.type === 'fee')
-                .sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            renderTransactionList(container, feeTransactions, 'fee');
-            document.getElementById('fees-count').textContent = `${feeTransactions.length} Records`;
-        }
-
-        // Render only expense transactions
-        function renderExpenseTransactions() {
-            const container = document.getElementById('expenses-transactions');
-            if (!jsonData.transactions) {
-                container.innerHTML = getEmptyStateHTML('No expense records found');
-                document.getElementById('expenses-count').textContent = '0 Records';
-                return;
-            }
-            
-            let expenseTransactions = jsonData.transactions
-                .filter(t => t.type === 'expense')
-                .sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            renderTransactionList(container, expenseTransactions, 'expense');
-            document.getElementById('expenses-count').textContent = `${expenseTransactions.length} Records`;
-        }
-
-        // Generic transaction list renderer
-        function renderTransactionList(container, transactions, type) {
             container.innerHTML = '';
+            if (countElement) countElement.textContent = `${sortedTransactions.length} Records`;
             
-            if (!transactions || transactions.length === 0) {
-                container.innerHTML = getEmptyStateHTML(`No ${type} records found`);
-                return;
-            }
-            
-            transactions.forEach(transaction => {
-                const isFee = transaction.type === 'fee';
-                const categories = isFee ? feeCategories : expenseCategories;
-                const categoryConfig = categories[transaction.category] || 
-                                     { icon: 'fa-circle', color: 'bg-gray-100 text-gray-500' };
-                
-                const transactionEl = document.createElement('div');
-                transactionEl.className = 'bg-white p-4 rounded-2xl shadow-sm border border-slate-100';
-                
-                transactionEl.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3 overflow-hidden">
-                            <div class="${categoryConfig.color} category-icon shrink-0">
-                                <i class="fa-solid ${categoryConfig.icon}"></i>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <h4 class="font-semibold text-slate-800 text-sm truncate leading-tight">
-                                    ${transaction.description}
-                                </h4>
-                                <div class="text-xs text-slate-400 mt-0.5 truncate flex items-center gap-1">
-                                    <span>${formatDate(transaction.date, 'short')}</span>
-                                    <span>•</span>
-                                    <span>${isFee ? transaction.studentName : transaction.category}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex flex-col items-end shrink-0 pl-2">
-                            <span class="font-bold ${isFee ? 'text-green-600' : 'text-red-600'} text-base">
-                                ${isFee ? '+' : '-'} ${formatCurrency(transaction.amount)}
-                            </span>
-                            <span class="text-xs text-slate-400 mt-1">
-                                ${isFee ? 'Fee' : 'Expense'}
-                            </span>
-                        </div>
-                    </div>
-                `;
-                
-                container.appendChild(transactionEl);
+            sortedTransactions.forEach(transaction => {
+                container.appendChild(createTransactionCard(transaction));
             });
         }
 
-        // Utility functions
+        function createTransactionCard(transaction) {
+            const isFee = transaction.type === 'fee';
+            const categories = isFee ? FEE_CATEGORIES : EXPENSE_CATEGORIES;
+            const categoryConfig = categories[transaction.category] || 
+                                 { icon: 'fa-circle', color: 'bg-gray-100 text-gray-500', label: transaction.category };
+            
+            const card = document.createElement('div');
+            card.className = 'transaction-card bg-white p-4 rounded-2xl shadow-sm border border-slate-100';
+            
+            card.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="${categoryConfig.color} category-icon">
+                            <i class="fa-solid ${categoryConfig.icon}"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="font-semibold text-slate-800 text-sm truncate leading-tight">
+                                ${transaction.description}
+                            </h4>
+                            <div class="text-xs text-slate-400 mt-0.5 truncate">
+                                <span class="inline-flex items-center gap-1">
+                                    <i class="fa-solid fa-calendar"></i>
+                                    ${formatDate(transaction.date, 'short')}
+                                </span>
+                                <span class="mx-2">•</span>
+                                ${isFee ? 
+                                    `<span><i class="fa-solid fa-user-graduate mr-1"></i>${transaction.studentName}</span>` : 
+                                    `<span><i class="fa-solid fa-store mr-1"></i>${transaction.vendor || transaction.category}</span>`
+                                }
+                            </div>
+                            ${transaction.receiptNo || transaction.invoiceNo ? 
+                                `<div class="text-xs text-slate-500 mt-1">
+                                    <i class="fa-solid fa-hashtag mr-1"></i>
+                                    ${transaction.receiptNo || transaction.invoiceNo}
+                                </div>` : ''
+                            }
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end shrink-0 pl-2">
+                        <span class="font-bold ${isFee ? 'text-green-600' : 'text-red-600'} text-lg">
+                            ${isFee ? '+' : '-'} ${formatCurrency(transaction.amount)}
+                        </span>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="text-xs px-2 py-1 rounded-full ${isFee ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                ${isFee ? 'FEE' : 'EXPENSE'}
+                            </span>
+                            <span class="text-xs text-slate-500">
+                                <i class="fa-solid fa-${transaction.paymentMethod === 'Cash' ? 'money-bill' : 'building-columns'}"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // ========== UTILITY FUNCTIONS ==========
+        const FEE_CATEGORIES = {
+            'Monthly Fee': { icon: 'fa-calendar-check', color: 'bg-green-100 text-green-600' },
+            'Admission': { icon: 'fa-id-card', color: 'bg-teal-100 text-teal-600' },
+            'Security': { icon: 'fa-shield-halved', color: 'bg-indigo-100 text-indigo-600' },
+            'Others': { icon: 'fa-money-bill', color: 'bg-gray-100 text-gray-600' }
+        };
+
+        const EXPENSE_CATEGORIES = {
+            'Food': { icon: 'fa-utensils', color: 'bg-orange-100 text-orange-600' },
+            'Rent': { icon: 'fa-house', color: 'bg-blue-100 text-blue-600' },
+            'Transport': { icon: 'fa-bus', color: 'bg-purple-100 text-purple-600' },
+            'Utilities': { icon: 'fa-bolt', color: 'bg-yellow-100 text-yellow-600' },
+            'Staff Salary': { icon: 'fa-users', color: 'bg-cyan-100 text-cyan-600' },
+            'Daily Expenses': { icon: 'fa-shopping-bag', color: 'bg-fuchsia-100 text-fuchsia-600' },
+            'Others': { icon: 'fa-box-open', color: 'bg-gray-100 text-gray-600' }
+        };
+
         function formatCurrency(amount) {
             return `Rs ${amount.toLocaleString()}`;
         }
@@ -690,13 +1336,31 @@
         function getEmptyStateHTML(message) {
             return `
                 <div class="flex flex-col items-center justify-center py-12 opacity-60">
-                    <i class="fa-solid fa-clipboard-list text-4xl text-slate-300 mb-2"></i>
+                    <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-3">
+                        <i class="fa-solid fa-clipboard-list text-2xl text-slate-300"></i>
+                    </div>
                     <p class="text-sm text-slate-400">${message}</p>
                 </div>`;
         }
 
+        function updateDataUpdatedTime() {
+            const element = document.getElementById('data-updated');
+            if (element) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                element.textContent = `Today at ${timeString}`;
+            }
+        }
+
+        function refreshData() {
+            loadData();
+        }
+
         function showLoading(show) {
-            document.getElementById('loading-state').classList.toggle('hidden', !show);
+            const loadingElement = document.getElementById('loading-state');
+            if (loadingElement) {
+                loadingElement.classList.toggle('hidden', !show);
+            }
         }
 
         function showContent() {
@@ -712,10 +1376,10 @@
             document.getElementById('error-state').classList.remove('hidden');
         }
 
-        // Initialize with first tab active
+        // Initialize
         switchTab('all');
-
-        // Add shake animation for login error
+        
+        // Add shake animation
         const style = document.createElement('style');
         style.textContent = `
             @keyframes shake {
