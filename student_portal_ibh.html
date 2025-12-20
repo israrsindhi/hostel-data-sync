@@ -98,8 +98,34 @@
         /* Print styles */
         @media print {
             .no-print { display: none !important; }
-            body { background: white; padding: 0; }
+            body { background: white; padding: 0; margin: 0; }
             .container { max-width: 100%; }
+            .receipt-page { box-shadow: none; margin: 0; padding: 0; }
+        }
+        
+        /* Receipt page styling */
+        .receipt-page {
+            width: 210mm;
+            min-height: 297mm;
+            max-height: 297mm;
+            margin: 10mm auto;
+            padding: 15mm;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            page-break-inside: avoid;
+            page-break-after: always;
+            overflow: hidden;
+        }
+        
+        @media print {
+            .receipt-page {
+                box-shadow: none;
+                margin: 0;
+                padding: 10mm;
+                width: 100%;
+                height: 100%;
+                min-height: 100vh;
+            }
         }
     </style>
 </head>
@@ -765,7 +791,7 @@
             showToast('Logged out successfully');
         }
         
-        // Download receipt for a specific transaction
+        // Download receipt for a specific transaction - FIXED VERSION
         function downloadReceipt(transactionId) {
             const student = studentData;
             const transaction = student.transactions.find(t => t.id === transactionId);
@@ -778,15 +804,16 @@
             // Create receipt HTML
             const receiptHTML = createReceiptHTML(student, transaction);
             
-            // Create a blob and download
-            const blob = new Blob([receiptHTML], { type: 'text/html' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Receipt_${student.name.replace(/\s+/g, '_')}_${transaction.date}.html`;
-            a.click();
+            // Open in new window for printing/download
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(receiptHTML);
+            printWindow.document.close();
             
-            showToast('Receipt download started');
+            // Auto-print after a short delay
+            setTimeout(() => {
+                printWindow.print();
+                showToast('Receipt ready for printing');
+            }, 500);
         }
         
         // Download fee summary PDF
@@ -796,15 +823,16 @@
             // Create summary HTML
             const summaryHTML = createFeeSummaryHTML(student);
             
-            // Create a blob and download
-            const blob = new Blob([summaryHTML], { type: 'text/html' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Fee_Summary_${student.name.replace(/\s+/g, '_')}.html`;
-            a.click();
+            // Open in new window for printing/download
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(summaryHTML);
+            printWindow.document.close();
             
-            showToast('Fee summary download started');
+            // Auto-print after a short delay
+            setTimeout(() => {
+                printWindow.print();
+                showToast('Fee summary ready for printing');
+            }, 500);
         }
         
         // Download all receipts as ZIP (simulated)
@@ -819,29 +847,25 @@
             // For demo purposes, we'll create a single HTML file with all receipts
             const allReceiptsHTML = createAllReceiptsHTML(student);
             
-            const blob = new Blob([allReceiptsHTML], { type: 'text/html' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `All_Receipts_${student.name.replace(/\s+/g, '_')}.html`;
-            a.click();
+            // Open in new window for printing/download
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(allReceiptsHTML);
+            printWindow.document.close();
             
-            showToast(`Downloading ${student.transactions.length} receipt(s)`);
+            // Auto-print after a short delay
+            setTimeout(() => {
+                printWindow.print();
+                showToast(`All receipts ready for printing`);
+            }, 500);
         }
         
-        // Create receipt HTML for a transaction
+        // Create receipt HTML for a transaction - FIXED TO FIT ONE PAGE
         function createReceiptHTML(student, transaction) {
             const dateStr = new Date().toLocaleDateString('en-GB');
             const receiptDate = new Date(transaction.date).toLocaleDateString('en-GB');
             
-            // Signature URLs for different receivers
-            const signatureUrls = {
-                'Faiq Ali': 'faiqsign.jpg',
-                'Ali Faheem': 'alifaheemsign.jpg',
-                'Saeed Bapar': 'Saeedsign.jpg'
-            };
-            
-            const signUrl = signatureUrls[transaction.receivedBy] || '';
+            // Convert amount to words
+            const amountInWords = amountToWords(transaction.amount);
             
             return `
             <!DOCTYPE html>
@@ -851,6 +875,7 @@
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Fee Receipt - ${HOSTEL_NAME}</title>
                 <style>
+                    /* Reset and base styles */
                     * {
                         margin: 0;
                         padding: 0;
@@ -859,39 +884,48 @@
                     }
                     
                     body {
-                        padding: 40px;
                         background: white;
                         color: #333;
                         line-height: 1.6;
+                        padding: 0;
+                        margin: 0;
                     }
                     
-                    .container {
-                        max-width: 210mm;
+                    /* One-page receipt container */
+                    .receipt-page {
+                        width: 210mm;
+                        min-height: 297mm;
+                        max-height: 297mm;
                         margin: 0 auto;
-                        border: 2px solid #e5e7eb;
-                        border-radius: 16px;
+                        padding: 15mm;
+                        background: white;
+                        page-break-inside: avoid;
+                        page-break-after: always;
                         overflow: hidden;
-                        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
                     }
                     
                     /* Header */
                     .header {
                         background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
                         color: white;
-                        padding: 30px;
+                        padding: 25px 30px;
                         text-align: center;
+                        border-radius: 8px 8px 0 0;
+                        margin-bottom: 25px;
                     }
                     
                     .hostel-name {
                         font-size: 28px;
                         font-weight: bold;
                         margin-bottom: 8px;
+                        letter-spacing: 0.5px;
                     }
                     
                     .receipt-title {
                         font-size: 18px;
-                        opacity: 0.9;
+                        opacity: 0.95;
                         margin-bottom: 5px;
+                        font-weight: 600;
                     }
                     
                     .receipt-id {
@@ -902,26 +936,27 @@
                         display: inline-block;
                         margin-top: 10px;
                         font-weight: 600;
+                        letter-spacing: 1px;
                     }
                     
-                    /* Body */
+                    /* Receipt body */
                     .receipt-body {
-                        padding: 30px;
+                        padding: 0 10px;
                     }
                     
                     .receipt-details {
                         background: #f9fafb;
-                        border-radius: 12px;
+                        border-radius: 10px;
                         padding: 25px;
-                        margin-bottom: 30px;
+                        margin-bottom: 25px;
                         border: 1px solid #e5e7eb;
                     }
                     
                     .detail-row {
                         display: flex;
                         justify-content: space-between;
-                        margin-bottom: 15px;
-                        padding-bottom: 15px;
+                        margin-bottom: 14px;
+                        padding-bottom: 14px;
                         border-bottom: 1px dashed #d1d5db;
                     }
                     
@@ -935,84 +970,98 @@
                         color: #6b7280;
                         font-weight: 500;
                         font-size: 15px;
+                        width: 40%;
                     }
                     
                     .detail-value {
                         font-weight: 600;
                         color: #374151;
                         font-size: 15px;
+                        width: 60%;
+                        text-align: right;
                     }
                     
-                    /* Amount Section */
+                    /* Amount section */
                     .amount-section {
                         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
                         color: white;
                         padding: 30px;
-                        border-radius: 12px;
+                        border-radius: 10px;
                         text-align: center;
                         margin-bottom: 30px;
+                        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
                     }
                     
                     .amount-label {
                         font-size: 16px;
-                        opacity: 0.9;
+                        opacity: 0.95;
                         margin-bottom: 10px;
                         font-weight: 600;
+                        letter-spacing: 1px;
                     }
                     
                     .amount-value {
-                        font-size: 48px;
+                        font-size: 42px;
                         font-weight: bold;
                         margin-bottom: 10px;
+                        letter-spacing: 1px;
                     }
                     
                     .amount-words {
-                        font-size: 16px;
-                        opacity: 0.9;
+                        font-size: 15px;
+                        opacity: 0.95;
                         font-style: italic;
+                        line-height: 1.5;
                     }
                     
-                    /* Footer with Signature */
+                    /* Footer with signature */
                     .receipt-footer {
-                        padding: 25px 30px;
+                        padding: 25px 20px 20px;
                         background: #f9fafb;
-                        border-top: 1px solid #e5e7eb;
-                        text-align: center;
+                        border-top: 2px solid #e5e7eb;
+                        border-radius: 0 0 8px 8px;
+                        margin-top: 30px;
                     }
                     
                     .thank-you {
                         color: #6b7280;
-                        margin-bottom: 20px;
+                        margin-bottom: 25px;
                         font-style: italic;
                         font-size: 16px;
+                        text-align: center;
+                        padding: 0 10px;
                     }
                     
                     .signature-section {
                         margin-top: 30px;
                         text-align: center;
-                    }
-                    
-                    .signature-image {
-                        max-width: 200px;
-                        max-height: 80px;
-                        margin: 15px auto;
-                        display: block;
-                        border-bottom: 2px solid #374151;
-                        padding-bottom: 10px;
+                        padding: 20px;
+                        background: white;
+                        border-radius: 8px;
+                        border: 1px solid #e5e7eb;
                     }
                     
                     .signature-label {
                         color: #374151;
                         font-size: 16px;
                         font-weight: 600;
-                        margin-top: 10px;
+                        margin-bottom: 20px;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                    }
+                    
+                    .signature-line {
+                        width: 250px;
+                        height: 2px;
+                        background: #374151;
+                        margin: 30px auto 10px;
                     }
                     
                     .receiver-name {
                         color: #4f46e5;
                         font-weight: bold;
-                        margin-top: 5px;
                         font-size: 18px;
+                        margin-top: 10px;
                     }
                     
                     .receipt-meta {
@@ -1020,25 +1069,69 @@
                         color: #9ca3af;
                         margin-top: 30px;
                         line-height: 1.8;
+                        text-align: center;
+                        padding-top: 20px;
+                        border-top: 1px solid #e5e7eb;
                     }
                     
                     /* Print styles */
                     @media print {
                         body {
-                            padding: 0;
+                            padding: 0 !important;
+                            margin: 0 !important;
+                            background: white !important;
                         }
                         
-                        .container {
-                            border: none;
-                            box-shadow: none;
-                            max-width: 100%;
+                        .receipt-page {
+                            width: 100% !important;
+                            height: 100% !important;
+                            min-height: 100vh !important;
+                            margin: 0 !important;
+                            padding: 10mm !important;
+                            box-shadow: none !important;
+                        }
+                        
+                        .header {
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                        
+                        .amount-section {
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                        
+                        .no-print {
+                            display: none !important;
+                        }
+                    }
+                    
+                    /* Responsive adjustments */
+                    @media (max-width: 768px) {
+                        .detail-row {
+                            flex-direction: column;
+                            margin-bottom: 12px;
+                        }
+                        
+                        .detail-label,
+                        .detail-value {
+                            width: 100%;
+                            text-align: left;
+                        }
+                        
+                        .detail-value {
+                            margin-top: 5px;
+                        }
+                        
+                        .amount-value {
+                            font-size: 36px;
                         }
                     }
                 </style>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
             </head>
             <body>
-                <div class="container">
+                <div class="receipt-page">
                     <!-- Header -->
                     <div class="header">
                         <div class="hostel-name">${HOSTEL_NAME}</div>
@@ -1088,7 +1181,7 @@
                         <div class="amount-section">
                             <div class="amount-label">AMOUNT RECEIVED</div>
                             <div class="amount-value">Rs ${transaction.amount.toLocaleString()}/-</div>
-                            <div class="amount-words">${amountToWords(transaction.amount)} Pakistani Rupees Only</div>
+                            <div class="amount-words">${amountInWords} Only</div>
                         </div>
                     </div>
                     
@@ -1100,13 +1193,9 @@
                         
                         <div class="signature-section">
                             <div class="signature-label">AUTHORIZED SIGNATURE</div>
-                            ${signUrl ? `
-                                <img src="${signUrl}" alt="Signature" class="signature-image">
-                            ` : `
-                                <div style="height: 60px; border-bottom: 2px solid #374151; width: 200px; margin: 15px auto;"></div>
-                            `}
+                            <div class="signature-line"></div>
                             <div class="receiver-name">${transaction.receivedBy || 'Authorized Signatory'}</div>
-                            <div style="margin-top: 10px; color: #6b7280; font-size: 14px;">
+                            <div style="margin-top: 15px; color: #6b7280; font-size: 14px;">
                                 ${HOSTEL_NAME}
                             </div>
                         </div>
@@ -1115,7 +1204,7 @@
                             <div><strong>Address:</strong> ${ADDRESS}</div>
                             <div><strong>Contact:</strong> ${CONTACT}</div>
                             <div><strong>Generated on:</strong> ${dateStr}</div>
-                            <div style="margin-top: 15px; font-style: italic;">
+                            <div style="margin-top: 15px; font-style: italic; color: #6b7280;">
                                 This is a computer-generated receipt. Valid without signature.
                             </div>
                         </div>
@@ -1124,9 +1213,18 @@
                 
                 <script>
                     // Auto-print after delay
-                    setTimeout(() => {
-                        window.print();
-                    }, 1000);
+                    window.onload = function() {
+                        setTimeout(() => {
+                            window.print();
+                        }, 500);
+                    };
+                    
+                    // Close window after printing
+                    window.onafterprint = function() {
+                        setTimeout(() => {
+                            window.close();
+                        }, 1000);
+                    };
                 <\/script>
             </body>
             </html>
@@ -1155,15 +1253,16 @@
                     }
                     
                     body {
-                        padding: 40px;
                         background: white;
                         color: #333;
                         line-height: 1.6;
+                        padding: 20px;
                     }
                     
                     .container {
                         max-width: 210mm;
                         margin: 0 auto;
+                        padding: 20px;
                     }
                     
                     /* Header */
@@ -1529,7 +1628,7 @@
                     // Auto-print after delay
                     setTimeout(() => {
                         window.print();
-                    }, 1000);
+                    }, 500);
                 <\/script>
             </body>
             </html>
@@ -1585,11 +1684,16 @@
                             border: 1px solid #ccc;
                             margin-bottom: 20px;
                         }
+                        
+                        body {
+                            padding: 0;
+                            margin: 0;
+                        }
                     }
                 </style>
             </head>
             <body>
-                <div style="text-align: center; margin-bottom: 30px;">
+                <div style="text-align: center; margin-bottom: 30px; padding: 20px;">
                     <h1 style="color: #4f46e5; font-size: 28px; margin-bottom: 10px;">${HOSTEL_NAME}</h1>
                     <h2 style="color: #666; font-size: 20px;">All Payment Receipts for ${student.name}</h2>
                     <p style="color: #888; margin-top: 10px;">Generated on: ${dateStr}</p>
@@ -1604,7 +1708,7 @@
                     // Auto-print after delay
                     setTimeout(() => {
                         window.print();
-                    }, 1000);
+                    }, 500);
                 <\/script>
             </body>
             </html>
@@ -1621,35 +1725,45 @@
             
             let words = '';
             
+            // Handle lakhs
             if (amount >= 100000) {
                 const lakhs = Math.floor(amount / 100000);
                 words += amountToWords(lakhs) + ' Lakh ';
                 amount %= 100000;
             }
             
+            // Handle thousands
             if (amount >= 1000) {
                 const thousands = Math.floor(amount / 1000);
-                words += amountToWords(thousands) + ' Thousand ';
+                if (thousands > 0) {
+                    words += amountToWords(thousands) + ' Thousand ';
+                }
                 amount %= 1000;
             }
             
+            // Handle hundreds
             if (amount >= 100) {
                 const hundreds = Math.floor(amount / 100);
                 words += ones[hundreds] + ' Hundred ';
                 amount %= 100;
             }
             
-            if (amount >= 20) {
-                const ten = Math.floor(amount / 10);
-                words += tens[ten] + ' ';
-                amount %= 10;
-            } else if (amount >= 10) {
-                words += teens[amount - 10] + ' ';
-                amount = 0;
-            }
-            
+            // Handle tens and ones
             if (amount > 0) {
-                words += ones[amount] + ' ';
+                if (words !== '') words += 'and ';
+                
+                if (amount < 10) {
+                    words += ones[amount];
+                } else if (amount < 20) {
+                    words += teens[amount - 10];
+                } else {
+                    const ten = Math.floor(amount / 10);
+                    const one = amount % 10;
+                    words += tens[ten];
+                    if (one > 0) {
+                        words += ' ' + ones[one];
+                    }
+                }
             }
             
             return words.trim() + ' Rupees';
