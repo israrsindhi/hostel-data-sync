@@ -1,27 +1,62 @@
 {
   "users": [
     {
-      "username": "israrsindhi",
-      "password": "israrali01",
-      "name": "Israr Sindhi",
-      "permissions": ["view"]
+      "username": "israr",
+      "password": "israr123",
+      "defaultProfile": {
+        "name": "Administrator",
+        "role": "System Admin",
+        "department": "Administration",
+        "email": "admin@indushostel.com",
+        "phone": "0333-1234567",
+        "image": "https://ui-avatars.com/api/?name=Admin&background=4f46e5&color=fff&size=128",
+        "signature": "Admin Signature",
+        "permissions": ["view"],
+        "theme": "indigo",
+        "notifications": true,
+        "language": "en"
+      }
     },
     {
       "username": "manager",
       "password": "manager123",
-      "name": "Hostel Manager",
-      "permissions": ["view"]
+      "defaultProfile": {
+        "name": "Hostel Manager",
+        "role": "Manager",
+        "department": "Management",
+        "email": "manager@indushostel.com",
+        "phone": "0333-7654321",
+        "image": "https://ui-avatars.com/api/?name=Manager&background=059669&color=fff&size=128",
+        "signature": "Manager Signature",
+        "permissions": ["view"],
+        "theme": "green",
+        "notifications": true,
+        "language": "en"
+      }
     },
     {
       "username": "accountant",
       "password": "accountant123",
-      "name": "Accountant",
-      "permissions": ["view"]
+      "defaultProfile": {
+        "name": "Accountant",
+        "role": "Finance Officer",
+        "department": "Accounts",
+        "email": "accountant@indushostel.com",
+        "phone": "0333-9876543",
+        "image": "https://ui-avatars.com/api/?name=Accountant&background=7c3aed&color=fff&size=128",
+        "signature": "Accountant Signature",
+        "permissions": ["view"],
+        "theme": "purple",
+        "notifications": false,
+        "language": "en"
+      }
     }
   ],
-  "metadata": {
-    "portalName": "Indus Boys Hostel Management Portal",
-    "version": "1.0",
-    "created": "2025-12-12"
+  "portalInfo": {
+    "name": "Indus Boys Hostel Management Portal",
+    "address": "Hostel Street, DHA Phase 1, Karachi",
+    "contact": "0333-1234567",
+    "established": "2020",
+    "version": "2.0"
   }
 }
