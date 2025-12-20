@@ -166,6 +166,14 @@
         .animate-shake {
             animation: shake 0.5s ease-in-out;
         }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body class="text-slate-800">
@@ -1535,66 +1543,120 @@
         function refreshTransactionLists() {
             if (!jsonData) return;
             
-            let filteredTransactions = [...jsonData.transactions];
+            // Get ALL transactions first
+            const allTransactions = [...jsonData.transactions];
+            const feeTransactions = allTransactions.filter(t => t.type === 'fee');
+            const expenseTransactions = allTransactions.filter(t => t.type === 'expense');
             
-            // FIRST: Isolate by tab type (Fees, Expenses, or All)
-            if (currentTab === 'fees') {
-                filteredTransactions = filteredTransactions.filter(t => t.type === 'fee');
+            let filteredTransactions = [];
+            
+            // ISOLATE TABS: Filter based on current tab
+            if (currentTab === 'all') {
+                filteredTransactions = [...allTransactions];
+            } else if (currentTab === 'fees') {
+                filteredTransactions = [...feeTransactions];
             } else if (currentTab === 'expenses') {
-                filteredTransactions = filteredTransactions.filter(t => t.type === 'expense');
+                filteredTransactions = [...expenseTransactions];
             }
-            // For 'all' tab, keep all transactions
             
-            // SECOND: Apply category filter
+            // Apply category filter
             if (activeFilters.category !== 'All') {
-                const filterBtn = document.querySelector(`.filter-btn[data-category="${activeFilters.category}"]`);
-                const filterType = filterBtn ? filterBtn.dataset.type : null;
-                
-                // Apply category filter based on filter type
-                if (currentTab === 'all') {
-                    // In "All" tab, show transactions matching the selected category
-                    filteredTransactions = filteredTransactions.filter(t => t.category === activeFilters.category);
-                } else if (currentTab === 'fees') {
-                    // In "Fees" tab, only apply fee category filters
-                    if (filterType === 'fee') {
-                        filteredTransactions = filteredTransactions.filter(t => t.category === activeFilters.category);
-                    } else {
-                        // If expense category selected in Fees tab, show no results
-                        filteredTransactions = [];
-                    }
-                } else if (currentTab === 'expenses') {
-                    // In "Expenses" tab, only apply expense category filters
-                    if (filterType === 'expense') {
-                        filteredTransactions = filteredTransactions.filter(t => t.category === activeFilters.category);
-                    } else {
-                        // If fee category selected in Expenses tab, show no results
-                        filteredTransactions = [];
-                    }
-                }
+                filteredTransactions = filteredTransactions.filter(t => t.category === activeFilters.category);
             }
             
-            // THIRD: Apply collector filter (only for fees tab)
+            // Apply collector filter (only for fees tab)
             if (currentTab === 'fees' && activeFilters.collector !== 'All Collectors') {
                 filteredTransactions = filteredTransactions.filter(t => t.collectedBy === activeFilters.collector);
             }
             
-            // Update counts - show filtered count for each tab
-            const allTransactions = jsonData.transactions;
-            const feeTransactions = allTransactions.filter(t => t.type === 'fee');
-            const expenseTransactions = allTransactions.filter(t => t.type === 'expense');
-            
+            // Update counts
             document.getElementById('all-count').textContent = `${filteredTransactions.length} Records`;
             document.getElementById('fees-count').textContent = `${feeTransactions.length} Records`;
             document.getElementById('expenses-count').textContent = `${expenseTransactions.length} Records`;
             
             // Render appropriate list
+            renderTransactionLists(filteredTransactions);
+        }
+
+        function renderTransactionLists(filteredTransactions) {
+            // Filter transactions for each tab
+            const allTransactions = [...jsonData.transactions];
+            const feeTransactions = allTransactions.filter(t => t.type === 'fee');
+            const expenseTransactions = allTransactions.filter(t => t.type === 'expense');
+            
+            // Prepare data for each tab
+            let allTabData = [];
+            let feesTabData = [];
+            let expensesTabData = [];
+            
             if (currentTab === 'all') {
-                renderTransactionList('all-transactions', filteredTransactions);
+                // For "All" tab, use the filtered transactions
+                allTabData = filteredTransactions;
+                
+                // For Fees tab, show fee transactions with current filters
+                feesTabData = feeTransactions.filter(t => {
+                    let match = true;
+                    if (activeFilters.category !== 'All') {
+                        match = match && t.category === activeFilters.category;
+                    }
+                    if (activeFilters.collector !== 'All Collectors' && currentTab === 'fees') {
+                        match = match && t.collectedBy === activeFilters.collector;
+                    }
+                    return match;
+                });
+                
+                // For Expenses tab, show expense transactions with current filters
+                expensesTabData = expenseTransactions.filter(t => {
+                    let match = true;
+                    if (activeFilters.category !== 'All') {
+                        match = match && t.category === activeFilters.category;
+                    }
+                    return match;
+                });
             } else if (currentTab === 'fees') {
-                renderTransactionList('fees-transactions', filteredTransactions);
+                // For Fees tab, use the filtered transactions
+                feesTabData = filteredTransactions;
+                
+                // For All tab, show all transactions with current category filter
+                allTabData = allTransactions.filter(t => {
+                    if (activeFilters.category !== 'All') {
+                        return t.category === activeFilters.category;
+                    }
+                    return true;
+                });
+                
+                // For Expenses tab, show expense transactions with current category filter
+                expensesTabData = expenseTransactions.filter(t => {
+                    if (activeFilters.category !== 'All') {
+                        return t.category === activeFilters.category;
+                    }
+                    return true;
+                });
             } else if (currentTab === 'expenses') {
-                renderTransactionList('expenses-transactions', filteredTransactions);
+                // For Expenses tab, use the filtered transactions
+                expensesTabData = filteredTransactions;
+                
+                // For All tab, show all transactions with current category filter
+                allTabData = allTransactions.filter(t => {
+                    if (activeFilters.category !== 'All') {
+                        return t.category === activeFilters.category;
+                    }
+                    return true;
+                });
+                
+                // For Fees tab, show fee transactions with current category filter
+                feesTabData = feeTransactions.filter(t => {
+                    if (activeFilters.category !== 'All') {
+                        return t.category === activeFilters.category;
+                    }
+                    return true;
+                });
             }
+            
+            // Render each tab's data
+            renderTransactionList('all-transactions', allTabData);
+            renderTransactionList('fees-transactions', feesTabData);
+            renderTransactionList('expenses-transactions', expensesTabData);
         }
 
         function renderTransactionList(containerId, transactions) {
