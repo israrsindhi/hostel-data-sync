@@ -74,30 +74,6 @@
             to { opacity: 1; }
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        .stat-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        
-        .transaction-card {
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-        
-        .transaction-card:hover {
-            transform: translateX(4px);
-            border-left-color: var(--primary-color);
-        }
-        
         .modal-overlay {
             animation: fadeIn 0.3s ease;
         }
@@ -135,18 +111,64 @@
         .theme-purple { --primary-color: #7c3aed; --primary-dark: #6d28d9; }
         .theme-blue { --primary-color: #3b82f6; --primary-dark: #2563eb; }
         .theme-orange { --primary-color: #f59e0b; --primary-dark: #d97706; }
+        
+        .filter-active {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+        
+        .scrollable-modal {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .scrollable-profile {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+        
+        .scrollable-profile::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .scrollable-profile::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .scrollable-profile::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+        
+        .scrollable-profile::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+        
+        .collection-summary-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+        
+        .collection-summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body class="text-slate-800">
     <!-- Login Screen -->
     <div id="login-screen" class="login-bg">
+        <!-- ... Login screen code remains exactly the same as before ... -->
         <div class="login-card">
             <div class="bg-indigo-600 text-white p-8 text-center">
                 <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
                     <i class="fa-solid fa-building-columns text-3xl"></i>
                 </div>
                 <h1 class="text-2xl font-bold">Indus Boys Hostel</h1>
-                <p class="text-indigo-200 text-sm mt-1">Management Portal v2.0</p>
+                <p class="text-indigo-200 text-sm mt-1">Management Portal v2.1</p>
             </div>
             
             <div class="p-8">
@@ -217,7 +239,7 @@
                     </div>
                     <div>
                         <h1 class="text-lg font-bold">Indus Boys Hostel</h1>
-                        <p class="text-indigo-200 text-xs">Management Portal</p>
+                        <p class="text-indigo-200 text-xs">Management Portal v2.1</p>
                     </div>
                 </div>
                 
@@ -252,6 +274,13 @@
                                     <i class="fa-solid fa-palette text-slate-500"></i>
                                     <span>Change Theme</span>
                                 </button>
+                                <!-- Admin Only: Fee Collection Summary -->
+                                <div id="admin-features" class="hidden border-t border-slate-100 mt-2 pt-2">
+                                    <button onclick="generateFeeCollectionSummary()" class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                                        <i class="fa-solid fa-file-invoice-dollar text-green-500"></i>
+                                        <span>Fee Collection Summary</span>
+                                    </button>
+                                </div>
                                 <div class="border-t border-slate-100 mt-2 pt-2">
                                     <button onclick="handleLogout()" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
                                         <i class="fa-solid fa-right-from-bracket"></i>
@@ -361,7 +390,82 @@
                         </div>
                         <div class="mt-3 text-xs text-purple-200">
                             <i class="fa-solid fa-users mr-1"></i>
-                            <span id="active-students">4 Students</span>
+                            <span id="active-students">0 Students</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Section -->
+                <div id="filter-section" class="px-4 mb-4">
+                    <!-- Filter Toggle -->
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-slate-700">Filters</h3>
+                        <button onclick="toggleFilters()" class="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-800">
+                            <i class="fa-solid fa-filter"></i>
+                            <span id="filter-toggle-text">Show Filters</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Filter Panel -->
+                    <div id="filter-panel" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-4 space-y-4">
+                        <!-- Category Filters -->
+                        <div>
+                            <h4 class="font-medium text-slate-700 mb-2 text-sm">Filter by Category</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="toggleCategoryFilter('All')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition filter-active" data-category="All">
+                                    All Categories
+                                </button>
+                                <!-- Fee Categories -->
+                                <button onclick="toggleCategoryFilter('Monthly Fee')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Monthly Fee" data-type="fee">
+                                    <i class="fa-solid fa-calendar-check mr-1"></i>Monthly Fee
+                                </button>
+                                <button onclick="toggleCategoryFilter('Security')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Security" data-type="fee">
+                                    <i class="fa-solid fa-shield-halved mr-1"></i>Security
+                                </button>
+                                <button onclick="toggleCategoryFilter('Admission')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Admission" data-type="fee">
+                                    <i class="fa-solid fa-id-card mr-1"></i>Admission
+                                </button>
+                                <!-- Expense Categories -->
+                                <button onclick="toggleCategoryFilter('Food')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Food" data-type="expense">
+                                    <i class="fa-solid fa-utensils mr-1"></i>Food
+                                </button>
+                                <button onclick="toggleCategoryFilter('Utilities')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Utilities" data-type="expense">
+                                    <i class="fa-solid fa-bolt mr-1"></i>Utilities
+                                </button>
+                                <button onclick="toggleCategoryFilter('Staff Salary')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Staff Salary" data-type="expense">
+                                    <i class="fa-solid fa-users mr-1"></i>Staff Salary
+                                </button>
+                                <button onclick="toggleCategoryFilter('Transport')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Transport" data-type="expense">
+                                    <i class="fa-solid fa-bus mr-1"></i>Transport
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Collector Filters (Only in Fees Tab) -->
+                        <div id="collector-filter-section" class="hidden">
+                            <h4 class="font-medium text-slate-700 mb-2 text-sm">Filter by Collector</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="toggleCollectorFilter('All Collectors')" class="collector-filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition filter-active" data-collector="All Collectors">
+                                    All Collectors
+                                </button>
+                                <button onclick="toggleCollectorFilter('Ali Faheem')" class="collector-filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-collector="Ali Faheem">
+                                    <i class="fa-solid fa-user-tie mr-1"></i>Ali Faheem
+                                </button>
+                                <button onclick="toggleCollectorFilter('Faiq Ali')" class="collector-filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-collector="Faiq Ali">
+                                    <i class="fa-solid fa-user-tie mr-1"></i>Faiq Ali
+                                </button>
+                                <button onclick="toggleCollectorFilter('Saeed BAPAR')" class="collector-filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-collector="Saeed BAPAR">
+                                    <i class="fa-solid fa-user-tie mr-1"></i>Saeed BAPAR
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Clear Filters Button -->
+                        <div class="pt-2 border-t border-slate-100">
+                            <button onclick="clearAllFilters()" class="text-xs text-slate-500 hover:text-slate-700 flex items-center gap-1">
+                                <i class="fa-solid fa-broom"></i>
+                                Clear All Filters
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -515,7 +619,7 @@
         <!-- Footer -->
         <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500 shrink-0">
             <div class="max-w-6xl mx-auto">
-                <p class="mb-1">Indus Boys Hostel Management Portal v2.0 © 2025 • Secure Access Only</p>
+                <p class="mb-1">Indus Boys Hostel Management Portal v2.1 © 2025 • Secure Access Only</p>
                 <p class="text-slate-400">
                     <i class="fa-solid fa-location-dot mr-1"></i>
                     <span id="footer-address">Hostel Street, DHA Phase 1, Karachi</span>
@@ -527,12 +631,12 @@
         </footer>
     </div>
 
-    <!-- Profile Settings Modal -->
+    <!-- Profile Settings Modal (Scrollable) -->
     <div id="profile-modal" class="hidden fixed inset-0 z-50 modal-overlay">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeProfileSettings()"></div>
         <div class="absolute inset-0 flex items-center justify-center p-4">
             <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden">
-                <div class="p-6 border-b border-slate-100">
+                <div class="p-6 border-b border-slate-100 shrink-0">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-slate-800">Profile Settings</h3>
                         <button onclick="closeProfileSettings()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200 transition">
@@ -542,8 +646,8 @@
                     <p class="text-slate-500 text-sm mt-1">Customize your profile (saved locally)</p>
                 </div>
                 
-                <div class="p-6 overflow-y-auto">
-                    <form id="profile-form" onsubmit="saveProfileSettings(event)" class="space-y-5">
+                <div class="p-6 scrollable-profile">
+                    <form id="profile-form" onsubmit="saveProfileSettings(event)" class="space-y-6">
                         <!-- Profile Image -->
                         <div class="text-center">
                             <div class="profile-image-upload inline-block relative">
@@ -601,7 +705,7 @@
                         <div class="pt-4 border-t border-slate-100">
                             <h4 class="font-bold text-slate-700 mb-3">Preferences</h4>
                             
-                            <div class="space-y-3">
+                            <div class="space-y-4">
                                 <label class="flex items-center gap-3 cursor-pointer">
                                     <input type="checkbox" id="profile-notifications" class="w-4 h-4 text-indigo-600 rounded border-slate-300">
                                     <span class="text-sm text-slate-700">Enable email notifications</span>
@@ -637,6 +741,85 @@
         </div>
     </div>
 
+    <!-- Fee Collection Summary Modal -->
+    <div id="fee-summary-modal" class="hidden fixed inset-0 z-[60] modal-overlay">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeFeeSummary()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+                <div class="p-6 border-b border-slate-100 shrink-0">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800">Fee Collection Summary</h3>
+                            <p class="text-slate-500 text-sm mt-1">Analysis of fee collections by collectors</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="printFeeSummary()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition flex items-center gap-2">
+                                <i class="fa-solid fa-print"></i>
+                                <span class="hidden md:inline">Print</span>
+                            </button>
+                            <button onclick="exportFeeSummary()" class="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg font-medium transition flex items-center gap-2">
+                                <i class="fa-solid fa-download"></i>
+                                <span class="hidden md:inline">Export</span>
+                            </button>
+                            <button onclick="closeFeeSummary()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200 transition">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+                    <!-- Summary Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-indigo-50 p-4 rounded-xl">
+                            <div class="text-indigo-600 text-sm font-medium mb-1">Total Collected</div>
+                            <div class="text-2xl font-bold text-slate-800" id="summary-total">Rs 0</div>
+                            <div class="text-slate-500 text-xs mt-1">From all collectors</div>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-xl">
+                            <div class="text-green-600 text-sm font-medium mb-1">Collections Count</div>
+                            <div class="text-2xl font-bold text-slate-800" id="summary-count">0</div>
+                            <div class="text-slate-500 text-xs mt-1">Total fee transactions</div>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-xl">
+                            <div class="text-purple-600 text-sm font-medium mb-1">Period</div>
+                            <div class="text-2xl font-bold text-slate-800" id="summary-period">-</div>
+                            <div class="text-slate-500 text-xs mt-1">Reporting period</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Collector Breakdown -->
+                    <div class="mb-6">
+                        <h4 class="font-bold text-slate-700 mb-4">Collector Performance</h4>
+                        <div id="collector-breakdown" class="space-y-4">
+                            <!-- Collector cards will be generated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Student Breakdown -->
+                    <div class="mb-6">
+                        <h4 class="font-bold text-slate-700 mb-4">Student-wise Collections</h4>
+                        <div id="student-breakdown" class="space-y-3">
+                            <!-- Student details will be generated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Category Breakdown -->
+                    <div>
+                        <h4 class="font-bold text-slate-700 mb-4">Category-wise Breakdown</h4>
+                        <div id="category-breakdown" class="space-y-3">
+                            <!-- Category details will be generated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-4 border-t border-slate-100 bg-slate-50 text-center text-xs text-slate-500">
+                    <p>Generated on <span id="summary-generated-date"></span> • Indus Boys Hostel Management System</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ========== CONFIGURATION ==========
         const CONFIG = {
@@ -653,7 +836,8 @@
                 purple: { primary: '#7c3aed', dark: '#6d28d9' },
                 blue: { primary: '#3b82f6', dark: '#2563eb' },
                 orange: { primary: '#f59e0b', dark: '#d97706' }
-            }
+            },
+            COLLECTORS: ['Ali Faheem', 'Faiq Ali', 'Saeed BAPAR']
         };
 
         // ========== APP STATE ==========
@@ -661,22 +845,17 @@
         let userProfile = null;
         let jsonData = null;
         let currentTab = 'all';
-        let sessionActivity = {
-            loginCount: 0,
-            lastActivity: null,
-            currentSessionStart: null
+        let activeFilters = {
+            category: 'All',
+            collector: 'All Collectors'
         };
+        let feeTransactions = [];
 
         // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', async () => {
-            // Set current date
             updateCurrentDate();
-            
-            // Check for existing session
             await checkExistingSession();
-            
-            // Setup periodic data refresh
-            setInterval(updateDataUpdatedTime, 60000); // Update timestamp every minute
+            setInterval(updateDataUpdatedTime, 60000);
         });
 
         // ========== SESSION MANAGEMENT ==========
@@ -687,7 +866,6 @@
                     const session = JSON.parse(savedSession);
                     const now = Date.now();
                     
-                    // Check session expiry
                     if (session.expiresAt && now < session.expiresAt) {
                         currentUser = session.user;
                         await loadUserProfile();
@@ -695,7 +873,6 @@
                         trackSessionActivity();
                         return;
                     } else {
-                        // Session expired
                         localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_SESSION);
                     }
                 }
@@ -710,34 +887,17 @@
         function trackSessionActivity() {
             if (!currentUser) return;
             
-            // Load session activity
             const activityKey = `session_activity_${currentUser.username}`;
             const savedActivity = localStorage.getItem(activityKey);
-            if (savedActivity) {
-                sessionActivity = JSON.parse(savedActivity);
-            }
+            let sessionActivity = savedActivity ? JSON.parse(savedActivity) : { loginCount: 0 };
             
-            // Update activity
             sessionActivity.loginCount = (sessionActivity.loginCount || 0) + 1;
             sessionActivity.lastActivity = Date.now();
-            sessionActivity.currentSessionStart = Date.now();
             
-            // Save activity
             localStorage.setItem(activityKey, JSON.stringify(sessionActivity));
             
-            // Update UI
             if (document.getElementById('profile-sessions')) {
                 document.getElementById('profile-sessions').textContent = sessionActivity.loginCount;
-            }
-        }
-
-        function updateCurrentDate() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateString = now.toLocaleDateString('en-US', options);
-            const dateElement = document.getElementById('current-date');
-            if (dateElement) {
-                dateElement.textContent = dateString;
             }
         }
 
@@ -749,33 +909,28 @@
             const password = document.getElementById('login-password').value;
             const rememberMe = document.getElementById('remember-me').checked;
             
-            // Show loading state
             const loginBtn = document.getElementById('login-btn');
             const originalText = loginBtn.innerHTML;
             loginBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Authenticating...';
             loginBtn.disabled = true;
             
             try {
-                // Load credentials
                 const response = await fetch('profiles_data.json');
                 if (!response.ok) throw new Error('Network error');
                 
                 const credentials = await response.json();
-                
-                // Find user
                 const user = credentials.users.find(u => 
                     u.username.toLowerCase() === username.toLowerCase() && 
                     u.password === password
                 );
                 
                 if (user) {
-                    // Successful login
                     currentUser = {
                         username: user.username,
-                        defaultProfile: user.defaultProfile
+                        defaultProfile: user.defaultProfile,
+                        role: user.defaultProfile.role
                     };
                     
-                    // Create session
                     const session = {
                         user: currentUser,
                         expiresAt: rememberMe ? Date.now() + CONFIG.SESSION_TIMEOUT : null,
@@ -783,11 +938,7 @@
                     };
                     
                     localStorage.setItem(CONFIG.STORAGE_KEYS.USER_SESSION, JSON.stringify(session));
-                    
-                    // Load user profile
                     await loadUserProfile();
-                    
-                    // Show app
                     showApp();
                     trackSessionActivity();
                     
@@ -799,23 +950,9 @@
                 console.error('Login error:', error);
                 showLoginError('Network error. Please try again.');
             } finally {
-                // Reset button
                 loginBtn.innerHTML = originalText;
                 loginBtn.disabled = false;
             }
-        }
-
-        function showLoginError(message) {
-            const errorElement = document.getElementById('login-error');
-            const errorText = document.getElementById('error-text');
-            
-            errorText.textContent = message;
-            errorElement.classList.remove('hidden');
-            
-            // Shake animation
-            const form = document.getElementById('login-form');
-            form.classList.add('animate-shake');
-            setTimeout(() => form.classList.remove('animate-shake'), 500);
         }
 
         function handleLogout() {
@@ -831,22 +968,7 @@
             userProfile = null;
         }
 
-        function togglePassword() {
-            const passwordInput = document.getElementById('login-password');
-            const eyeIcon = passwordInput.nextElementSibling.querySelector('i');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
-            }
-        }
-
-        // ========== USER PROFILE MANAGEMENT ==========
+        // ========== PROFILE MANAGEMENT ==========
         async function loadUserProfile() {
             if (!currentUser) return;
             
@@ -856,44 +978,39 @@
             if (savedProfile) {
                 userProfile = JSON.parse(savedProfile);
             } else {
-                // Use default profile
                 userProfile = { ...currentUser.defaultProfile };
                 userProfile.isDefault = true;
                 userProfile.createdAt = Date.now();
-                
-                // Save default profile
                 localStorage.setItem(profileKey, JSON.stringify(userProfile));
             }
             
-            // Apply theme
-            applyTheme(userProfile.theme || 'indigo');
+            // Show admin features if user is admin
+            if (currentUser.role === 'System Admin' || currentUser.username === 'admin') {
+                document.getElementById('admin-features').classList.remove('hidden');
+            }
             
-            // Update UI
+            applyTheme(userProfile.theme || 'indigo');
             updateProfileUI();
         }
 
         function updateProfileUI() {
             if (!userProfile) return;
             
-            // Update header
             document.getElementById('welcome-user').textContent = userProfile.name;
             document.getElementById('user-role').textContent = userProfile.role;
             document.getElementById('dropdown-name').textContent = userProfile.name;
             document.getElementById('dropdown-role').textContent = userProfile.role;
             
-            // Update avatar
             const avatarElements = document.querySelectorAll('#user-avatar, #profile-avatar, #profile-preview');
             avatarElements.forEach(el => {
                 el.src = userProfile.image || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(userProfile.name) + '&background=4f46e5&color=fff&size=128';
             });
             
-            // Update profile card
             document.getElementById('profile-name').textContent = userProfile.name;
             document.getElementById('profile-role').textContent = userProfile.role;
             document.getElementById('profile-department').textContent = userProfile.department || 'Not specified';
             document.getElementById('profile-joined').textContent = new Date(userProfile.createdAt).getFullYear();
             
-            // Update footer
             document.getElementById('footer-address').textContent = jsonData?.metadata?.address || 'Hostel Street, DHA Phase 1, Karachi';
             document.getElementById('footer-contact').textContent = jsonData?.metadata?.contact || '0333-1234567';
         }
@@ -902,7 +1019,6 @@
         function openProfileSettings() {
             if (!userProfile) return;
             
-            // Populate form
             document.getElementById('profile-name-input').value = userProfile.name;
             document.getElementById('profile-role-input').value = userProfile.role;
             document.getElementById('profile-dept-input').value = userProfile.department || '';
@@ -912,7 +1028,6 @@
             document.getElementById('profile-notifications').checked = userProfile.notifications !== false;
             document.getElementById('profile-preview').src = userProfile.image;
             
-            // Set active theme
             const theme = userProfile.theme || 'indigo';
             document.querySelectorAll('.theme-option').forEach(btn => {
                 const btnTheme = btn.onclick.toString().match(/'([^']+)'/)[1];
@@ -920,7 +1035,6 @@
                 btn.classList.toggle('border-2', btnTheme !== theme);
             });
             
-            // Show modal
             document.getElementById('profile-modal').classList.remove('hidden');
             document.getElementById('profile-menu').classList.add('hidden');
         }
@@ -929,53 +1043,11 @@
             document.getElementById('profile-modal').classList.add('hidden');
         }
 
-        function previewProfileImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('profile-preview').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function selectTheme(theme) {
-            // Update UI
-            document.querySelectorAll('.theme-option').forEach(btn => {
-                const btnTheme = btn.onclick.toString().match(/'([^']+)'/)[1];
-                btn.classList.toggle('border-4', btnTheme === theme);
-                btn.classList.toggle('border-2', btnTheme !== theme);
-            });
-            
-            // Apply immediately for preview
-            applyTheme(theme);
-        }
-
-        function applyTheme(theme) {
-            const themeColors = CONFIG.THEMES[theme] || CONFIG.THEMES.indigo;
-            
-            // Update CSS variables
-            document.documentElement.style.setProperty('--primary-color', themeColors.primary);
-            document.documentElement.style.setProperty('--primary-dark', themeColors.dark);
-            
-            // Update header background
-            const header = document.querySelector('header');
-            if (header) {
-                header.style.background = `linear-gradient(135deg, ${themeColors.primary} 0%, ${themeColors.dark} 100%)`;
-            }
-            
-            // Update theme class
-            document.body.classList.remove('theme-indigo', 'theme-green', 'theme-purple', 'theme-blue', 'theme-orange');
-            document.body.classList.add(`theme-${theme}`);
-        }
-
         function saveProfileSettings(event) {
             event.preventDefault();
             
             if (!userProfile || !currentUser) return;
             
-            // Update profile
             userProfile.name = document.getElementById('profile-name-input').value;
             userProfile.role = document.getElementById('profile-role-input').value;
             userProfile.department = document.getElementById('profile-dept-input').value;
@@ -986,14 +1058,12 @@
             userProfile.updatedAt = Date.now();
             userProfile.isDefault = false;
             
-            // Get selected theme
             const activeThemeBtn = document.querySelector('.theme-option.border-4');
             if (activeThemeBtn) {
                 const theme = activeThemeBtn.onclick.toString().match(/'([^']+)'/)[1];
                 userProfile.theme = theme;
             }
             
-            // Handle profile image
             const imageInput = document.getElementById('profile-image-input');
             if (imageInput.files[0]) {
                 const reader = new FileReader();
@@ -1007,181 +1077,79 @@
             }
             
             function saveProfileToStorage() {
-                // Save to localStorage
                 const profileKey = CONFIG.STORAGE_KEYS.USER_PROFILE + currentUser.username;
                 localStorage.setItem(profileKey, JSON.stringify(userProfile));
-                
-                // Update UI
                 updateProfileUI();
                 applyTheme(userProfile.theme || 'indigo');
-                
-                // Show success message
                 alert('Profile updated successfully! Changes saved locally.');
                 closeProfileSettings();
             }
         }
 
-        function resetProfileToDefault() {
-            if (confirm('Reset profile to default settings? Your customizations will be lost.')) {
-                if (!currentUser) return;
-                
-                // Reset to default
-                userProfile = { ...currentUser.defaultProfile };
-                userProfile.isDefault = true;
-                userProfile.resetAt = Date.now();
-                
-                // Save
-                const profileKey = CONFIG.STORAGE_KEYS.USER_PROFILE + currentUser.username;
-                localStorage.setItem(profileKey, JSON.stringify(userProfile));
-                
-                // Update UI and close modal
-                updateProfileUI();
-                applyTheme(userProfile.theme || 'indigo');
-                closeProfileSettings();
-                
-                alert('Profile reset to default settings.');
-            }
-        }
-
-        // ========== UI CONTROLS ==========
-        function toggleProfileMenu() {
-            const menu = document.getElementById('profile-menu');
-            menu.classList.toggle('hidden');
-        }
-
-        function toggleThemeMenu() {
-            // For now, just open profile settings at theme section
-            openProfileSettings();
-            document.getElementById('profile-menu').classList.add('hidden');
-        }
-
-        function showLogin() {
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('app-container').classList.add('hidden');
-            document.getElementById('login-error').classList.add('hidden');
-            document.getElementById('login-form').reset();
-        }
-
-        function showApp() {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app-container').classList.remove('hidden');
-            loadData();
-        }
-
-        // ========== DATA MANAGEMENT ==========
-        async function loadData() {
-            try {
-                showLoading(true);
-                
-                const response = await fetch('data.json');
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                
-                jsonData = await response.json();
-                renderData();
-                showContent();
-                showLoading(false);
-                
-            } catch (error) {
-                console.error('Data loading error:', error);
-                showError('Failed to load data', error.message);
-            }
-        }
-
-        function useOfflineData() {
-            // Try to load from localStorage
-            const savedData = localStorage.getItem('offline_data');
-            if (savedData) {
-                jsonData = JSON.parse(savedData);
-                renderData();
-                showContent();
-                showLoading(false);
+        // ========== FILTER SYSTEM ==========
+        function toggleFilters() {
+            const panel = document.getElementById('filter-panel');
+            const toggleText = document.getElementById('filter-toggle-text');
+            
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                toggleText.textContent = 'Hide Filters';
             } else {
-                showError('No offline data available', 'Please check your internet connection.');
+                panel.classList.add('hidden');
+                toggleText.textContent = 'Show Filters';
             }
         }
 
-        function renderData() {
-            if (!jsonData) return;
+        function toggleCategoryFilter(category) {
+            // Update active filter
+            activeFilters.category = category;
             
-            // Save for offline use
-            localStorage.setItem('offline_data', JSON.stringify(jsonData));
+            // Update UI
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.category === category) {
+                    btn.classList.add('filter-active');
+                } else {
+                    btn.classList.remove('filter-active');
+                }
+            });
             
-            // Calculate totals
-            const feeTransactions = jsonData.transactions.filter(t => t.type === 'fee');
-            const expenseTransactions = jsonData.transactions.filter(t => t.type === 'expense');
-            
-            const totalIncome = feeTransactions.reduce((sum, t) => sum + t.amount, 0);
-            const totalExpense = expenseTransactions.reduce((sum, t) => sum + t.amount, 0);
-            const netBalance = totalIncome - totalExpense;
-            
-            // Update summary cards
-            document.getElementById('total-income').textContent = formatCurrency(totalIncome);
-            document.getElementById('total-expense').textContent = formatCurrency(totalExpense);
-            document.getElementById('net-balance').textContent = formatCurrency(netBalance);
-            document.getElementById('total-transactions').textContent = jsonData.transactions.length;
-            
-            // Update periods
-            document.getElementById('income-period').textContent = jsonData.metadata.reportPeriod;
-            document.getElementById('expense-period').textContent = jsonData.metadata.reportPeriod;
-            document.getElementById('balance-trend').textContent = netBalance >= 0 ? 'Positive' : 'Negative';
-            
-            // Update student count
-            const uniqueStudents = [...new Set(feeTransactions.map(t => t.studentName).filter(Boolean))];
-            document.getElementById('active-students').textContent = `${uniqueStudents.length} Students`;
-            
-            // Update insights
-            updateInsights(feeTransactions, expenseTransactions);
-            
-            // Render transactions
-            renderAllTransactions();
-            renderFeeTransactions();
-            renderExpenseTransactions();
-            
-            // Update data timestamp
-            updateDataUpdatedTime();
+            // Refresh transaction lists
+            refreshTransactionLists();
         }
 
-        function updateInsights(feeTransactions, expenseTransactions) {
-            // Find top student
-            const studentTotals = {};
-            feeTransactions.forEach(t => {
-                if (t.studentName) {
-                    studentTotals[t.studentName] = (studentTotals[t.studentName] || 0) + t.amount;
+        function toggleCollectorFilter(collector) {
+            activeFilters.collector = collector;
+            
+            document.querySelectorAll('.collector-filter-btn').forEach(btn => {
+                if (btn.dataset.collector === collector) {
+                    btn.classList.add('filter-active');
+                } else {
+                    btn.classList.remove('filter-active');
                 }
             });
             
-            let topStudent = '-';
-            let topStudentAmount = 0;
-            Object.entries(studentTotals).forEach(([student, amount]) => {
-                if (amount > topStudentAmount) {
-                    topStudentAmount = amount;
-                    topStudent = student;
-                }
-            });
-            
-            document.getElementById('insight-top-student').textContent = topStudent;
-            document.getElementById('insight-top-amount').textContent = formatCurrency(topStudentAmount);
-            
-            // Find largest category
-            const categoryTotals = {};
-            jsonData.transactions.forEach(t => {
-                categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
-            });
-            
-            let topCategory = '-';
-            let topCategoryAmount = 0;
-            Object.entries(categoryTotals).forEach(([category, amount]) => {
-                if (amount > topCategoryAmount) {
-                    topCategoryAmount = amount;
-                    topCategory = category;
-                }
-            });
-            
-            document.getElementById('insight-top-category').textContent = topCategory;
-            document.getElementById('insight-category-amount').textContent = formatCurrency(topCategoryAmount);
+            refreshTransactionLists();
         }
 
-        // ========== TRANSACTION RENDERING ==========
+        function clearAllFilters() {
+            activeFilters = {
+                category: 'All',
+                collector: 'All Collectors'
+            };
+            
+            // Reset UI
+            document.querySelectorAll('.filter-btn, .collector-filter-btn').forEach(btn => {
+                if (btn.dataset.category === 'All' || btn.dataset.collector === 'All Collectors') {
+                    btn.classList.add('filter-active');
+                } else {
+                    btn.classList.remove('filter-active');
+                }
+            });
+            
+            refreshTransactionLists();
+        }
+
+        // ========== TAB SYSTEM ==========
         function switchTab(tabName) {
             currentTab = tabName;
             
@@ -1202,48 +1170,435 @@
                 }
             });
             
+            // Show/hide collector filters
+            const collectorSection = document.getElementById('collector-filter-section');
+            if (tabName === 'fees') {
+                collectorSection.classList.remove('hidden');
+            } else {
+                collectorSection.classList.add('hidden');
+                activeFilters.collector = 'All Collectors';
+            }
+            
             // Show/hide content
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
             document.getElementById(`tab-${tabName}-content`).classList.add('active');
+            
+            refreshTransactionLists();
         }
 
-        function renderAllTransactions() {
-            renderTransactionList('all-transactions', jsonData.transactions, 'all-count');
+        // ========== DATA MANAGEMENT ==========
+        async function loadData() {
+            try {
+                showLoading(true);
+                
+                const response = await fetch('data.json');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                jsonData = await response.json();
+                
+                // Extract fee transactions for analysis
+                feeTransactions = jsonData.transactions.filter(t => t.type === 'fee');
+                
+                renderData();
+                showContent();
+                showLoading(false);
+                
+            } catch (error) {
+                console.error('Data loading error:', error);
+                showError('Failed to load data', error.message);
+            }
         }
 
-        function renderFeeTransactions() {
+        function renderData() {
+            if (!jsonData) return;
+            
+            localStorage.setItem('offline_data', JSON.stringify(jsonData));
+            
             const feeTransactions = jsonData.transactions.filter(t => t.type === 'fee');
-            renderTransactionList('fees-transactions', feeTransactions, 'fees-count');
-        }
-
-        function renderExpenseTransactions() {
             const expenseTransactions = jsonData.transactions.filter(t => t.type === 'expense');
-            renderTransactionList('expenses-transactions', expenseTransactions, 'expenses-count');
+            
+            const totalIncome = feeTransactions.reduce((sum, t) => sum + t.amount, 0);
+            const totalExpense = expenseTransactions.reduce((sum, t) => sum + t.amount, 0);
+            const netBalance = totalIncome - totalExpense;
+            
+            document.getElementById('total-income').textContent = formatCurrency(totalIncome);
+            document.getElementById('total-expense').textContent = formatCurrency(totalExpense);
+            document.getElementById('net-balance').textContent = formatCurrency(netBalance);
+            document.getElementById('total-transactions').textContent = jsonData.transactions.length;
+            
+            document.getElementById('income-period').textContent = jsonData.metadata.reportPeriod;
+            document.getElementById('expense-period').textContent = jsonData.metadata.reportPeriod;
+            document.getElementById('balance-trend').textContent = netBalance >= 0 ? 'Positive' : 'Negative';
+            
+            const uniqueStudents = [...new Set(feeTransactions.map(t => t.studentName).filter(Boolean))];
+            document.getElementById('active-students').textContent = `${uniqueStudents.length} Students`;
+            
+            updateInsights(feeTransactions, expenseTransactions);
+            refreshTransactionLists();
+            updateDataUpdatedTime();
         }
 
-        function renderTransactionList(containerId, transactions, countId) {
+        function refreshTransactionLists() {
+            if (!jsonData) return;
+            
+            let filteredTransactions = [...jsonData.transactions];
+            
+            // Apply category filter
+            if (activeFilters.category !== 'All') {
+                filteredTransactions = filteredTransactions.filter(t => t.category === activeFilters.category);
+            }
+            
+            // Apply tab filter
+            if (currentTab === 'fees') {
+                filteredTransactions = filteredTransactions.filter(t => t.type === 'fee');
+                
+                // Apply collector filter for fees tab
+                if (activeFilters.collector !== 'All Collectors') {
+                    filteredTransactions = filteredTransactions.filter(t => t.collectedBy === activeFilters.collector);
+                }
+            } else if (currentTab === 'expenses') {
+                filteredTransactions = filteredTransactions.filter(t => t.type === 'expense');
+            }
+            
+            // Update counts
+            const feeCount = jsonData.transactions.filter(t => t.type === 'fee').length;
+            const expenseCount = jsonData.transactions.filter(t => t.type === 'expense').length;
+            
+            document.getElementById('all-count').textContent = `${filteredTransactions.length} Records`;
+            document.getElementById('fees-count').textContent = `${feeCount} Records`;
+            document.getElementById('expenses-count').textContent = `${expenseCount} Records`;
+            
+            // Render appropriate list
+            if (currentTab === 'all') {
+                renderTransactionList('all-transactions', filteredTransactions);
+            } else if (currentTab === 'fees') {
+                const feeList = filteredTransactions.filter(t => t.type === 'fee');
+                renderTransactionList('fees-transactions', feeList);
+            } else if (currentTab === 'expenses') {
+                const expenseList = filteredTransactions.filter(t => t.type === 'expense');
+                renderTransactionList('expenses-transactions', expenseList);
+            }
+        }
+
+        function renderTransactionList(containerId, transactions) {
             const container = document.getElementById(containerId);
-            const countElement = document.getElementById(countId);
+            container.innerHTML = '';
             
             if (!transactions || transactions.length === 0) {
                 container.innerHTML = getEmptyStateHTML('No transactions found');
-                if (countElement) countElement.textContent = '0 Records';
                 return;
             }
             
-            // Sort by date (newest first)
             const sortedTransactions = [...transactions].sort((a, b) => 
                 new Date(b.date) - new Date(a.date)
             );
             
-            container.innerHTML = '';
-            if (countElement) countElement.textContent = `${sortedTransactions.length} Records`;
-            
             sortedTransactions.forEach(transaction => {
                 container.appendChild(createTransactionCard(transaction));
             });
+        }
+
+        // ========== FEE COLLECTION SUMMARY ==========
+        function generateFeeCollectionSummary() {
+            if (!jsonData || !feeTransactions.length) {
+                alert('No fee data available to generate summary.');
+                return;
+            }
+            
+            // Calculate totals
+            const totalCollected = feeTransactions.reduce((sum, t) => sum + t.amount, 0);
+            
+            // Group by collector
+            const collectorData = {};
+            CONFIG.COLLECTORS.forEach(collector => {
+                collectorData[collector] = {
+                    total: 0,
+                    transactions: [],
+                    students: {}
+                };
+            });
+            
+            feeTransactions.forEach(transaction => {
+                const collector = transaction.collectedBy;
+                if (collector && collectorData[collector]) {
+                    collectorData[collector].total += transaction.amount;
+                    collectorData[collector].transactions.push(transaction);
+                    
+                    // Group by student for this collector
+                    if (!collectorData[collector].students[transaction.studentName]) {
+                        collectorData[collector].students[transaction.studentName] = 0;
+                    }
+                    collectorData[collector].students[transaction.studentName] += transaction.amount;
+                }
+            });
+            
+            // Group by category
+            const categoryData = {};
+            feeTransactions.forEach(transaction => {
+                if (!categoryData[transaction.category]) {
+                    categoryData[transaction.category] = 0;
+                }
+                categoryData[transaction.category] += transaction.amount;
+            });
+            
+            // Update summary modal
+            document.getElementById('summary-total').textContent = formatCurrency(totalCollected);
+            document.getElementById('summary-count').textContent = feeTransactions.length;
+            document.getElementById('summary-period').textContent = jsonData.metadata.reportPeriod;
+            document.getElementById('summary-generated-date').textContent = new Date().toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Render collector breakdown
+            const collectorContainer = document.getElementById('collector-breakdown');
+            collectorContainer.innerHTML = '';
+            
+            CONFIG.COLLECTORS.forEach(collector => {
+                const data = collectorData[collector];
+                const card = document.createElement('div');
+                card.className = 'collection-summary-card bg-white p-4 rounded-xl border border-slate-100 shadow-sm';
+                card.style.borderLeftColor = getCollectorColor(collector);
+                
+                const studentCount = Object.keys(data.students).length;
+                const transactionCount = data.transactions.length;
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h5 class="font-bold text-slate-800">${collector}</h5>
+                            <div class="flex items-center gap-4 mt-2 text-sm text-slate-600">
+                                <span><i class="fa-solid fa-money-bill-wave mr-1"></i>${formatCurrency(data.total)}</span>
+                                <span><i class="fa-solid fa-receipt mr-1"></i>${transactionCount} transactions</span>
+                                <span><i class="fa-solid fa-user-graduate mr-1"></i>${studentCount} students</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-lg font-bold ${data.total > 0 ? 'text-green-600' : 'text-slate-400'}">
+                                ${formatCurrency(data.total)}
+                            </div>
+                            <div class="text-xs text-slate-500">Total Collected</div>
+                        </div>
+                    </div>
+                    ${studentCount > 0 ? `
+                    <div class="mt-3 pt-3 border-t border-slate-100">
+                        <div class="text-xs text-slate-500 mb-2">Student-wise Breakdown:</div>
+                        <div class="grid grid-cols-2 gap-2">
+                            ${Object.entries(data.students).map(([student, amount]) => `
+                                <div class="text-sm">
+                                    <span class="text-slate-700">${student}</span>
+                                    <span class="float-right font-medium">${formatCurrency(amount)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                `;
+                
+                collectorContainer.appendChild(card);
+            });
+            
+            // Render category breakdown
+            const categoryContainer = document.getElementById('category-breakdown');
+            categoryContainer.innerHTML = Object.entries(categoryData)
+                .sort(([,a], [,b]) => b - a)
+                .map(([category, amount]) => `
+                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+                        <span class="font-medium text-slate-700">${category}</span>
+                        <span class="font-bold text-green-600">${formatCurrency(amount)}</span>
+                    </div>
+                `).join('');
+            
+            // Show modal
+            document.getElementById('fee-summary-modal').classList.remove('hidden');
+            document.getElementById('profile-menu').classList.add('hidden');
+        }
+
+        function closeFeeSummary() {
+            document.getElementById('fee-summary-modal').classList.add('hidden');
+        }
+
+        function printFeeSummary() {
+            const printContent = document.getElementById('fee-summary-modal').innerHTML;
+            const originalContent = document.body.innerHTML;
+            
+            document.body.innerHTML = `
+                <div style="padding: 20px; font-family: Arial, sans-serif;">
+                    <h1 style="color: #4f46e5; border-bottom: 2px solid #4f46e5; padding-bottom: 10px;">
+                        Fee Collection Summary - Indus Boys Hostel
+                    </h1>
+                    <div style="margin-top: 20px;">
+                        ${document.getElementById('fee-summary-modal').querySelector('.modal-content').innerHTML}
+                    </div>
+                </div>
+            `;
+            
+            window.print();
+            document.body.innerHTML = originalContent;
+            location.reload();
+        }
+
+        function exportFeeSummary() {
+            if (!jsonData) return;
+            
+            const feeData = jsonData.transactions.filter(t => t.type === 'fee');
+            const summary = {
+                generated: new Date().toISOString(),
+                period: jsonData.metadata.reportPeriod,
+                totalCollected: feeData.reduce((sum, t) => sum + t.amount, 0),
+                totalTransactions: feeData.length,
+                collectors: {},
+                students: {},
+                categories: {}
+            };
+            
+            // Group data
+            feeData.forEach(transaction => {
+                // By collector
+                if (transaction.collectedBy) {
+                    if (!summary.collectors[transaction.collectedBy]) {
+                        summary.collectors[transaction.collectedBy] = {
+                            total: 0,
+                            transactions: []
+                        };
+                    }
+                    summary.collectors[transaction.collectedBy].total += transaction.amount;
+                    summary.collectors[transaction.collectedBy].transactions.push({
+                        student: transaction.studentName,
+                        amount: transaction.amount,
+                        date: transaction.date,
+                        category: transaction.category
+                    });
+                }
+                
+                // By student
+                if (transaction.studentName) {
+                    if (!summary.students[transaction.studentName]) {
+                        summary.students[transaction.studentName] = 0;
+                    }
+                    summary.students[transaction.studentName] += transaction.amount;
+                }
+                
+                // By category
+                if (!summary.categories[transaction.category]) {
+                    summary.categories[transaction.category] = 0;
+                }
+                summary.categories[transaction.category] += transaction.amount;
+            });
+            
+            // Create CSV
+            let csv = 'Fee Collection Summary\n\n';
+            csv += 'Period,Total Collected,Total Transactions\n';
+            csv += `${summary.period},${summary.totalCollected},${summary.totalTransactions}\n\n`;
+            
+            csv += 'Collector Breakdown\n';
+            csv += 'Collector,Total Collected,Transaction Count\n';
+            Object.entries(summary.collectors).forEach(([collector, data]) => {
+                csv += `${collector},${data.total},${data.transactions.length}\n`;
+            });
+            
+            csv += '\nStudent-wise Collections\n';
+            csv += 'Student,Total Paid\n';
+            Object.entries(summary.students).forEach(([student, amount]) => {
+                csv += `${student},${amount}\n`;
+            });
+            
+            csv += '\nCategory-wise Breakdown\n';
+            csv += 'Category,Total Amount\n';
+            Object.entries(summary.categories).forEach(([category, amount]) => {
+                csv += `${category},${amount}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Fee_Collection_Summary_${jsonData.metadata.reportPeriod.replace(' ', '_')}.csv`;
+            a.click();
+        }
+
+        // ========== UTILITY FUNCTIONS ==========
+        function getCollectorColor(collector) {
+            const colors = {
+                'Ali Faheem': '#4f46e5',
+                'Faiq Ali': '#10b981',
+                'Saeed BAPAR': '#7c3aed'
+            };
+            return colors[collector] || '#6b7280';
+        }
+
+        function updateCurrentDate() {
+            const now = new Date();
+            const dateString = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            const dateElement = document.getElementById('current-date');
+            if (dateElement) {
+                dateElement.textContent = dateString;
+            }
+        }
+
+        function applyTheme(theme) {
+            const themeColors = CONFIG.THEMES[theme] || CONFIG.THEMES.indigo;
+            
+            document.documentElement.style.setProperty('--primary-color', themeColors.primary);
+            document.documentElement.style.setProperty('--primary-dark', themeColors.dark);
+            
+            const header = document.querySelector('header');
+            if (header) {
+                header.style.background = `linear-gradient(135deg, ${themeColors.primary} 0%, ${themeColors.dark} 100%)`;
+            }
+            
+            document.body.classList.remove('theme-indigo', 'theme-green', 'theme-purple', 'theme-blue', 'theme-orange');
+            document.body.classList.add(`theme-${theme}`);
+        }
+
+        function selectTheme(theme) {
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                const btnTheme = btn.onclick.toString().match(/'([^']+)'/)[1];
+                btn.classList.toggle('border-4', btnTheme === theme);
+                btn.classList.toggle('border-2', btnTheme !== theme);
+            });
+            applyTheme(theme);
+        }
+
+        function updateDataUpdatedTime() {
+            const element = document.getElementById('data-updated');
+            if (element) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                element.textContent = `Today at ${timeString}`;
+            }
+        }
+
+        function formatCurrency(amount) {
+            return `Rs ${amount.toLocaleString()}`;
+        }
+
+        function formatDate(dateString, format = 'full') {
+            const date = new Date(dateString);
+            if (format === 'short') {
+                return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            }
+            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function getEmptyStateHTML(message) {
+            return `
+                <div class="flex flex-col items-center justify-center py-12 opacity-60">
+                    <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-3">
+                        <i class="fa-solid fa-clipboard-list text-2xl text-slate-300"></i>
+                    </div>
+                    <p class="text-sm text-slate-400">${message}</p>
+                </div>`;
         }
 
         function createTransactionCard(transaction) {
@@ -1254,6 +1609,16 @@
             
             const card = document.createElement('div');
             card.className = 'transaction-card bg-white p-4 rounded-2xl shadow-sm border border-slate-100';
+            
+            let collectorInfo = '';
+            if (isFee && transaction.collectedBy) {
+                collectorInfo = `
+                    <div class="text-xs text-slate-500 mt-1">
+                        <i class="fa-solid fa-user-tie mr-1"></i>
+                        Collected by: ${transaction.collectedBy}
+                    </div>
+                `;
+            }
             
             card.innerHTML = `
                 <div class="flex items-center justify-between">
@@ -1276,6 +1641,7 @@
                                     `<span><i class="fa-solid fa-store mr-1"></i>${transaction.vendor || transaction.category}</span>`
                                 }
                             </div>
+                            ${collectorInfo}
                             ${transaction.receiptNo || transaction.invoiceNo ? 
                                 `<div class="text-xs text-slate-500 mt-1">
                                     <i class="fa-solid fa-hashtag mr-1"></i>
@@ -1303,7 +1669,6 @@
             return card;
         }
 
-        // ========== UTILITY FUNCTIONS ==========
         const FEE_CATEGORIES = {
             'Monthly Fee': { icon: 'fa-calendar-check', color: 'bg-green-100 text-green-600' },
             'Admission': { icon: 'fa-id-card', color: 'bg-teal-100 text-teal-600' },
@@ -1320,61 +1685,6 @@
             'Daily Expenses': { icon: 'fa-shopping-bag', color: 'bg-fuchsia-100 text-fuchsia-600' },
             'Others': { icon: 'fa-box-open', color: 'bg-gray-100 text-gray-600' }
         };
-
-        function formatCurrency(amount) {
-            return `Rs ${amount.toLocaleString()}`;
-        }
-
-        function formatDate(dateString, format = 'full') {
-            const date = new Date(dateString);
-            if (format === 'short') {
-                return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-            }
-            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-        }
-
-        function getEmptyStateHTML(message) {
-            return `
-                <div class="flex flex-col items-center justify-center py-12 opacity-60">
-                    <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-3">
-                        <i class="fa-solid fa-clipboard-list text-2xl text-slate-300"></i>
-                    </div>
-                    <p class="text-sm text-slate-400">${message}</p>
-                </div>`;
-        }
-
-        function updateDataUpdatedTime() {
-            const element = document.getElementById('data-updated');
-            if (element) {
-                const now = new Date();
-                const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                element.textContent = `Today at ${timeString}`;
-            }
-        }
-
-        function refreshData() {
-            loadData();
-        }
-
-        function showLoading(show) {
-            const loadingElement = document.getElementById('loading-state');
-            if (loadingElement) {
-                loadingElement.classList.toggle('hidden', !show);
-            }
-        }
-
-        function showContent() {
-            document.getElementById('content-area').classList.remove('hidden');
-            document.getElementById('loading-state').classList.add('hidden');
-            document.getElementById('error-state').classList.add('hidden');
-        }
-
-        function showError(title, message) {
-            document.getElementById('error-message').textContent = message;
-            document.getElementById('loading-state').classList.add('hidden');
-            document.getElementById('content-area').classList.add('hidden');
-            document.getElementById('error-state').classList.remove('hidden');
-        }
 
         // Initialize
         switchTab('all');
