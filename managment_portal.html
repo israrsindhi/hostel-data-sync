@@ -174,6 +174,26 @@
         .tab-content.active {
             display: block;
         }
+        
+        .student-status-badge {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-paid { background-color: #d1fae5; color: #065f46; }
+        .status-pending { background-color: #fee2e2; color: #991b1b; }
+        .status-partial { background-color: #fef3c7; color: #92400e; }
+        
+        .student-card {
+            transition: all 0.2s ease;
+        }
+        
+        .student-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
     </style>
 </head>
 <body class="text-slate-800">
@@ -185,7 +205,7 @@
                     <i class="fa-solid fa-building-columns text-3xl"></i>
                 </div>
                 <h1 class="text-2xl font-bold">Indus Boys Hostel</h1>
-                <p class="text-indigo-200 text-sm mt-1">Management Portal v2.1</p>
+                <p class="text-indigo-200 text-sm mt-1">Management Portal v2.2</p>
             </div>
             
             <div class="p-8">
@@ -265,8 +285,8 @@
                         <i class="fa-solid fa-building-columns text-lg"></i>
                     </div>
                     <div>
-                        <h1 class="text-lg font-bold">Indus Boys Hostel</h1>
-                        <p class="text-indigo-200 text-xs">Management Portal v2.1</p>
+                        <h1 class="text-lg font-bold" id="header-hostel-name">Indus Boys Hostel</h1>
+                        <p class="text-indigo-200 text-xs">Management Portal v2.2</p>
                     </div>
                 </div>
                 
@@ -408,236 +428,183 @@
                     <div class="stat-card bg-gradient-to-br from-purple-500 to-purple-600 text-white p-5 rounded-2xl shadow-lg">
                         <div class="flex items-center justify-between">
                             <div>
-                                <div class="text-2xl font-bold" id="total-transactions">0</div>
-                                <div class="text-purple-100 text-sm mt-1">Transactions</div>
+                                <div class="text-2xl font-bold" id="total-students">0</div>
+                                <div class="text-purple-100 text-sm mt-1">Total Students</div>
                             </div>
                             <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                                <i class="fa-solid fa-receipt text-xl"></i>
+                                <i class="fa-solid fa-users text-xl"></i>
                             </div>
                         </div>
                         <div class="mt-3 text-xs text-purple-200">
-                            <i class="fa-solid fa-users mr-1"></i>
-                            <span id="active-students">0 Students</span>
+                            <i class="fa-solid fa-bed mr-1"></i>
+                            <span id="room-distribution">0 Rooms</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Filter Section -->
-                <div id="filter-section" class="px-4 mb-4">
-                    <!-- Filter Toggle -->
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-slate-700">Filters</h3>
-                        <button onclick="toggleFilters()" class="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-800">
-                            <i class="fa-solid fa-filter"></i>
-                            <span id="filter-toggle-text">Show Filters</span>
-                        </button>
-                    </div>
-                    
-                    <!-- Filter Panel -->
-                    <div id="filter-panel" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-4 space-y-4">
-                        <!-- Category Filters -->
-                        <div>
-                            <h4 class="font-medium text-slate-700 mb-2 text-sm">Filter by Category</h4>
-                            <div class="flex flex-wrap gap-2">
-                                <button onclick="toggleCategoryFilter('All')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition filter-active" data-category="All">
-                                    All Categories
-                                </button>
-                                <!-- Fee Categories -->
-                                <button onclick="toggleCategoryFilter('Monthly Fee')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Monthly Fee" data-type="fee">
-                                    <i class="fa-solid fa-calendar-check mr-1"></i>Monthly Fee
-                                </button>
-                                <button onclick="toggleCategoryFilter('Security')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Security" data-type="fee">
-                                    <i class="fa-solid fa-shield-halved mr-1"></i>Security
-                                </button>
-                                <button onclick="toggleCategoryFilter('Admission')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Admission" data-type="fee">
-                                    <i class="fa-solid fa-id-card mr-1"></i>Admission
-                                </button>
-                                <!-- Expense Categories -->
-                                <button onclick="toggleCategoryFilter('Food')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Food" data-type="expense">
-                                    <i class="fa-solid fa-utensils mr-1"></i>Food
-                                </button>
-                                <button onclick="toggleCategoryFilter('Utilities')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Utilities" data-type="expense">
-                                    <i class="fa-solid fa-bolt mr-1"></i>Utilities
-                                </button>
-                                <button onclick="toggleCategoryFilter('Staff Salary')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Staff Salary" data-type="expense">
-                                    <i class="fa-solid fa-users mr-1"></i>Staff Salary
-                                </button>
-                                <button onclick="toggleCategoryFilter('Transport')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Transport" data-type="expense">
-                                    <i class="fa-solid fa-bus mr-1"></i>Transport
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Collector Filters (Only in Fees Tab) -->
-                        <div id="collector-filter-section" class="hidden">
-                            <h4 class="font-medium text-slate-700 mb-2 text-sm">Filter by Collector</h4>
-                            <div class="flex flex-wrap gap-2">
-                                <button onclick="toggleCollectorFilter('All Collectors')" class="collector-filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition filter-active" data-collector="All Collectors">
-                                    All Collectors
-                                </button>
-                                <button onclick="toggleCollectorFilter('Ali Faheem')" class="collector-filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-collector="Ali Faheem">
-                                    <i class="fa-solid fa-user-tie mr-1"></i>Ali Faheem
-                                </button>
-                                <button onclick="toggleCollectorFilter('Faiq Ali')" class="collector-filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-collector="Faiq Ali">
-                                    <i class="fa-solid fa-user-tie mr-1"></i>Faiq Ali
-                                </button>
-                                <button onclick="toggleCollectorFilter('Saeed BAPAR')" class="collector-filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-collector="Saeed BAPAR">
-                                    <i class="fa-solid fa-user-tie mr-1"></i>Saeed BAPAR
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Clear Filters Button -->
-                        <div class="pt-2 border-t border-slate-100">
-                            <button onclick="clearAllFilters()" class="text-xs text-slate-500 hover:text-slate-700 flex items-center gap-1">
-                                <i class="fa-solid fa-broom"></i>
-                                Clear All Filters
+                <!-- Tabs Navigation -->
+                <div class="px-4">
+                    <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex bg-slate-100 rounded-xl p-1 relative">
+                            <div id="tab-indicator" class="tab-indicator"></div>
+                            
+                            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-white">
+                                <i class="fa-solid fa-gauge mr-2"></i>Dashboard
+                            </button>
+                            
+                            <button onclick="switchTab('students')" id="tab-students" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
+                                <i class="fa-solid fa-user-graduate mr-2"></i>Students
+                            </button>
+                            
+                            <button onclick="switchTab('transactions')" id="tab-transactions" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
+                                <i class="fa-solid fa-receipt mr-2"></i>Transactions
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Main Content Area -->
-                <div class="p-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Left Column - Tabs & Transactions -->
-                    <div class="lg:col-span-2 space-y-6">
-                        <!-- Tabs Navigation -->
-                        <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
-                            <div class="flex bg-slate-100 rounded-xl p-1 relative">
-                                <div id="tab-indicator" class="tab-indicator"></div>
-                                
-                                <button onclick="switchTab('all')" id="tab-all" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-white">
-                                    <i class="fa-solid fa-list mr-2"></i>All
-                                </button>
-                                
-                                <button onclick="switchTab('fees')" id="tab-fees" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
-                                    <i class="fa-solid fa-money-bill-wave mr-2"></i>Fees
-                                </button>
-                                
-                                <button onclick="switchTab('expenses')" id="tab-expenses" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
-                                    <i class="fa-solid fa-cart-shopping mr-2"></i>Expenses
-                                </button>
+                <!-- Dashboard Tab Content -->
+                <div id="tab-dashboard-content" class="tab-content active p-4 space-y-6">
+                    <!-- Fee Status Overview -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-slate-800">Fee Status Overview</h3>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
+                                    Current Month: <span id="current-month-display">December</span>
+                                </span>
                             </div>
                         </div>
-
-                        <!-- Transaction Lists -->
-                        <div>
-                            <!-- All Transactions Tab -->
-                            <div id="tab-all-content" class="tab-content active space-y-3">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h2 class="font-bold text-slate-800 text-lg">Recent Transactions</h2>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xs text-slate-400 font-medium" id="all-count">0 Records</span>
-                                        <button onclick="refreshData()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition">
-                                            <i class="fa-solid fa-rotate text-sm text-slate-600"></i>
-                                        </button>
-                                    </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="text-center p-4 bg-green-50 rounded-xl">
+                                <div class="text-2xl font-bold text-green-600" id="paid-count">0</div>
+                                <div class="text-sm text-green-700 mt-1">Paid Students</div>
+                                <div class="text-xs text-green-500 mt-2">
+                                    <i class="fa-solid fa-check-circle"></i> Up to date
                                 </div>
-                                <div id="all-transactions" class="space-y-3"></div>
                             </div>
-
-                            <!-- Fees Tab -->
-                            <div id="tab-fees-content" class="tab-content space-y-3">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h2 class="font-bold text-slate-800 text-lg">Fee Collections</h2>
-                                    <span class="text-xs text-slate-400 font-medium" id="fees-count">0 Records</span>
+                            
+                            <div class="text-center p-4 bg-red-50 rounded-xl">
+                                <div class="text-2xl font-bold text-red-600" id="pending-count">0</div>
+                                <div class="text-sm text-red-700 mt-1">Pending Students</div>
+                                <div class="text-xs text-red-500 mt-2">
+                                    <i class="fa-solid fa-clock"></i> Needs attention
                                 </div>
-                                <div id="fees-transactions" class="space-y-3"></div>
                             </div>
-
-                            <!-- Expenses Tab -->
-                            <div id="tab-expenses-content" class="tab-content space-y-3">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h2 class="font-bold text-slate-800 text-lg">Expense Records</h2>
-                                    <span class="text-xs text-slate-400 font-medium" id="expenses-count">0 Records</span>
+                            
+                            <div class="text-center p-4 bg-blue-50 rounded-xl">
+                                <div class="text-2xl font-bold text-blue-600" id="total-collected">Rs 0</div>
+                                <div class="text-sm text-blue-700 mt-1">Total Collected</div>
+                                <div class="text-xs text-blue-500 mt-2">
+                                    <i class="fa-solid fa-money-bill-wave"></i> This month
                                 </div>
-                                <div id="expenses-transactions" class="space-y-3"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Right Column - Profile & Insights -->
-                    <div class="space-y-6">
-                        <!-- Profile Card -->
-                        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-bold text-slate-800">Your Profile</h3>
-                                <button onclick="openProfileSettings()" class="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
-                                    <i class="fa-solid fa-pen mr-1"></i>Edit
+                    <!-- Recent Transactions -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-slate-800">Recent Transactions</h3>
+                            <span class="text-xs text-slate-400 font-medium" id="recent-transactions-count">0 Records</span>
+                        </div>
+                        <div id="recent-transactions" class="space-y-3"></div>
+                    </div>
+                </div>
+
+                <!-- Students Tab Content -->
+                <div id="tab-students-content" class="tab-content p-4 space-y-6">
+                    <!-- Students Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Student cards will be generated here -->
+                    </div>
+                </div>
+
+                <!-- Transactions Tab Content -->
+                <div id="tab-transactions-content" class="tab-content p-4 space-y-6">
+                    <!-- Filter Section -->
+                    <div id="filter-section" class="mb-4">
+                        <!-- Filter Toggle -->
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-slate-700">Transaction Filters</h3>
+                            <button onclick="toggleFilters()" class="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-800">
+                                <i class="fa-solid fa-filter"></i>
+                                <span id="filter-toggle-text">Show Filters</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Filter Panel -->
+                        <div id="filter-panel" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-4 space-y-4 mb-6">
+                            <!-- Category Filters -->
+                            <div>
+                                <h4 class="font-medium text-slate-700 mb-2 text-sm">Filter by Category</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="toggleCategoryFilter('All')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition filter-active" data-category="All">
+                                        All Categories
+                                    </button>
+                                    <!-- Fee Categories -->
+                                    <button onclick="toggleCategoryFilter('Monthly Fee')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Monthly Fee" data-type="fee">
+                                        <i class="fa-solid fa-calendar-check mr-1"></i>Monthly Fee
+                                    </button>
+                                    <button onclick="toggleCategoryFilter('Security')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Security" data-type="fee">
+                                        <i class="fa-solid fa-shield-halved mr-1"></i>Security
+                                    </button>
+                                    <button onclick="toggleCategoryFilter('Admission')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Admission" data-type="fee">
+                                        <i class="fa-solid fa-id-card mr-1"></i>Admission
+                                    </button>
+                                    <!-- Expense Categories -->
+                                    <button onclick="toggleCategoryFilter('Food')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Food" data-type="expense">
+                                        <i class="fa-solid fa-utensils mr-1"></i>Food
+                                    </button>
+                                    <button onclick="toggleCategoryFilter('Utilities')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Utilities" data-type="expense">
+                                        <i class="fa-solid fa-bolt mr-1"></i>Utilities
+                                    </button>
+                                    <button onclick="toggleCategoryFilter('Staff Salary')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Staff Salary" data-type="expense">
+                                        <i class="fa-solid fa-users mr-1"></i>Staff Salary
+                                    </button>
+                                    <button onclick="toggleCategoryFilter('Transport')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-category="Transport" data-type="expense">
+                                        <i class="fa-solid fa-bus mr-1"></i>Transport
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Collector Filters -->
+                            <div>
+                                <h4 class="font-medium text-slate-700 mb-2 text-sm">Filter by Collector</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="toggleCollectorFilter('All Collectors')" class="collector-filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition filter-active" data-collector="All Collectors">
+                                        All Collectors
+                                    </button>
+                                    <button onclick="toggleCollectorFilter('Faiq Ali')" class="collector-filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-collector="Faiq Ali">
+                                        <i class="fa-solid fa-user-tie mr-1"></i>Faiq Ali
+                                    </button>
+                                    <button onclick="toggleCollectorFilter('Ali Faheem')" class="collector-filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-collector="Ali Faheem">
+                                        <i class="fa-solid fa-user-tie mr-1"></i>Ali Faheem
+                                    </button>
+                                    <button onclick="toggleCollectorFilter('Saeed Bapar')" class="collector-filter-btn px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" data-collector="Saeed Bapar">
+                                        <i class="fa-solid fa-user-tie mr-1"></i>Saeed Bapar
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Clear Filters Button -->
+                            <div class="pt-2 border-t border-slate-100">
+                                <button onclick="clearAllFilters()" class="text-xs text-slate-500 hover:text-slate-700 flex items-center gap-1">
+                                    <i class="fa-solid fa-broom"></i>
+                                    Clear All Filters
                                 </button>
                             </div>
-                            
-                            <div class="flex items-center gap-4">
-                                <div class="relative">
-                                    <img id="profile-avatar" src="" alt="Profile" class="w-16 h-16 rounded-full object-cover border-2 border-slate-200">
-                                    <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-green-500 border-2 border-white flex items-center justify-center">
-                                        <i class="fa-solid fa-check text-xs text-white"></i>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800" id="profile-name">Loading...</h4>
-                                    <p class="text-slate-500 text-sm" id="profile-role">Role</p>
-                                    <p class="text-slate-400 text-xs mt-1" id="profile-department">Department</p>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4 grid grid-cols-2 gap-3">
-                                <div class="text-center p-3 bg-slate-50 rounded-lg">
-                                    <div class="text-slate-500 text-xs">Joined</div>
-                                    <div class="font-medium text-sm mt-1" id="profile-joined">2025</div>
-                                </div>
-                                <div class="text-center p-3 bg-slate-50 rounded-lg">
-                                    <div class="text-slate-500 text-xs">Sessions</div>
-                                    <div class="font-medium text-sm mt-1" id="profile-sessions">0</div>
-                                </div>
-                            </div>
                         </div>
+                    </div>
 
-                        <!-- Quick Insights -->
-                        <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-2xl p-5">
-                            <h3 class="font-bold text-lg mb-4">Quick Insights</h3>
-                            
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                                            <i class="fa-solid fa-user-graduate"></i>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm">Top Student</div>
-                                            <div class="font-bold" id="insight-top-student">-</div>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-2xl font-bold text-green-400" id="insight-top-amount">Rs 0</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                                            <i class="fa-solid fa-chart-pie"></i>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm">Largest Category</div>
-                                            <div class="font-bold" id="insight-top-category">-</div>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-2xl font-bold text-blue-400" id="insight-category-amount">Rs 0</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="pt-3 border-t border-white/10">
-                                    <div class="flex items-center gap-2 text-sm">
-                                        <i class="fa-solid fa-circle-info"></i>
-                                        <span>Data updated: </span>
-                                        <span class="font-medium" id="data-updated">Just now</span>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- Transaction List -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-slate-800">All Transactions</h3>
+                            <span class="text-xs text-slate-400 font-medium" id="all-transactions-count">0 Records</span>
                         </div>
+                        <div id="all-transactions" class="space-y-3"></div>
                     </div>
                 </div>
             </div>
@@ -646,7 +613,7 @@
         <!-- Footer -->
         <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500 shrink-0">
             <div class="max-w-6xl mx-auto">
-                <p class="mb-1">Indus Boys Hostel Management Portal v2.1 © 2025 • Secure Access Only</p>
+                <p class="mb-1">Indus Boys Hostel Management Portal v2.2 © 2025 • Secure Access Only</p>
                 <p class="text-slate-400">
                     <i class="fa-solid fa-location-dot mr-1"></i>
                     <span id="footer-address">Hostel Street, DHA Phase 1, Karachi</span>
@@ -863,20 +830,20 @@
                 purple: { primary: '#7c3aed', dark: '#6d28d9' },
                 blue: { primary: '#3b82f6', dark: '#2563eb' },
                 orange: { primary: '#f59e0b', dark: '#d97706' }
-            },
-            COLLECTORS: ['Ali Faheem', 'Faiq Ali', 'Saeed BAPAR']
+            }
         };
 
         // ========== APP STATE ==========
         let currentUser = null;
         let userProfile = null;
         let jsonData = null;
-        let currentTab = 'all';
+        let currentTab = 'dashboard';
         let activeFilters = {
             category: 'All',
             collector: 'All Collectors'
         };
         let feeTransactions = [];
+        let expenseTransactions = [];
 
         // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', async () => {
@@ -931,10 +898,6 @@
             sessionActivity.lastActivity = Date.now();
             
             localStorage.setItem(activityKey, JSON.stringify(sessionActivity));
-            
-            if (document.getElementById('profile-sessions')) {
-                document.getElementById('profile-sessions').textContent = sessionActivity.loginCount;
-            }
         }
 
         // ========== LOGIN / LOGOUT ==========
@@ -1110,25 +1073,13 @@
             
             // Update avatar
             const avatarUrl = userProfile.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile.name || userProfile.username)}&background=4f46e5&color=fff&size=128`;
-            const avatarElements = document.querySelectorAll('#user-avatar, #profile-avatar, #profile-preview');
+            const avatarElements = document.querySelectorAll('#user-avatar, #profile-preview');
             avatarElements.forEach(el => {
                 el.src = avatarUrl;
                 el.onerror = function() {
                     this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile.name || userProfile.username)}&background=4f46e5&color=fff&size=128`;
                 };
             });
-            
-            // Update profile card
-            document.getElementById('profile-name').textContent = userProfile.name || userProfile.username;
-            document.getElementById('profile-role').textContent = userProfile.role || 'User';
-            document.getElementById('profile-department').textContent = userProfile.department || 'Not specified';
-            document.getElementById('profile-joined').textContent = new Date(userProfile.createdAt).getFullYear();
-            
-            // Update footer if data is loaded
-            if (jsonData?.metadata) {
-                document.getElementById('footer-address').textContent = jsonData.metadata.address || 'Hostel Street, DHA Phase 1, Karachi';
-                document.getElementById('footer-contact').textContent = jsonData.metadata.contact || '0333-1234567';
-            }
         }
 
         // ========== UI CONTROLS ==========
@@ -1300,6 +1251,47 @@
             }
         }
 
+        // ========== TAB SYSTEM ==========
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tab indicator
+            const positions = { 'dashboard': 'translateX(0)', 'students': 'translateX(100%)', 'transactions': 'translateX(200%)' };
+            const indicator = document.getElementById('tab-indicator');
+            if (indicator) {
+                indicator.style.transform = positions[tabName];
+            }
+            
+            // Update tab buttons
+            const tabs = ['dashboard', 'students', 'transactions'];
+            tabs.forEach(tab => {
+                const btn = document.getElementById(`tab-${tab}`);
+                if (btn) {
+                    if (tab === tabName) {
+                        btn.classList.remove('text-slate-500');
+                        btn.classList.add('text-white');
+                    } else {
+                        btn.classList.remove('text-white');
+                        btn.classList.add('text-slate-500');
+                    }
+                }
+            });
+            
+            // Show/hide content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            const activeTab = document.getElementById(`tab-${tabName}-content`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+            
+            // Refresh data for the tab
+            if (jsonData) {
+                refreshTabContent();
+            }
+        }
+
         // ========== FILTER SYSTEM ==========
         function toggleFilters() {
             const panel = document.getElementById('filter-panel');
@@ -1328,7 +1320,7 @@
             });
             
             // Refresh transaction lists
-            refreshTransactionLists();
+            refreshTransactionList();
         }
 
         function toggleCollectorFilter(collector) {
@@ -1342,7 +1334,7 @@
                 }
             });
             
-            refreshTransactionLists();
+            refreshTransactionList();
         }
 
         function clearAllFilters() {
@@ -1360,67 +1352,7 @@
                 }
             });
             
-            refreshTransactionLists();
-        }
-
-        // ========== TAB SYSTEM ==========
-        function switchTab(tabName) {
-            currentTab = tabName;
-            
-            // Update tab indicator
-            const positions = { 'all': 'translateX(0)', 'fees': 'translateX(100%)', 'expenses': 'translateX(200%)' };
-            const indicator = document.getElementById('tab-indicator');
-            if (indicator) {
-                indicator.style.transform = positions[tabName];
-            }
-            
-            // Update tab buttons
-            const tabs = ['all', 'fees', 'expenses'];
-            tabs.forEach(tab => {
-                const btn = document.getElementById(`tab-${tab}`);
-                if (btn) {
-                    if (tab === tabName) {
-                        btn.classList.remove('text-slate-500');
-                        btn.classList.add('text-white');
-                    } else {
-                        btn.classList.remove('text-white');
-                        btn.classList.add('text-slate-500');
-                    }
-                }
-            });
-            
-            // Show/hide collector filters
-            const collectorSection = document.getElementById('collector-filter-section');
-            if (collectorSection) {
-                if (tabName === 'fees') {
-                    collectorSection.classList.remove('hidden');
-                } else {
-                    collectorSection.classList.add('hidden');
-                    activeFilters.collector = 'All Collectors';
-                }
-            }
-            
-            // Show/hide content
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            const activeTab = document.getElementById(`tab-${tabName}-content`);
-            if (activeTab) {
-                activeTab.classList.add('active');
-            }
-            
-            // Reset collector filter UI when switching tabs
-            if (tabName !== 'fees') {
-                document.querySelectorAll('.collector-filter-btn').forEach(btn => {
-                    if (btn.dataset.collector === 'All Collectors') {
-                        btn.classList.add('filter-active');
-                    } else {
-                        btn.classList.remove('filter-active');
-                    }
-                });
-            }
-            
-            refreshTransactionLists();
+            refreshTransactionList();
         }
 
         // ========== DATA MANAGEMENT ==========
@@ -1433,8 +1365,9 @@
                 
                 jsonData = await response.json();
                 
-                // Extract fee transactions for analysis
+                // Extract fee and expense transactions
                 feeTransactions = jsonData.transactions.filter(t => t.type === 'fee');
+                expenseTransactions = jsonData.transactions.filter(t => t.type === 'expense');
                 
                 renderData();
                 showContent();
@@ -1452,6 +1385,7 @@
                 try {
                     jsonData = JSON.parse(savedData);
                     feeTransactions = jsonData.transactions.filter(t => t.type === 'fee');
+                    expenseTransactions = jsonData.transactions.filter(t => t.type === 'expense');
                     renderData();
                     showContent();
                     showLoading(false);
@@ -1469,194 +1403,139 @@
             // Save for offline use
             localStorage.setItem('offline_data', JSON.stringify(jsonData));
             
-            const feeTransactions = jsonData.transactions.filter(t => t.type === 'fee');
-            const expenseTransactions = jsonData.transactions.filter(t => t.type === 'expense');
+            // Update header with hostel name
+            if (jsonData.metadata.hostelName) {
+                document.getElementById('header-hostel-name').textContent = jsonData.metadata.hostelName;
+            }
             
-            const totalIncome = feeTransactions.reduce((sum, t) => sum + t.amount, 0);
-            const totalExpense = expenseTransactions.reduce((sum, t) => sum + t.amount, 0);
-            const netBalance = totalIncome - totalExpense;
+            // Update summary from JSON
+            document.getElementById('total-income').textContent = formatCurrency(jsonData.summary.totalIncome);
+            document.getElementById('total-expense').textContent = formatCurrency(jsonData.summary.totalExpense);
+            document.getElementById('net-balance').textContent = formatCurrency(jsonData.summary.netBalance);
+            document.getElementById('total-students').textContent = jsonData.summary.totalStudents;
             
-            // Update summary cards
-            document.getElementById('total-income').textContent = formatCurrency(totalIncome);
-            document.getElementById('total-expense').textContent = formatCurrency(totalExpense);
-            document.getElementById('net-balance').textContent = formatCurrency(netBalance);
-            document.getElementById('total-transactions').textContent = jsonData.transactions.length;
-            
-            document.getElementById('income-period').textContent = jsonData.metadata.reportPeriod;
-            document.getElementById('expense-period').textContent = jsonData.metadata.reportPeriod;
-            document.getElementById('balance-trend').textContent = netBalance >= 0 ? 'Positive' : 'Negative';
-            
-            const uniqueStudents = [...new Set(feeTransactions.map(t => t.studentName).filter(Boolean))];
-            document.getElementById('active-students').textContent = `${uniqueStudents.length} Students`;
-            
-            updateInsights(feeTransactions, expenseTransactions);
-            refreshTransactionLists();
-            updateDataUpdatedTime();
+            // Calculate unique rooms
+            const uniqueRooms = [...new Set(jsonData.students.map(s => s.room))].filter(room => room);
+            document.getElementById('room-distribution').textContent = `${uniqueRooms.length} Rooms`;
             
             // Update footer with data from JSON
             if (jsonData.metadata) {
                 document.getElementById('footer-address').textContent = jsonData.metadata.address;
                 document.getElementById('footer-contact').textContent = jsonData.metadata.contact;
             }
+            
+            // Update fee status overview
+            updateFeeStatusOverview();
+            
+            // Update current month display
+            const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            document.getElementById('current-month-display').textContent = currentMonth;
+            
+            // Refresh tab content
+            refreshTabContent();
+            updateDataUpdatedTime();
         }
 
-        function updateInsights(feeTransactions, expenseTransactions) {
-            // Find top student
-            const studentTotals = {};
-            feeTransactions.forEach(t => {
-                if (t.studentName) {
-                    studentTotals[t.studentName] = (studentTotals[t.studentName] || 0) + t.amount;
+        function updateFeeStatusOverview() {
+            if (!jsonData || !jsonData.students) return;
+            
+            let paidCount = 0;
+            let pendingCount = 0;
+            let totalCollected = 0;
+            
+            // Count paid and pending students for current month
+            const currentMonth = '2025-12'; // You might want to make this dynamic
+            jsonData.students.forEach(student => {
+                if (student.feeStatus && student.feeStatus.detailed && student.feeStatus.detailed[currentMonth]) {
+                    const monthData = student.feeStatus.detailed[currentMonth];
+                    if (monthData.paid && monthData.status === 'paid') {
+                        paidCount++;
+                        totalCollected += monthData.amount || 0;
+                    } else {
+                        pendingCount++;
+                    }
+                } else {
+                    pendingCount++;
                 }
             });
             
-            let topStudent = '-';
-            let topStudentAmount = 0;
-            Object.entries(studentTotals).forEach(([student, amount]) => {
-                if (amount > topStudentAmount) {
-                    topStudentAmount = amount;
-                    topStudent = student;
-                }
-            });
-            
-            document.getElementById('insight-top-student').textContent = topStudent;
-            document.getElementById('insight-top-amount').textContent = formatCurrency(topStudentAmount);
-            
-            // Find largest category
-            const categoryTotals = {};
-            jsonData.transactions.forEach(t => {
-                categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
-            });
-            
-            let topCategory = '-';
-            let topCategoryAmount = 0;
-            Object.entries(categoryTotals).forEach(([category, amount]) => {
-                if (amount > topCategoryAmount) {
-                    topCategoryAmount = amount;
-                    topCategory = category;
-                }
-            });
-            
-            document.getElementById('insight-top-category').textContent = topCategory;
-            document.getElementById('insight-category-amount').textContent = formatCurrency(topCategoryAmount);
+            // Update UI
+            document.getElementById('paid-count').textContent = paidCount;
+            document.getElementById('pending-count').textContent = pendingCount;
+            document.getElementById('total-collected').textContent = formatCurrency(totalCollected);
         }
 
-        function refreshTransactionLists() {
+        function refreshTabContent() {
             if (!jsonData) return;
             
-            // Get ALL transactions first
-            const allTransactions = [...jsonData.transactions];
-            const feeTransactions = allTransactions.filter(t => t.type === 'fee');
-            const expenseTransactions = allTransactions.filter(t => t.type === 'expense');
-            
-            let filteredTransactions = [];
-            
-            // ISOLATE TABS: Filter based on current tab
-            if (currentTab === 'all') {
-                filteredTransactions = [...allTransactions];
-            } else if (currentTab === 'fees') {
-                filteredTransactions = [...feeTransactions];
-            } else if (currentTab === 'expenses') {
-                filteredTransactions = [...expenseTransactions];
+            switch (currentTab) {
+                case 'dashboard':
+                    renderDashboard();
+                    break;
+                case 'students':
+                    renderStudents();
+                    break;
+                case 'transactions':
+                    renderTransactions();
+                    break;
             }
+        }
+
+        function renderDashboard() {
+            // Show recent transactions (last 5)
+            const recentTransactions = [...jsonData.transactions]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+            
+            document.getElementById('recent-transactions-count').textContent = `${recentTransactions.length} Recent Transactions`;
+            renderTransactionList('recent-transactions', recentTransactions);
+        }
+
+        function renderStudents() {
+            const container = document.querySelector('#tab-students-content .grid');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (!jsonData.students || jsonData.students.length === 0) {
+                container.innerHTML = getEmptyStateHTML('No students found');
+                return;
+            }
+            
+            jsonData.students.forEach(student => {
+                const studentCard = createStudentCard(student);
+                container.appendChild(studentCard);
+            });
+        }
+
+        function renderTransactions() {
+            // Filter transactions
+            let filteredTransactions = [...jsonData.transactions];
             
             // Apply category filter
             if (activeFilters.category !== 'All') {
                 filteredTransactions = filteredTransactions.filter(t => t.category === activeFilters.category);
             }
             
-            // Apply collector filter (only for fees tab)
-            if (currentTab === 'fees' && activeFilters.collector !== 'All Collectors') {
-                filteredTransactions = filteredTransactions.filter(t => t.collectedBy === activeFilters.collector);
+            // Apply collector filter (only for fee transactions)
+            if (activeFilters.collector !== 'All Collectors') {
+                filteredTransactions = filteredTransactions.filter(t => {
+                    if (t.type === 'fee') {
+                        return t.receivedBy === activeFilters.collector || 
+                               (t.receiverDetails && t.receiverDetails.name === activeFilters.collector);
+                    }
+                    return true; // Expense transactions don't have collectors
+                });
             }
             
-            // Update counts
-            document.getElementById('all-count').textContent = `${filteredTransactions.length} Records`;
-            document.getElementById('fees-count').textContent = `${feeTransactions.length} Records`;
-            document.getElementById('expenses-count').textContent = `${expenseTransactions.length} Records`;
-            
-            // Render appropriate list
-            renderTransactionLists(filteredTransactions);
+            document.getElementById('all-transactions-count').textContent = `${filteredTransactions.length} Records`;
+            renderTransactionList('all-transactions', filteredTransactions);
         }
 
-        function renderTransactionLists(filteredTransactions) {
-            // Filter transactions for each tab
-            const allTransactions = [...jsonData.transactions];
-            const feeTransactions = allTransactions.filter(t => t.type === 'fee');
-            const expenseTransactions = allTransactions.filter(t => t.type === 'expense');
-            
-            // Prepare data for each tab
-            let allTabData = [];
-            let feesTabData = [];
-            let expensesTabData = [];
-            
-            if (currentTab === 'all') {
-                // For "All" tab, use the filtered transactions
-                allTabData = filteredTransactions;
-                
-                // For Fees tab, show fee transactions with current filters
-                feesTabData = feeTransactions.filter(t => {
-                    let match = true;
-                    if (activeFilters.category !== 'All') {
-                        match = match && t.category === activeFilters.category;
-                    }
-                    if (activeFilters.collector !== 'All Collectors' && currentTab === 'fees') {
-                        match = match && t.collectedBy === activeFilters.collector;
-                    }
-                    return match;
-                });
-                
-                // For Expenses tab, show expense transactions with current filters
-                expensesTabData = expenseTransactions.filter(t => {
-                    let match = true;
-                    if (activeFilters.category !== 'All') {
-                        match = match && t.category === activeFilters.category;
-                    }
-                    return match;
-                });
-            } else if (currentTab === 'fees') {
-                // For Fees tab, use the filtered transactions
-                feesTabData = filteredTransactions;
-                
-                // For All tab, show all transactions with current category filter
-                allTabData = allTransactions.filter(t => {
-                    if (activeFilters.category !== 'All') {
-                        return t.category === activeFilters.category;
-                    }
-                    return true;
-                });
-                
-                // For Expenses tab, show expense transactions with current category filter
-                expensesTabData = expenseTransactions.filter(t => {
-                    if (activeFilters.category !== 'All') {
-                        return t.category === activeFilters.category;
-                    }
-                    return true;
-                });
-            } else if (currentTab === 'expenses') {
-                // For Expenses tab, use the filtered transactions
-                expensesTabData = filteredTransactions;
-                
-                // For All tab, show all transactions with current category filter
-                allTabData = allTransactions.filter(t => {
-                    if (activeFilters.category !== 'All') {
-                        return t.category === activeFilters.category;
-                    }
-                    return true;
-                });
-                
-                // For Fees tab, show fee transactions with current category filter
-                feesTabData = feeTransactions.filter(t => {
-                    if (activeFilters.category !== 'All') {
-                        return t.category === activeFilters.category;
-                    }
-                    return true;
-                });
+        function refreshTransactionList() {
+            if (currentTab === 'transactions') {
+                renderTransactions();
             }
-            
-            // Render each tab's data
-            renderTransactionList('all-transactions', allTabData);
-            renderTransactionList('fees-transactions', feesTabData);
-            renderTransactionList('expenses-transactions', expensesTabData);
         }
 
         function renderTransactionList(containerId, transactions) {
@@ -1679,6 +1558,154 @@
             });
         }
 
+        function createStudentCard(student) {
+            const card = document.createElement('div');
+            card.className = 'student-card bg-white p-4 rounded-2xl shadow-sm border border-slate-100';
+            
+            const currentMonth = '2025-12'; // You might want to make this dynamic
+            const feeStatus = student.feeStatus?.detailed?.[currentMonth];
+            const statusClass = feeStatus?.status === 'paid' ? 'status-paid' : 'status-pending';
+            const statusText = feeStatus?.status === 'paid' ? 'PAID' : 'PENDING';
+            
+            card.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="w-14 h-14 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center">
+                        ${student.image && student.image !== 'base64_encoded_image' ? 
+                            `<img src="${student.image}" alt="${student.name}" class="w-full h-full object-cover">` :
+                            `<i class="fa-solid fa-user-graduate text-slate-400 text-xl"></i>`
+                        }
+                    </div>
+                    
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-slate-800 truncate">${student.name}</h4>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-xs text-slate-500">
+                                        <i class="fa-solid fa-bed mr-1"></i>${student.room || 'N/A'}
+                                    </span>
+                                    ${student.phone ? `
+                                        <span class="text-xs text-slate-500">
+                                            <i class="fa-solid fa-phone mr-1"></i>${student.phone}
+                                        </span>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            <span class="${statusClass} student-status-badge">${statusText}</span>
+                        </div>
+                        
+                        ${feeStatus ? `
+                            <div class="mt-3 pt-3 border-t border-slate-100">
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div class="text-slate-500">Current Month:</div>
+                                    <div class="font-medium text-right ${feeStatus.paid ? 'text-green-600' : 'text-red-600'}">
+                                        ${feeStatus.paid ? formatCurrency(feeStatus.amount || 0) : 'Pending'}
+                                    </div>
+                                    
+                                    <div class="text-slate-500">Payment Date:</div>
+                                    <div class="font-medium text-right">${feeStatus.date || 'N/A'}</div>
+                                    
+                                    ${student.emergencyContact ? `
+                                        <div class="text-slate-500">Emergency:</div>
+                                        <div class="font-medium text-right truncate">${student.emergencyContact}</div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${student.notes ? `
+                            <div class="mt-2 pt-2 border-t border-slate-100">
+                                <p class="text-xs text-slate-500 italic">${student.notes}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function createTransactionCard(transaction) {
+            const isFee = transaction.type === 'fee';
+            const categories = isFee ? FEE_CATEGORIES : EXPENSE_CATEGORIES;
+            const categoryConfig = categories[transaction.category] || 
+                                 { icon: 'fa-circle', color: 'bg-gray-100 text-gray-500', label: transaction.category };
+            
+            const card = document.createElement('div');
+            card.className = 'transaction-card bg-white p-4 rounded-2xl shadow-sm border border-slate-100';
+            
+            let collectorInfo = '';
+            if (isFee) {
+                const collector = transaction.receivedBy || (transaction.receiverDetails && transaction.receiverDetails.name);
+                if (collector) {
+                    collectorInfo = `
+                        <div class="text-xs text-slate-500 mt-1">
+                            <i class="fa-solid fa-user-tie mr-1"></i>
+                            Received by: ${collector}
+                            ${transaction.receiverDetails?.signatureAvailable ? 
+                                '<i class="fa-solid fa-signature ml-1 text-green-500"></i>' : ''}
+                        </div>
+                    `;
+                }
+            }
+            
+            card.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="${categoryConfig.color} category-icon">
+                            <i class="fa-solid ${categoryConfig.icon}"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="font-semibold text-slate-800 text-sm truncate leading-tight">
+                                ${transaction.description}
+                            </h4>
+                            <div class="text-xs text-slate-400 mt-0.5 truncate">
+                                <span class="inline-flex items-center gap-1">
+                                    <i class="fa-solid fa-calendar"></i>
+                                    ${formatDate(transaction.date, 'short')}
+                                </span>
+                                <span class="mx-2">•</span>
+                                ${isFee ? 
+                                    `<span><i class="fa-solid fa-user-graduate mr-1"></i>${transaction.studentName || 'Unknown'}</span>` : 
+                                    `<span><i class="fa-solid fa-tag mr-1"></i>${transaction.category}</span>`
+                                }
+                            </div>
+                            ${collectorInfo}
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end shrink-0 pl-2">
+                        <span class="font-bold ${isFee ? 'text-green-600' : 'text-red-600'} text-lg">
+                            ${isFee ? '+' : '-'} ${formatCurrency(transaction.amount)}
+                        </span>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="text-xs px-2 py-1 rounded-full ${isFee ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                ${isFee ? 'FEE' : 'EXPENSE'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        const FEE_CATEGORIES = {
+            'Monthly Fee': { icon: 'fa-calendar-check', color: 'bg-green-100 text-green-600' },
+            'Admission': { icon: 'fa-id-card', color: 'bg-teal-100 text-teal-600' },
+            'Security': { icon: 'fa-shield-halved', color: 'bg-indigo-100 text-indigo-600' },
+            'Others': { icon: 'fa-money-bill', color: 'bg-gray-100 text-gray-600' }
+        };
+
+        const EXPENSE_CATEGORIES = {
+            'Food': { icon: 'fa-utensils', color: 'bg-orange-100 text-orange-600' },
+            'Rent': { icon: 'fa-house', color: 'bg-blue-100 text-blue-600' },
+            'Transport': { icon: 'fa-bus', color: 'bg-purple-100 text-purple-600' },
+            'Utilities': { icon: 'fa-bolt', color: 'bg-yellow-100 text-yellow-600' },
+            'Staff Salary': { icon: 'fa-users', color: 'bg-cyan-100 text-cyan-600' },
+            'Daily Expenses': { icon: 'fa-shopping-bag', color: 'bg-fuchsia-100 text-fuchsia-600' },
+            'Others': { icon: 'fa-box-open', color: 'bg-gray-100 text-gray-600' }
+        };
+
         // ========== FEE COLLECTION SUMMARY ==========
         function generateFeeCollectionSummary() {
             if (!jsonData || !feeTransactions.length) {
@@ -1691,16 +1718,19 @@
             
             // Group by collector
             const collectorData = {};
-            CONFIG.COLLECTORS.forEach(collector => {
-                collectorData[collector] = {
+            
+            // Initialize with all receivers
+            jsonData.receivers.forEach(receiver => {
+                collectorData[receiver.name] = {
                     total: 0,
                     transactions: [],
-                    students: {}
+                    students: {},
+                    signatureUrl: receiver.signUrl
                 };
             });
             
             feeTransactions.forEach(transaction => {
-                const collector = transaction.collectedBy;
+                const collector = transaction.receivedBy || (transaction.receiverDetails && transaction.receiverDetails.name);
                 if (collector && collectorData[collector]) {
                     collectorData[collector].total += transaction.amount;
                     collectorData[collector].transactions.push(transaction);
@@ -1722,10 +1752,19 @@
                 categoryData[transaction.category] += transaction.amount;
             });
             
+            // Group by student
+            const studentData = {};
+            feeTransactions.forEach(transaction => {
+                if (!studentData[transaction.studentName]) {
+                    studentData[transaction.studentName] = 0;
+                }
+                studentData[transaction.studentName] += transaction.amount;
+            });
+            
             // Update summary modal
             document.getElementById('summary-total').textContent = formatCurrency(totalCollected);
             document.getElementById('summary-count').textContent = feeTransactions.length;
-            document.getElementById('summary-period').textContent = jsonData.metadata.reportPeriod;
+            document.getElementById('summary-period').textContent = jsonData.metadata.exportDate || 'Current Period';
             document.getElementById('summary-generated-date').textContent = new Date().toLocaleDateString('en-GB', {
                 day: 'numeric',
                 month: 'long',
@@ -1738,19 +1777,24 @@
             const collectorContainer = document.getElementById('collector-breakdown');
             collectorContainer.innerHTML = '';
             
-            CONFIG.COLLECTORS.forEach(collector => {
-                const data = collectorData[collector];
+            Object.entries(collectorData).forEach(([collector, data]) => {
+                const studentCount = Object.keys(data.students).length;
+                const transactionCount = data.transactions.length;
+                
                 const card = document.createElement('div');
                 card.className = 'collection-summary-card bg-white p-4 rounded-xl border border-slate-100 shadow-sm';
                 card.style.borderLeftColor = getCollectorColor(collector);
-                
-                const studentCount = Object.keys(data.students).length;
-                const transactionCount = data.transactions.length;
                 
                 card.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
                             <h5 class="font-bold text-slate-800">${collector}</h5>
+                            ${data.signatureUrl ? `
+                                <div class="text-xs text-slate-500 mt-1">
+                                    <i class="fa-solid fa-signature mr-1"></i>
+                                    Signature available
+                                </div>
+                            ` : ''}
                             <div class="flex items-center gap-4 mt-2 text-sm text-slate-600">
                                 <span><i class="fa-solid fa-money-bill-wave mr-1"></i>${formatCurrency(data.total)}</span>
                                 <span><i class="fa-solid fa-receipt mr-1"></i>${transactionCount} transactions</span>
@@ -1782,6 +1826,20 @@
                 collectorContainer.appendChild(card);
             });
             
+            // Render student breakdown
+            const studentContainer = document.getElementById('student-breakdown');
+            studentContainer.innerHTML = Object.entries(studentData)
+                .sort(([,a], [,b]) => b - a)
+                .map(([student, amount]) => `
+                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-user-graduate text-slate-500"></i>
+                            <span class="font-medium text-slate-700">${student}</span>
+                        </div>
+                        <span class="font-bold text-green-600">${formatCurrency(amount)}</span>
+                    </div>
+                `).join('');
+            
             // Render category breakdown
             const categoryContainer = document.getElementById('category-breakdown');
             categoryContainer.innerHTML = Object.entries(categoryData)
@@ -1809,7 +1867,7 @@
             document.body.innerHTML = `
                 <div style="padding: 20px; font-family: Arial, sans-serif;">
                     <h1 style="color: #4f46e5; border-bottom: 2px solid #4f46e5; padding-bottom: 10px;">
-                        Fee Collection Summary - Indus Boys Hostel
+                        Fee Collection Summary - ${jsonData.metadata.hostelName}
                     </h1>
                     <div style="margin-top: 20px;">
                         ${document.getElementById('fee-summary-modal').querySelector('.modal-content').innerHTML}
@@ -1828,7 +1886,8 @@
             const feeData = jsonData.transactions.filter(t => t.type === 'fee');
             const summary = {
                 generated: new Date().toISOString(),
-                period: jsonData.metadata.reportPeriod,
+                period: jsonData.metadata.exportDate,
+                hostelName: jsonData.metadata.hostelName,
                 totalCollected: feeData.reduce((sum, t) => sum + t.amount, 0),
                 totalTransactions: feeData.length,
                 collectors: {},
@@ -1839,19 +1898,21 @@
             // Group data
             feeData.forEach(transaction => {
                 // By collector
-                if (transaction.collectedBy) {
-                    if (!summary.collectors[transaction.collectedBy]) {
-                        summary.collectors[transaction.collectedBy] = {
+                const collector = transaction.receivedBy || (transaction.receiverDetails && transaction.receiverDetails.name);
+                if (collector) {
+                    if (!summary.collectors[collector]) {
+                        summary.collectors[collector] = {
                             total: 0,
                             transactions: []
                         };
                     }
-                    summary.collectors[transaction.collectedBy].total += transaction.amount;
-                    summary.collectors[transaction.collectedBy].transactions.push({
+                    summary.collectors[collector].total += transaction.amount;
+                    summary.collectors[collector].transactions.push({
                         student: transaction.studentName,
                         amount: transaction.amount,
                         date: transaction.date,
-                        category: transaction.category
+                        category: transaction.category,
+                        description: transaction.description
                     });
                 }
                 
@@ -1872,8 +1933,8 @@
             
             // Create CSV
             let csv = 'Fee Collection Summary\n\n';
-            csv += 'Period,Total Collected,Total Transactions\n';
-            csv += `${summary.period},${summary.totalCollected},${summary.totalTransactions}\n\n`;
+            csv += 'Hostel Name,Period,Total Collected,Total Transactions\n';
+            csv += `${summary.hostelName},${summary.period},${summary.totalCollected},${summary.totalTransactions}\n\n`;
             
             csv += 'Collector Breakdown\n';
             csv += 'Collector,Total Collected,Transaction Count\n';
@@ -1897,16 +1958,16 @@
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Fee_Collection_Summary_${jsonData.metadata.reportPeriod.replace(' ', '_')}.csv`;
+            a.download = `Fee_Collection_Summary_${jsonData.metadata.hostelName.replace(/ /g, '_')}_${summary.period}.csv`;
             a.click();
         }
 
         // ========== UTILITY FUNCTIONS ==========
         function getCollectorColor(collector) {
             const colors = {
-                'Ali Faheem': '#4f46e5',
-                'Faiq Ali': '#10b981',
-                'Saeed BAPAR': '#7c3aed'
+                'Faiq Ali': '#4f46e5',
+                'Ali Faheem': '#10b981',
+                'Saeed Bapar': '#7c3aed'
             };
             return colors[collector] || '#6b7280';
         }
@@ -1989,93 +2050,8 @@
                 </div>`;
         }
 
-        function createTransactionCard(transaction) {
-            const isFee = transaction.type === 'fee';
-            const categories = isFee ? FEE_CATEGORIES : EXPENSE_CATEGORIES;
-            const categoryConfig = categories[transaction.category] || 
-                                 { icon: 'fa-circle', color: 'bg-gray-100 text-gray-500', label: transaction.category };
-            
-            const card = document.createElement('div');
-            card.className = 'transaction-card bg-white p-4 rounded-2xl shadow-sm border border-slate-100';
-            
-            let collectorInfo = '';
-            if (isFee && transaction.collectedBy) {
-                collectorInfo = `
-                    <div class="text-xs text-slate-500 mt-1">
-                        <i class="fa-solid fa-user-tie mr-1"></i>
-                        Collected by: ${transaction.collectedBy}
-                    </div>
-                `;
-            }
-            
-            card.innerHTML = `
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3 overflow-hidden">
-                        <div class="${categoryConfig.color} category-icon">
-                            <i class="fa-solid ${categoryConfig.icon}"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <h4 class="font-semibold text-slate-800 text-sm truncate leading-tight">
-                                ${transaction.description}
-                            </h4>
-                            <div class="text-xs text-slate-400 mt-0.5 truncate">
-                                <span class="inline-flex items-center gap-1">
-                                    <i class="fa-solid fa-calendar"></i>
-                                    ${formatDate(transaction.date, 'short')}
-                                </span>
-                                <span class="mx-2">•</span>
-                                ${isFee ? 
-                                    `<span><i class="fa-solid fa-user-graduate mr-1"></i>${transaction.studentName || 'Unknown'}</span>` : 
-                                    `<span><i class="fa-solid fa-store mr-1"></i>${transaction.vendor || transaction.category}</span>`
-                                }
-                            </div>
-                            ${collectorInfo}
-                            ${transaction.receiptNo || transaction.invoiceNo ? 
-                                `<div class="text-xs text-slate-500 mt-1">
-                                    <i class="fa-solid fa-hashtag mr-1"></i>
-                                    ${transaction.receiptNo || transaction.invoiceNo}
-                                </div>` : ''
-                            }
-                        </div>
-                    </div>
-                    <div class="flex flex-col items-end shrink-0 pl-2">
-                        <span class="font-bold ${isFee ? 'text-green-600' : 'text-red-600'} text-lg">
-                            ${isFee ? '+' : '-'} ${formatCurrency(transaction.amount)}
-                        </span>
-                        <div class="flex items-center gap-2 mt-1">
-                            <span class="text-xs px-2 py-1 rounded-full ${isFee ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                                ${isFee ? 'FEE' : 'EXPENSE'}
-                            </span>
-                            <span class="text-xs text-slate-500">
-                                <i class="fa-solid fa-${transaction.paymentMethod === 'Cash' ? 'money-bill' : 'building-columns'}"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            return card;
-        }
-
-        const FEE_CATEGORIES = {
-            'Monthly Fee': { icon: 'fa-calendar-check', color: 'bg-green-100 text-green-600' },
-            'Admission': { icon: 'fa-id-card', color: 'bg-teal-100 text-teal-600' },
-            'Security': { icon: 'fa-shield-halved', color: 'bg-indigo-100 text-indigo-600' },
-            'Others': { icon: 'fa-money-bill', color: 'bg-gray-100 text-gray-600' }
-        };
-
-        const EXPENSE_CATEGORIES = {
-            'Food': { icon: 'fa-utensils', color: 'bg-orange-100 text-orange-600' },
-            'Rent': { icon: 'fa-house', color: 'bg-blue-100 text-blue-600' },
-            'Transport': { icon: 'fa-bus', color: 'bg-purple-100 text-purple-600' },
-            'Utilities': { icon: 'fa-bolt', color: 'bg-yellow-100 text-yellow-600' },
-            'Staff Salary': { icon: 'fa-users', color: 'bg-cyan-100 text-cyan-600' },
-            'Daily Expenses': { icon: 'fa-shopping-bag', color: 'bg-fuchsia-100 text-fuchsia-600' },
-            'Others': { icon: 'fa-box-open', color: 'bg-gray-100 text-gray-600' }
-        };
-
         // Initialize tabs
-        switchTab('all');
+        switchTab('dashboard');
     </script>
 </body>
 </html>
