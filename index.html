@@ -2,620 +2,564 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JSON Data Viewer - Hostel Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indus Boys Hostel - Premium Student Accommodation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-dark: #4338ca;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            overscroll-behavior-y: none;
-            -webkit-tap-highlight-color: transparent;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        .category-icon {
-            display: flex; align-items: center; justify-content: center;
-            width: 42px; height: 42px; border-radius: 50%; font-size: 1.2rem;
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        input, select, textarea { font-size: 16px !important; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        .card-hover {
+            transition: all 0.3s ease;
         }
-        .tab-indicator {
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-title {
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        
+        .section-title::after {
+            content: '';
             position: absolute;
-            left: 0.25rem;
-            top: 0.25rem;
-            bottom: 0.25rem;
-            width: calc(33.333% - 8px);
-            background: #4f46e5;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 0;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float-animation {
+            animation: float 5s ease-in-out infinite;
         }
     </style>
 </head>
-<body class="text-slate-800 h-[100dvh] flex flex-col overflow-hidden bg-slate-50">
-    <!-- Header -->
-    <header class="bg-indigo-600 text-white shadow-md z-30 shrink-0">
-        <div class="w-full max-w-lg mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-lg font-bold flex items-center gap-2">
-                <i class="fa-solid fa-database text-indigo-200"></i> JSON Data Viewer
-            </h1>
-            <div class="flex gap-1">
-                <button onclick="refreshData()" class="w-9 h-9 flex items-center justify-center hover:bg-indigo-500 rounded-full transition active:bg-indigo-700" title="Refresh Data">
-                    <i class="fa-solid fa-rotate"></i>
-                </button>
-                <button onclick="goBackToMain()" class="w-9 h-9 flex items-center justify-center hover:bg-indigo-500 rounded-full transition active:bg-indigo-700" title="Back to Main">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
-            </div>
+<body class="text-gray-800">
+    <!-- Header/Navigation -->
+    <header class="fixed w-full z-50 py-4 px-6">
+        <div class="max-w-7xl mx-auto">
+            <nav class="flex items-center justify-between glass-effect rounded-2xl px-6 py-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                        <i class="fa-solid fa-building-columns text-white text-lg"></i>
+                    </div>
+                    <span class="text-white font-bold text-xl">Indus Boys Hostel</span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="nav-link text-white font-medium">Home</a>
+                    <a href="#about" class="nav-link text-white font-medium">About</a>
+                    <a href="#features" class="nav-link text-white font-medium">Features</a>
+                    <a href="#contact" class="nav-link text-white font-medium">Contact</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/student_portal_ibh.html" 
+                       class="btn-primary hidden md:block">
+                        Student Portal
+                    </a>
+                    <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/managment_portal.html" 
+                       class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-50 transition">
+                        Management Portal
+                    </a>
+                </div>
+            </nav>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto w-full max-w-lg mx-auto">
-        <!-- Loading/Error State -->
-        <div id="loading-error" class="hidden p-6">
-            <div class="bg-red-50 border border-red-200 rounded-2xl p-4 text-center">
-                <i class="fa-solid fa-triangle-exclamation text-red-500 text-3xl mb-3"></i>
-                <h3 class="font-bold text-red-700 mb-1" id="error-title">Error Loading Data</h3>
-                <p class="text-red-600 text-sm" id="error-message">Failed to load data.json</p>
-                <button onclick="refreshData()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition">
-                    <i class="fa-solid fa-rotate mr-2"></i>Retry
-                </button>
-            </div>
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center relative overflow-hidden pt-20">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-20 left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+            <div class="absolute bottom-20 right-10 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
         </div>
-
-        <!-- Summary Section -->
-        <div id="summary-section" class="p-4">
-            <!-- Summary Card -->
-            <div class="bg-indigo-600 text-white p-5 rounded-2xl shadow-lg mb-4">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h2 class="text-xl font-bold" id="hostel-name">Loading...</h2>
-                        <p class="text-indigo-200 text-sm mt-1" id="report-period"></p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-indigo-200 text-xs">Exported</p>
-                        <p class="font-bold text-sm" id="export-date">...</p>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-3 gap-3">
-                    <div class="text-center bg-indigo-700/40 p-3 rounded-xl">
-                        <div class="text-green-300 font-bold text-lg" id="total-income">0</div>
-                        <div class="text-indigo-200 text-xs">Income</div>
-                    </div>
-                    <div class="text-center bg-indigo-700/40 p-3 rounded-xl">
-                        <div class="text-red-300 font-bold text-lg" id="total-expense">0</div>
-                        <div class="text-indigo-200 text-xs">Expense</div>
-                    </div>
-                    <div class="text-center bg-indigo-700/40 p-3 rounded-xl">
-                        <div class="text-white font-bold text-lg" id="net-balance">0</div>
-                        <div class="text-indigo-200 text-xs">Balance</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Stats -->
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
-                            <i class="fa-solid fa-arrow-down text-sm"></i>
-                        </div>
-                        <div>
-                            <div class="text-xl font-bold text-slate-800" id="income-count">0</div>
-                            <div class="text-xs text-slate-500">Income Records</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
-                            <i class="fa-solid fa-arrow-up text-sm"></i>
-                        </div>
-                        <div>
-                            <div class="text-xl font-bold text-slate-800" id="expense-count">0</div>
-                            <div class="text-xs text-slate-500">Expense Records</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabs Navigation -->
-        <div class="px-4 mb-3">
-            <div class="bg-white p-1 rounded-2xl shadow-sm border border-slate-100">
-                <div class="flex bg-slate-100 rounded-xl p-1 relative">
-                    <!-- Tab Indicator -->
-                    <div id="tab-indicator" class="tab-indicator"></div>
-                    
-                    <!-- All Tab -->
-                    <button onclick="switchTab('all')" id="tab-all" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-white">
-                        All
-                    </button>
-                    
-                    <!-- Fees Tab -->
-                    <button onclick="switchTab('fees')" id="tab-fees" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
-                        <i class="fa-solid fa-money-bill-wave mr-1 text-xs"></i> Fees
-                    </button>
-                    
-                    <!-- Expenses Tab -->
-                    <button onclick="switchTab('expenses')" id="tab-expenses" class="relative z-10 flex-1 py-3 text-sm font-semibold text-center transition-colors rounded-lg text-slate-500">
-                        <i class="fa-solid fa-cart-shopping mr-1 text-xs"></i> Expenses
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filter Panel -->
-        <div id="filter-panel" class="hidden px-4 mb-3">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-3">
-                <div class="flex justify-between items-center mb-2">
-                    <h3 class="font-bold text-slate-700 text-sm">Filter by Category</h3>
-                    <button onclick="clearFilters()" class="text-xs text-indigo-600 font-medium hover:text-indigo-800">Clear All</button>
-                </div>
-                <div class="space-y-3">
-                    <!-- Fee Categories -->
-                    <div>
-                        <div class="text-xs text-slate-500 mb-1">Fee Categories</div>
-                        <div class="flex flex-wrap gap-1.5" id="fee-categories"></div>
-                    </div>
-                    
-                    <!-- Expense Categories -->
-                    <div>
-                        <div class="text-xs text-slate-500 mb-1">Expense Categories</div>
-                        <div class="flex flex-wrap gap-1.5" id="expense-categories"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filter Button -->
-        <div class="px-4 mb-4 flex justify-end">
-            <button onclick="toggleFilters()" class="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium transition">
-                <i class="fa-solid fa-filter text-xs"></i>
-                <span>Filters</span>
-                <span id="active-filter-count" class="bg-indigo-600 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[18px]">0</span>
-            </button>
-        </div>
-
-        <!-- Transaction Lists -->
-        <div class="px-4 pb-6">
-            <!-- All Transactions Tab -->
-            <div id="tab-all-content" class="tab-content active">
-                <div class="flex justify-between items-baseline mb-3">
-                    <h2 class="font-bold text-slate-700">All Transactions</h2>
-                    <span class="text-xs text-slate-400 font-medium" id="all-count">0 Records</span>
-                </div>
-                <div id="all-transactions" class="space-y-3"></div>
-            </div>
-
-            <!-- Fees Tab -->
-            <div id="tab-fees-content" class="tab-content">
-                <div class="flex justify-between items-baseline mb-3">
-                    <h2 class="font-bold text-slate-700">Fee Collections</h2>
-                    <span class="text-xs text-slate-400 font-medium" id="fees-count">0 Records</span>
-                </div>
-                <div id="fees-transactions" class="space-y-3"></div>
-            </div>
-
-            <!-- Expenses Tab -->
-            <div id="tab-expenses-content" class="tab-content">
-                <div class="flex justify-between items-baseline mb-3">
-                    <h2 class="font-bold text-slate-700">Expenses</h2>
-                    <span class="text-xs text-slate-400 font-medium" id="expenses-count">0 Records</span>
-                </div>
-                <div id="expenses-transactions" class="space-y-3"></div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <div class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500 shrink-0">
-        <p id="footer-info">Loading data...</p>
-    </div>
-
-    <script>
-        // Category configurations
-        const expenseCategories = {
-            'Food': { icon: 'fa-utensils', color: 'bg-orange-100 text-orange-600' },
-            'Rent': { icon: 'fa-house', color: 'bg-blue-100 text-blue-600' },
-            'Transport': { icon: 'fa-bus', color: 'bg-purple-100 text-purple-600' },
-            'Utilities': { icon: 'fa-bolt', color: 'bg-yellow-100 text-yellow-600' },
-            'Staff Salary': { icon: 'fa-users', color: 'bg-cyan-100 text-cyan-600' }, 
-            'Daily Expenses': { icon: 'fa-shopping-bag', color: 'bg-fuchsia-100 text-fuchsia-600' },
-            'Others': { icon: 'fa-box-open', color: 'bg-gray-100 text-gray-600' }
-        };
         
-        const feeCategories = {
-            'Monthly Fee': { icon: 'fa-calendar-check', color: 'bg-green-100 text-green-600' },
-            'Admission': { icon: 'fa-id-card', color: 'bg-teal-100 text-teal-600' },
-            'Security': { icon: 'fa-shield-halved', color: 'bg-indigo-100 text-indigo-600' },
-            'Others': { icon: 'fa-money-bill', color: 'bg-gray-100 text-gray-600' }
-        };
-
-        // App state
-        let jsonData = null;
-        let currentTab = 'all';
-        let activeCategoryFilters = {
-            fees: [],
-            expenses: []
-        };
-
-        // Load data on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadJSONData();
-        });
-
-        // Load JSON data from external file
-        async function loadJSONData() {
-            try {
-                showLoading(true);
+        <div class="max-w-7xl mx-auto px-6 py-20 relative z-10">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="text-white">
+                    <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
+                        Premium Student<br>
+                        <span class="gradient-text">Accommodation</span>
+                    </h1>
+                    <p class="text-xl text-gray-200 mb-8 leading-relaxed">
+                        Experience comfortable living with modern amenities, 
+                        dedicated support, and a vibrant community at Indus Boys Hostel.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/student_portal_ibh.html" 
+                           class="btn-primary inline-flex items-center">
+                            <i class="fa-solid fa-graduation-cap mr-2"></i>
+                            Student Portal
+                        </a>
+                        <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/managment_portal.html" 
+                           class="bg-white/20 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/30 transition inline-flex items-center">
+                            <i class="fa-solid fa-chart-line mr-2"></i>
+                            Management Portal
+                        </a>
+                    </div>
+                </div>
                 
-                const response = await fetch('data.json');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                
-                jsonData = await response.json();
-                renderData();
-                renderCategoryFilters();
-                updateFilterCount();
-                showLoading(false);
-                
-            } catch (error) {
-                console.error('Error loading JSON:', error);
-                showError(`Failed to load data.json`, error.message);
-            }
-        }
-
-        // Render the loaded data
-        function renderData() {
-            if (!jsonData) return;
-            
-            // Update metadata
-            document.getElementById('hostel-name').textContent = jsonData.metadata.hostelName;
-            document.getElementById('report-period').textContent = jsonData.metadata.reportPeriod;
-            document.getElementById('export-date').textContent = formatDate(jsonData.metadata.exportDate);
-            
-            // Update summary
-            document.getElementById('total-income').textContent = formatCurrency(jsonData.summary.totalIncome);
-            document.getElementById('total-expense').textContent = formatCurrency(jsonData.summary.totalExpense);
-            document.getElementById('net-balance').textContent = formatCurrency(jsonData.summary.netBalance);
-            document.getElementById('income-count').textContent = jsonData.summary.incomeRecords;
-            document.getElementById('expense-count').textContent = jsonData.summary.expenseRecords;
-            
-            // Update footer
-            document.getElementById('footer-info').textContent = 
-                `${jsonData.metadata.hostelName} | ${jsonData.metadata.address} | ${jsonData.metadata.contact}`;
-            
-            // Render all transaction tabs
-            renderAllTransactions();
-            renderFeeTransactions();
-            renderExpenseTransactions();
-        }
-
-        // Tab switching function
-        function switchTab(tabName) {
-            currentTab = tabName;
-            
-            // Update tab indicator position
-            const indicator = document.getElementById('tab-indicator');
-            const positions = {
-                'all': 'translateX(0)',
-                'fees': 'translateX(100%)',
-                'expenses': 'translateX(200%)'
-            };
-            
-            indicator.style.transform = positions[tabName];
-            
-            // Update tab button colors
-            const tabButtons = {
-                'all': document.getElementById('tab-all'),
-                'fees': document.getElementById('tab-fees'),
-                'expenses': document.getElementById('tab-expenses')
-            };
-            
-            Object.keys(tabButtons).forEach(tab => {
-                if (tab === tabName) {
-                    tabButtons[tab].classList.remove('text-slate-500');
-                    tabButtons[tab].classList.add('text-white');
-                } else {
-                    tabButtons[tab].classList.remove('text-white');
-                    tabButtons[tab].classList.add('text-slate-500');
-                }
-            });
-            
-            // Show/hide tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(`tab-${tabName}-content`).classList.add('active');
-        }
-
-        // Render all transactions (mixed)
-        function renderAllTransactions() {
-            const container = document.getElementById('all-transactions');
-            if (!jsonData.transactions || jsonData.transactions.length === 0) {
-                container.innerHTML = getEmptyStateHTML('No transactions found');
-                document.getElementById('all-count').textContent = '0 Records';
-                return;
-            }
-            
-            const filteredTransactions = filterTransactions(jsonData.transactions);
-            renderTransactionList(container, filteredTransactions, 'mixed');
-            document.getElementById('all-count').textContent = `${filteredTransactions.length} Records`;
-        }
-
-        // Render only fee transactions
-        function renderFeeTransactions() {
-            const container = document.getElementById('fees-transactions');
-            if (!jsonData.transactions) {
-                container.innerHTML = getEmptyStateHTML('No fee records found');
-                document.getElementById('fees-count').textContent = '0 Records';
-                return;
-            }
-            
-            let feeTransactions = jsonData.transactions.filter(t => t.type === 'fee');
-            
-            // Apply category filters if any
-            if (activeCategoryFilters.fees.length > 0) {
-                feeTransactions = feeTransactions.filter(t => 
-                    activeCategoryFilters.fees.includes(t.category)
-                );
-            }
-            
-            renderTransactionList(container, feeTransactions, 'fee');
-            document.getElementById('fees-count').textContent = `${feeTransactions.length} Records`;
-        }
-
-        // Render only expense transactions
-        function renderExpenseTransactions() {
-            const container = document.getElementById('expenses-transactions');
-            if (!jsonData.transactions) {
-                container.innerHTML = getEmptyStateHTML('No expense records found');
-                document.getElementById('expenses-count').textContent = '0 Records';
-                return;
-            }
-            
-            let expenseTransactions = jsonData.transactions.filter(t => t.type === 'expense');
-            
-            // Apply category filters if any
-            if (activeCategoryFilters.expenses.length > 0) {
-                expenseTransactions = expenseTransactions.filter(t => 
-                    activeCategoryFilters.expenses.includes(t.category)
-                );
-            }
-            
-            renderTransactionList(container, expenseTransactions, 'expense');
-            document.getElementById('expenses-count').textContent = `${expenseTransactions.length} Records`;
-        }
-
-        // Generic transaction list renderer
-        function renderTransactionList(container, transactions, type) {
-            container.innerHTML = '';
-            
-            if (!transactions || transactions.length === 0) {
-                container.innerHTML = getEmptyStateHTML(`No ${type} records found`);
-                return;
-            }
-            
-            // Sort by date (newest first)
-            const sortedTransactions = [...transactions].sort((a, b) => 
-                new Date(b.date) - new Date(a.date)
-            );
-            
-            sortedTransactions.forEach(transaction => {
-                const isFee = transaction.type === 'fee';
-                const categories = isFee ? feeCategories : expenseCategories;
-                const categoryConfig = categories[transaction.category] || 
-                                     { icon: 'fa-circle', color: 'bg-gray-100 text-gray-500' };
-                
-                const transactionEl = document.createElement('div');
-                transactionEl.className = 'bg-white p-4 rounded-2xl shadow-sm border border-slate-100';
-                
-                transactionEl.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3 overflow-hidden">
-                            <div class="${categoryConfig.color} category-icon shrink-0">
-                                <i class="fa-solid ${categoryConfig.icon}"></i>
+                <div class="relative">
+                    <div class="glass-effect rounded-3xl p-8 float-animation">
+                        <div class="bg-white rounded-2xl p-8 shadow-2xl">
+                            <div class="text-center mb-8">
+                                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mx-auto mb-4">
+                                    <i class="fa-solid fa-key text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800">Secure Access Portals</h3>
+                                <p class="text-gray-600 mt-2">Choose your portal to continue</p>
                             </div>
-                            <div class="min-w-0 flex-1">
-                                <h4 class="font-semibold text-slate-800 text-sm truncate leading-tight">
-                                    ${transaction.description}
-                                </h4>
-                                <div class="text-xs text-slate-400 mt-0.5 truncate flex items-center gap-1">
-                                    <span>${formatDate(transaction.date, 'short')}</span>
-                                    <span>•</span>
-                                    <span>${isFee ? transaction.studentName : transaction.category}</span>
+                            
+                            <div class="space-y-6">
+                                <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/student_portal_ibh.html" 
+                                   class="block p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100 hover:border-indigo-300 transition-all duration-300 group">
+                                    <div class="flex items-center">
+                                        <div class="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center mr-4 group-hover:bg-indigo-200 transition">
+                                            <i class="fa-solid fa-user-graduate text-indigo-600 text-xl"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-bold text-gray-800">Student Portal</h4>
+                                            <p class="text-sm text-gray-600">Access fees, room details, and notices</p>
+                                        </div>
+                                        <i class="fa-solid fa-arrow-right text-indigo-600"></i>
+                                    </div>
+                                </a>
+                                
+                                <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/managment_portal.html" 
+                                   class="block p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100 hover:border-green-300 transition-all duration-300 group">
+                                    <div class="flex items-center">
+                                        <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center mr-4 group-hover:bg-green-200 transition">
+                                            <i class="fa-solid fa-chart-line text-green-600 text-xl"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-bold text-gray-800">Management Portal</h4>
+                                            <p class="text-sm text-gray-600">Administrative access for hostel management</p>
+                                        </div>
+                                        <i class="fa-solid fa-arrow-right text-green-600"></i>
+                                    </div>
+                                </a>
+                            </div>
+                            
+                            <div class="mt-8 pt-6 border-t border-gray-200">
+                                <p class="text-sm text-gray-500 text-center">
+                                    <i class="fa-solid fa-shield mr-1"></i>
+                                    Secure • Encrypted • 24/7 Access
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">About Indus Boys Hostel</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    A premier accommodation facility providing students with a comfortable, 
+                    secure, and conducive living environment for academic excellence.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-br from-indigo-50 to-white p-8 rounded-2xl shadow-lg card-hover">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-home text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Premium Accommodation</h3>
+                    <p class="text-gray-600">
+                        Modern rooms with comfortable bedding, study areas, and ample storage space 
+                        designed for student living.
+                    </p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-purple-50 to-white p-8 rounded-2xl shadow-lg card-hover">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-shield-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">24/7 Security</h3>
+                    <p class="text-gray-600">
+                        CCTV surveillance, secure entry systems, and dedicated security staff 
+                        ensuring complete safety for all residents.
+                    </p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-blue-50 to-white p-8 rounded-2xl shadow-lg card-hover">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-wifi text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">High-Speed Internet</h3>
+                    <p class="text-gray-600">
+                        Reliable high-speed internet connectivity throughout the hostel 
+                        for uninterrupted online learning and communication.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gradient-to-br from-gray-50 to-indigo-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="section-title text-4xl font-bold text-gray-800 inline-block">Our Facilities</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto mt-4">
+                    Modern amenities designed to enhance student living and academic performance
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-md text-center card-hover">
+                    <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-utensils text-indigo-600 text-xl"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-800 mb-2">Quality Mess</h4>
+                    <p class="text-sm text-gray-600">Nutritious and hygienic meals</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-md text-center card-hover">
+                    <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-bolt text-green-600 text-xl"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-800 mb-2">Power Backup</h4>
+                    <p class="text-sm text-gray-600">Uninterrupted power supply</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-md text-center card-hover">
+                    <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-water text-purple-600 text-xl"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-800 mb-2">24/7 Water</h4>
+                    <p class="text-sm text-gray-600">Hot & cold water available</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-md text-center card-hover">
+                    <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-book text-blue-600 text-xl"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-800 mb-2">Study Room</h4>
+                    <p class="text-sm text-gray-600">Quiet study environment</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="section-title text-4xl font-bold text-gray-800 inline-block">Contact Us</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto mt-4">
+                    Get in touch with us for inquiries, admissions, or support
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <div class="bg-gradient-to-br from-indigo-50 to-white rounded-2xl p-8 shadow-lg">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">Contact Information</h3>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center mr-4">
+                                    <i class="fa-solid fa-location-dot text-indigo-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-1">Address</h4>
+                                    <p class="text-gray-600">Hostel Street, DHA Phase 1, Karachi</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center mr-4">
+                                    <i class="fa-solid fa-phone text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-1">Phone Number</h4>
+                                    <p class="text-gray-600">0333-1234567</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center mr-4">
+                                    <i class="fa-solid fa-envelope text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-1">Email</h4>
+                                    <p class="text-gray-600">info@indusboyshostel.edu.pk</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mr-4">
+                                    <i class="fa-solid fa-clock text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-1">Office Hours</h4>
+                                    <p class="text-gray-600">Monday - Saturday: 9:00 AM - 6:00 PM</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex flex-col items-end shrink-0 pl-2">
-                            <span class="font-bold ${isFee ? 'text-green-600' : 'text-red-600'} text-base">
-                                ${isFee ? '+' : '-'} ${formatCurrency(transaction.amount)}
-                            </span>
-                            <span class="text-xs text-slate-400 mt-1">
-                                ${isFee ? 'Fee' : 'Expense'}
-                            </span>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 shadow-lg">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">Quick Links</h3>
+                        
+                        <div class="space-y-4">
+                            <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/student_portal_ibh.html" 
+                               class="block p-4 bg-white border border-gray-200 rounded-xl hover:border-indigo-300 hover:shadow-md transition-all group">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center mr-3">
+                                            <i class="fa-solid fa-user-graduate text-indigo-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-gray-800">Student Portal</h4>
+                                            <p class="text-sm text-gray-600">For hostel residents</p>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-indigo-600 transition"></i>
+                                </div>
+                            </a>
+                            
+                            <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/managment_portal.html" 
+                               class="block p-4 bg-white border border-gray-200 rounded-xl hover:border-green-300 hover:shadow-md transition-all group">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center mr-3">
+                                            <i class="fa-solid fa-chart-line text-green-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-gray-800">Management Portal</h4>
+                                            <p class="text-sm text-gray-600">For administrative staff</p>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-green-600 transition"></i>
+                                </div>
+                            </a>
+                            
+                            <div class="mt-8 p-4 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl text-white">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mr-4">
+                                        <i class="fa-solid fa-headset text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold">Need Help?</h4>
+                                        <p class="text-sm opacity-90">Contact our support team for assistance</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                `;
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center">
+                            <i class="fa-solid fa-building-columns text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold">Indus Boys Hostel</h3>
+                            <p class="text-sm text-gray-400">Premium Student Accommodation</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Providing students with comfortable, secure, and conducive living 
+                        environment for academic excellence since 2010.
+                    </p>
+                </div>
                 
-                container.appendChild(transactionEl);
-            });
-        }
+                <div>
+                    <h4 class="text-lg font-bold mb-6">Quick Links</h4>
+                    <div class="space-y-3">
+                        <a href="#home" class="block text-gray-400 hover:text-white transition">Home</a>
+                        <a href="#about" class="block text-gray-400 hover:text-white transition">About</a>
+                        <a href="#features" class="block text-gray-400 hover:text-white transition">Facilities</a>
+                        <a href="#contact" class="block text-gray-400 hover:text-white transition">Contact</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-6">Access Portals</h4>
+                    <div class="space-y-4">
+                        <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/student_portal_ibh.html" 
+                           class="inline-flex items-center text-gray-400 hover:text-white transition">
+                            <i class="fa-solid fa-graduation-cap mr-2"></i>
+                            Student Portal
+                        </a>
+                        <br>
+                        <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/managment_portal.html" 
+                           class="inline-flex items-center text-gray-400 hover:text-white transition">
+                            <i class="fa-solid fa-chart-line mr-2"></i>
+                            Management Portal
+                        </a>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h4 class="text-lg font-bold mb-4">Follow Us</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-indigo-600 transition">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-500 transition">
+                                <i class="fa-brands fa-twitter"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 transition">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">
+                <p>© 2025 Indus Boys Hostel. All rights reserved. | Designed with <i class="fa-solid fa-heart text-red-500 mx-1"></i> for students</p>
+                <p class="mt-2">Address: Hostel Street, DHA Phase 1, Karachi | Phone: 0333-1234567</p>
+            </div>
+        </div>
+    </footer>
 
-        // Render category filters
-        function renderCategoryFilters() {
-            if (!jsonData) return;
-            
-            const feeContainer = document.getElementById('fee-categories');
-            const expenseContainer = document.getElementById('expense-categories');
-            
-            feeContainer.innerHTML = '';
-            expenseContainer.innerHTML = '';
-            
-            // Get all unique categories from transactions
-            const allCategories = {
-                fees: [...new Set(jsonData.transactions.filter(t => t.type === 'fee').map(t => t.category))],
-                expenses: [...new Set(jsonData.transactions.filter(t => t.type === 'expense').map(t => t.category))]
-            };
-            
-            // Create fee category filters
-            allCategories.fees.forEach(category => {
-                const button = document.createElement('button');
-                button.className = `px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${isCategoryActive('fees', category) ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`;
-                button.innerHTML = `<i class="fa-solid fa-money-bill-wave mr-1 text-xs"></i>${category}`;
-                button.onclick = () => toggleCategoryFilter('fees', category);
-                feeContainer.appendChild(button);
-            });
-            
-            // Create expense category filters
-            allCategories.expenses.forEach(category => {
-                const button = document.createElement('button');
-                button.className = `px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${isCategoryActive('expenses', category) ? 'bg-red-100 text-red-700 border-red-300' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`;
-                button.innerHTML = `<i class="fa-solid fa-cart-shopping mr-1 text-xs"></i>${category}`;
-                button.onclick = () => toggleCategoryFilter('expenses', category);
-                expenseContainer.appendChild(button);
-            });
-        }
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="fixed bottom-8 right-8 w-12 h-12 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 transition hidden">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
 
-        // Filter transactions based on active filters
-        function filterTransactions(transactions) {
-            let filtered = [...transactions];
-            
-            const feeFilters = activeCategoryFilters.fees;
-            const expenseFilters = activeCategoryFilters.expenses;
-            
-            if (feeFilters.length > 0 || expenseFilters.length > 0) {
-                filtered = filtered.filter(t => {
-                    if (t.type === 'fee' && feeFilters.length > 0) {
-                        return feeFilters.includes(t.category);
-                    }
-                    if (t.type === 'expense' && expenseFilters.length > 0) {
-                        return expenseFilters.includes(t.category);
-                    }
-                    return true;
-                });
-            }
-            
-            return filtered;
-        }
-
-        // Toggle category filter
-        function toggleCategoryFilter(type, category) {
-            const index = activeCategoryFilters[type].indexOf(category);
-            
-            if (index === -1) {
-                activeCategoryFilters[type].push(category);
+    <script>
+        // Back to top button
+        const backToTopButton = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.remove('hidden');
             } else {
-                activeCategoryFilters[type].splice(index, 1);
+                backToTopButton.classList.add('hidden');
             }
-            
-            renderCategoryFilters();
-            updateFilterCount();
-            refreshTransactionLists();
-        }
-
-        // Update active filter count
-        function updateFilterCount() {
-            const totalFilters = activeCategoryFilters.fees.length + activeCategoryFilters.expenses.length;
-            document.getElementById('active-filter-count').textContent = totalFilters;
-        }
-
-        // Check if category filter is active
-        function isCategoryActive(type, category) {
-            return activeCategoryFilters[type].includes(category);
-        }
-
-        // Clear all filters
-        function clearFilters() {
-            activeCategoryFilters = {
-                fees: [],
-                expenses: []
-            };
-            renderCategoryFilters();
-            updateFilterCount();
-            refreshTransactionLists();
-        }
-
-        // Refresh all transaction lists
-        function refreshTransactionLists() {
-            renderAllTransactions();
-            renderFeeTransactions();
-            renderExpenseTransactions();
-        }
-
-        // Toggle filter panel visibility
-        function toggleFilters() {
-            const panel = document.getElementById('filter-panel');
-            panel.classList.toggle('hidden');
-        }
-
-        // Utility functions
-        function formatCurrency(amount) {
-            return `Rs ${amount.toLocaleString()}`;
-        }
-
-        function formatDate(dateString, format = 'full') {
-            const date = new Date(dateString);
-            if (format === 'short') {
-                return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Navbar background on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.pageYOffset > 50) {
+                nav.classList.add('backdrop-blur-lg', 'bg-white/10');
+            } else {
+                nav.classList.remove('backdrop-blur-lg', 'bg-white/10');
             }
-            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-        }
-
-        function getEmptyStateHTML(message) {
-            return `
-                <div class="flex flex-col items-center justify-center py-12 opacity-60">
-                    <i class="fa-solid fa-clipboard-list text-4xl text-slate-300 mb-2"></i>
-                    <p class="text-sm text-slate-400">${message}</p>
-                </div>`;
-        }
-
-        function showLoading(show) {
-            document.getElementById('loading-error').classList.toggle('hidden', !show);
-            document.getElementById('summary-section').classList.toggle('hidden', show);
-            document.querySelector('.px-4.pb-6').classList.toggle('hidden', show);
-            document.getElementById('filter-panel').classList.add('hidden');
-            
-            if (show) {
-                document.getElementById('error-title').textContent = 'Loading Data...';
-                document.getElementById('error-message').textContent = 'Please wait while we load the JSON data';
-            }
-        }
-
-        function showError(title, message) {
-            document.getElementById('loading-error').classList.remove('hidden');
-            document.getElementById('summary-section').classList.add('hidden');
-            document.querySelector('.px-4.pb-6').classList.add('hidden');
-            document.getElementById('filter-panel').classList.add('hidden');
-            
-            document.getElementById('error-title').textContent = title;
-            document.getElementById('error-message').textContent = message;
-        }
-
-        // Button functions
-        function refreshData() {
-            loadJSONData();
-        }
-
-        function goBackToMain() {
-            window.location.href = 'index.html';
-        }
-
-        // Initialize with first tab active
-        switchTab('all');
+        });
+        
+        // Mobile menu toggle (if needed in future)
+        // You can add a hamburger menu for mobile if required
     </script>
 </body>
 </html>
