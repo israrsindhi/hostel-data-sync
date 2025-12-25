@@ -20,6 +20,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--light-color);
+            overflow-x: hidden;
         }
         
         .hero-bg {
@@ -171,7 +172,7 @@
         }
         
         .glass-effect {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -360,23 +361,158 @@
         .animate-slide-in {
             animation: slideIn 0.5s ease-out;
         }
+        
+        /* Responsive Design Updates */
+        @media (max-width: 768px) {
+            /* Header adjustments for mobile */
+            header {
+                padding: 0.5rem !important;
+            }
+            
+            nav {
+                padding: 0.75rem 1rem !important;
+            }
+            
+            /* Hide logo text on very small screens */
+            .logo-text {
+                display: none;
+            }
+            
+            /* Adjust hero section */
+            .hero-section h1 {
+                font-size: 2.5rem !important;
+                line-height: 1.2 !important;
+            }
+            
+            /* Adjust button sizes */
+            .btn-primary, .btn-secondary {
+                padding: 12px 20px !important;
+                font-size: 0.9rem !important;
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            
+            /* Adjust stats section */
+            .stat-card {
+                padding: 1.5rem 1rem !important;
+            }
+            
+            /* Adjust menu section */
+            .meal-tab {
+                padding: 1.5rem !important;
+            }
+            
+            /* Adjust facilities grid */
+            .facilities-grid .col-span-2 {
+                grid-column: span 1 !important;
+            }
+            
+            /* Adjust contact section */
+            .contact-card {
+                padding: 1.5rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            /* Further adjustments for very small screens */
+            .hero-section h1 {
+                font-size: 2rem !important;
+            }
+            
+            .stat-card {
+                padding: 1rem !important;
+            }
+            
+            /* Single column layout for stats */
+            .stats-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 0.5rem !important;
+            }
+            
+            /* Smaller font sizes */
+            h2 {
+                font-size: 1.75rem !important;
+            }
+            
+            h3 {
+                font-size: 1.25rem !important;
+            }
+            
+            /* Adjust modal padding */
+            .modal-content {
+                padding: 1.5rem !important;
+            }
+        }
+        
+        /* Mobile menu animations */
+        .mobile-menu-enter {
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Better touch targets for mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .nav-link, button, a {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            .mobile-menu-link {
+                padding: 12px 0;
+                font-size: 1.1rem;
+            }
+        }
+        
+        /* Prevent horizontal scroll */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Logo styling */
+        .hostel-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+        
+        @media (max-width: 640px) {
+            .hostel-logo {
+                width: 40px;
+                height: 40px;
+            }
+        }
     </style>
 </head>
 <body class="text-gray-800">
     <!-- Header/Navigation -->
-    <header class="fixed w-full z-50 py-4 px-6">
+    <header class="fixed w-full z-50 py-3 px-4 md:py-4 md:px-6">
         <div class="max-w-7xl mx-auto">
-            <nav class="flex items-center justify-between glass-effect rounded-2xl px-6 py-3 shadow-lg">
+            <nav class="flex items-center justify-between glass-effect rounded-2xl px-4 py-3 md:px-6 md:py-3 shadow-lg">
                 <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                        <i class="fa-solid fa-building text-white text-lg"></i>
+                    <!-- Hostel Logo -->
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center overflow-hidden">
+                        <img src="https://i.postimg.cc/RFFccnLV/2-removebg-preview.png" 
+                             alt="Indus Boys Hostel Logo" 
+                             class="hostel-logo object-contain">
                     </div>
-                    <div>
-                        <h1 class="font-bold text-xl text-gray-900">Indus Boys Hostel</h1>
+                    <div class="logo-text">
+                        <h1 class="font-bold text-lg md:text-xl text-gray-900">Indus Boys Hostel</h1>
                         <p class="text-xs text-gray-600">Excellence in Student Living</p>
                     </div>
                 </div>
                 
+                <!-- Desktop Navigation -->
                 <div class="hidden lg:flex items-center space-x-8">
                     <a href="#home" class="nav-link">Home</a>
                     <a href="#about" class="nav-link">About</a>
@@ -386,38 +522,42 @@
                     <a href="#contact" class="nav-link">Contact</a>
                 </div>
                 
-                <div class="flex items-center space-x-4">
-                    <button onclick="showMenuModal()" class="btn-primary text-sm">
+                <!-- Mobile Menu Button & Actions -->
+                <div class="flex items-center space-x-3 md:space-x-4">
+                    <button onclick="showMenuModal()" class="btn-primary text-sm hidden sm:inline-flex">
                         <i class="fa-solid fa-utensils mr-2"></i>
-                        Today's Menu
+                        <span class="hidden md:inline">Today's Menu</span>
+                        <span class="md:hidden">Menu</span>
                     </button>
                     <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/student_portal_ibh.html" 
-                       class="btn-secondary text-sm">
+                       class="btn-secondary text-sm hidden sm:inline-flex">
                         <i class="fa-solid fa-graduation-cap mr-2"></i>
-                        Student Portal
+                        <span class="hidden md:inline">Student Portal</span>
+                        <span class="md:hidden">Portal</span>
                     </a>
                     <button class="lg:hidden text-gray-700" id="menuToggle">
-                        <i class="fa-solid fa-bars text-xl"></i>
+                        <i class="fa-solid fa-bars text-xl md:text-2xl"></i>
                     </button>
                 </div>
             </nav>
         </div>
         
         <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden lg:hidden fixed inset-x-0 top-20 bg-white shadow-xl rounded-2xl mx-4 p-6">
-            <div class="space-y-4">
-                <a href="#home" class="block py-2 font-medium text-gray-800 hover:text-cyan-600">Home</a>
-                <a href="#about" class="block py-2 font-medium text-gray-800 hover:text-cyan-600">About</a>
-                <a href="#facilities" class="block py-2 font-medium text-gray-800 hover:text-cyan-600">Facilities</a>
-                <a href="#menu" class="block py-2 font-medium text-gray-800 hover:text-cyan-600">Weekly Menu</a>
-                <a href="#portals" class="block py-2 font-medium text-gray-800 hover:text-cyan-600">Portals</a>
-                <a href="#contact" class="block py-2 font-medium text-gray-800 hover:text-cyan-600">Contact</a>
-                <div class="pt-4 border-t">
-                    <button onclick="showMenuModal()" class="btn-primary w-full justify-center mb-3">
+        <div id="mobileMenu" class="hidden lg:hidden absolute inset-x-0 top-full mt-3 bg-white shadow-xl rounded-2xl mx-4 p-6 z-50">
+            <div class="space-y-2">
+                <a href="#home" class="block py-3 px-4 font-medium text-gray-800 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition mobile-menu-link" onclick="closeMobileMenu()">Home</a>
+                <a href="#about" class="block py-3 px-4 font-medium text-gray-800 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition mobile-menu-link" onclick="closeMobileMenu()">About</a>
+                <a href="#facilities" class="block py-3 px-4 font-medium text-gray-800 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition mobile-menu-link" onclick="closeMobileMenu()">Facilities</a>
+                <a href="#menu" class="block py-3 px-4 font-medium text-gray-800 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition mobile-menu-link" onclick="closeMobileMenu()">Weekly Menu</a>
+                <a href="#portals" class="block py-3 px-4 font-medium text-gray-800 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition mobile-menu-link" onclick="closeMobileMenu()">Portals</a>
+                <a href="#contact" class="block py-3 px-4 font-medium text-gray-800 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition mobile-menu-link" onclick="closeMobileMenu()">Contact</a>
+                <div class="pt-4 border-t mt-4">
+                    <button onclick="showMenuModal(); closeMobileMenu()" 
+                            class="btn-primary w-full justify-center mb-3">
                         <i class="fa-solid fa-utensils mr-2"></i>
                         Today's Menu
                     </button>
-                    <button onclick="showManagementAccessModal()" 
+                    <button onclick="showManagementAccessModal(); closeMobileMenu()" 
                             class="btn-secondary w-full justify-center">
                         <i class="fa-solid fa-chart-line mr-2"></i>
                         Management Portal
@@ -428,56 +568,56 @@
     </header>
 
     <!-- Hero Section -->
-    <section id="home" class="min-h-screen hero-bg pt-24 pb-20 relative overflow-hidden">
+    <section id="home" class="min-h-screen hero-bg pt-20 md:pt-24 pb-20 relative overflow-hidden">
         <div class="absolute top-10 right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
         <div class="absolute bottom-10 left-10 w-64 h-64 bg-cyan-300/20 rounded-full blur-3xl"></div>
         
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <div class="text-white">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+                <div class="text-white hero-section">
                     <div class="inline-flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-full mb-6">
                         <span class="pulse-dot w-2 h-2 bg-emerald-400 rounded-full"></span>
                         <span class="text-sm">Since Sep 2025</span>
                     </div>
                     
-                    <h1 class="text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
                         Premium Student<br>
                         <span class="text-amber-300">Accommodation</span>
                     </h1>
                     
-                    <p class="text-xl text-cyan-100 mb-8 leading-relaxed">
+                    <p class="text-lg md:text-xl text-cyan-100 mb-8 leading-relaxed">
                         Experience modern living with exceptional facilities, 
                         24/7 security, and a vibrant community designed for 
                         academic success.
                     </p>
                     
-                    <div class="flex flex-wrap gap-4">
+                    <div class="flex flex-col sm:flex-row gap-4">
                         <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/student_portal_ibh.html" 
-                           class="btn-primary">
+                           class="btn-primary text-center">
                             <i class="fa-solid fa-graduation-cap mr-2"></i>
                             Student Portal
                         </a>
                         <button onclick="showMenuModal()" 
-                                class="bg-emerald-500 text-white px-8 py-3.5 rounded-lg font-semibold hover:bg-emerald-600 transition">
+                                class="bg-emerald-500 text-white px-6 md:px-8 py-3.5 rounded-lg font-semibold hover:bg-emerald-600 transition text-center">
                             <i class="fa-solid fa-utensils mr-2"></i>
                             View Today's Menu
                         </button>
                     </div>
                 </div>
                 
-                <div class="relative">
+                <div class="relative mt-8 lg:mt-0">
                     <div class="relative rounded-3xl overflow-hidden shadow-2xl">
                         <img src="https://i.postimg.cc/nz4M1Z7t/ok.jpg" alt="Indus Boys Hostel" class="w-full h-auto">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                     </div>
-                    <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl p-6 shadow-2xl">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                                <i class="fa-solid fa-users text-white text-xl"></i>
+                    <div class="absolute -bottom-4 md:-bottom-6 -left-4 md:-left-6 bg-white rounded-2xl p-4 md:p-6 shadow-2xl">
+                        <div class="flex items-center space-x-3 md:space-x-4">
+                            <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                                <i class="fa-solid fa-users text-white text-lg md:text-xl"></i>
                             </div>
                             <div>
-                                <div class="text-2xl font-bold text-gray-900">50+</div>
-                                <div class="text-sm text-gray-600">Happy Residents</div>
+                                <div class="text-xl md:text-2xl font-bold text-gray-900">50+</div>
+                                <div class="text-xs md:text-sm text-gray-600">Happy Residents</div>
                             </div>
                         </div>
                     </div>
@@ -487,30 +627,30 @@
     </section>
 
     <!-- Stats Section -->
-    <section class="py-12 bg-gradient-to-r from-slate-50 to-gray-50">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <section class="py-8 md:py-12 bg-gradient-to-r from-slate-50 to-gray-50">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 stats-grid">
                 <div class="stat-card text-center">
-                    <div class="text-3xl font-bold text-gray-900 mb-2">50+</div>
-                    <div class="text-gray-600">Students</div>
+                    <div class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">50+</div>
+                    <div class="text-gray-600 text-sm md:text-base">Students</div>
                     <div class="text-xs text-gray-400 mt-1">Current Residents</div>
                 </div>
                 
                 <div class="stat-card text-center">
-                    <div class="text-3xl font-bold text-gray-900 mb-2">10+</div>
-                    <div class="text-gray-600">Rooms</div>
+                    <div class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">10+</div>
+                    <div class="text-gray-600 text-sm md:text-base">Rooms</div>
                     <div class="text-xs text-gray-400 mt-1">Premium Accommodation</div>
                 </div>
                 
                 <div class="stat-card text-center">
-                    <div class="text-3xl font-bold text-gray-900 mb-2">24/7</div>
-                    <div class="text-gray-600">Security</div>
+                    <div class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">24/7</div>
+                    <div class="text-gray-600 text-sm md:text-base">Security</div>
                     <div class="text-xs text-gray-400 mt-1">CCTV & Personnel</div>
                 </div>
                 
                 <div class="stat-card text-center">
-                    <div class="text-3xl font-bold text-gray-900 mb-2">100%</div>
-                    <div class="text-gray-600">Satisfaction</div>
+                    <div class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">100%</div>
+                    <div class="text-gray-600 text-sm md:text-base">Satisfaction</div>
                     <div class="text-xs text-gray-400 mt-1">Student Feedback</div>
                 </div>
             </div>
@@ -518,39 +658,39 @@
     </section>
 
     <!-- Weekly Menu Section -->
-    <section id="menu" class="py-20 menu-section">
-        <div class="max-w-7xl mx-auto px-6 menu-content">
-            <div class="text-center mb-16">
+    <section id="menu" class="py-12 md:py-20 menu-section">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 menu-content">
+            <div class="text-center mb-12 md:mb-16">
                 <span class="badge bg-white/20 text-white mb-4">
                     <i class="fa-solid fa-utensils mr-2"></i>
                     Dining Services
                 </span>
-                <h2 class="text-4xl font-bold text-white mb-4">Weekly Meal Plan</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Weekly Meal Plan</h2>
                 <div class="section-divider mb-6"></div>
-                <p class="text-lg text-gray-300 max-w-3xl mx-auto">
+                <p class="text-base md:text-lg text-gray-300 max-w-3xl mx-auto">
                     Nutritious and delicious meals served daily with hygienic preparation
                 </p>
             </div>
             
-            <div class="grid lg:grid-cols-2 gap-8">
+            <div class="grid lg:grid-cols-2 gap-6 md:gap-8">
                 <!-- Today's Meals Card -->
-                <div class="meal-tab rounded-2xl p-8">
+                <div class="meal-tab rounded-2xl p-6 md:p-8">
                     <div class="flex items-center mb-6">
-                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mr-4">
-                            <i class="fa-solid fa-calendar-day text-white text-xl"></i>
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mr-3 md:mr-4">
+                            <i class="fa-solid fa-calendar-day text-white text-lg md:text-xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Today's Meals</h3>
-                            <p class="text-gray-600" id="currentDate"></p>
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-2">Today's Meals</h3>
+                            <p class="text-gray-600 text-sm md:text-base" id="currentDate"></p>
                         </div>
                     </div>
                     
-                    <div class="space-y-6" id="todaysMeals">
+                    <div class="space-y-4 md:space-y-6" id="todaysMeals">
                         <!-- Dynamic content will be inserted here -->
                     </div>
                     
-                    <div class="mt-8 pt-6 border-t border-gray-200">
-                        <div class="flex justify-between items-center">
+                    <div class="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-200">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <button onclick="showTomorrowMeals()" 
                                     class="text-cyan-600 hover:text-cyan-700 font-medium flex items-center">
                                 <i class="fa-solid fa-arrow-right mr-2"></i>
@@ -566,36 +706,36 @@
                 </div>
                 
                 <!-- Meal Timings Card -->
-                <div class="meal-tab rounded-2xl p-8">
+                <div class="meal-tab rounded-2xl p-6 md:p-8">
                     <div class="flex items-center mb-6">
-                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mr-4">
-                            <i class="fa-solid fa-clock text-white text-xl"></i>
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mr-3 md:mr-4">
+                            <i class="fa-solid fa-clock text-white text-lg md:text-xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Meal Timings</h3>
-                            <p class="text-gray-600">Daily serving schedule</p>
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-2">Meal Timings</h3>
+                            <p class="text-gray-600 text-sm md:text-base">Daily serving schedule</p>
                         </div>
                     </div>
                     
                     <div class="space-y-4">
-                        <div class="meal-time-item rounded-xl p-4">
-                            <div class="flex items-center justify-between mb-2">
+                        <div class="meal-time-item rounded-xl p-3 md:p-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
                                 <h4 class="font-bold text-gray-900">Breakfast</h4>
                                 <span class="timing-badge px-3 py-1 rounded-full text-sm font-medium">7:30 AM - 9:30 AM</span>
                             </div>
                             <p class="text-gray-600 text-sm">Start your day with a nutritious breakfast</p>
                         </div>
                         
-                        <div class="meal-time-item rounded-xl p-4">
-                            <div class="flex items-center justify-between mb-2">
+                        <div class="meal-time-item rounded-xl p-3 md:p-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
                                 <h4 class="font-bold text-gray-900">Lunch</h4>
                                 <span class="timing-badge px-3 py-1 rounded-full text-sm font-medium">1:00 PM - 3:00 PM</span>
                             </div>
                             <p class="text-gray-600 text-sm">Hearty lunch to keep you energized</p>
                         </div>
                         
-                        <div class="meal-time-item rounded-xl p-4">
-                            <div class="flex items-center justify-between mb-2">
+                        <div class="meal-time-item rounded-xl p-3 md:p-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
                                 <h4 class="font-bold text-gray-900">Dinner</h4>
                                 <span class="timing-badge px-3 py-1 rounded-full text-sm font-medium">7:30 PM - 9:30 PM</span>
                             </div>
@@ -603,8 +743,8 @@
                         </div>
                     </div>
                     
-                    <div class="mt-8 pt-6 border-t border-gray-200">
-                        <p class="text-sm text-gray-600">
+                    <div class="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-200">
+                        <p class="text-xs md:text-sm text-gray-600">
                             <i class="fa-solid fa-info-circle mr-2 text-cyan-600"></i>
                             Special dietary requirements can be arranged upon request
                         </p>
@@ -615,50 +755,50 @@
     </section>
 
     <!-- About Section -->
-    <section id="about" class="py-20 section-bg">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
+    <section id="about" class="py-12 md:py-20 section-bg">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="text-center mb-12 md:mb-16">
                 <span class="badge-primary mb-4">
                     <i class="fa-solid fa-star mr-2"></i>
                     Why Choose Us
                 </span>
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Excellence in Student Living</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Excellence in Student Living</h2>
                 <div class="section-divider mb-6"></div>
-                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                <p class="text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
                     We provide more than just accommodation - we create an environment 
                     where students can thrive academically and personally.
                 </p>
             </div>
             
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="card-hover feature-bg p-8 rounded-2xl">
+            <div class="grid md:grid-cols-3 gap-6 md:gap-8">
+                <div class="card-hover feature-bg p-6 md:p-8 rounded-2xl">
                     <div class="icon-circle icon-circle-primary">
                         <i class="fa-solid fa-shield-alt text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Complete Security</h3>
-                    <p class="text-gray-600">
+                    <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-3">Complete Security</h3>
+                    <p class="text-gray-600 text-sm md:text-base">
                         24/7 CCTV surveillance, biometric access control, and dedicated 
                         security staff ensure complete safety for all residents.
                     </p>
                 </div>
                 
-                <div class="card-hover feature-bg p-8 rounded-2xl">
+                <div class="card-hover feature-bg p-6 md:p-8 rounded-2xl">
                     <div class="icon-circle icon-circle-secondary">
                         <i class="fa-solid fa-wifi text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">High-Speed Internet</h3>
-                    <p class="text-gray-600">
+                    <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-3">High-Speed Internet</h3>
+                    <p class="text-gray-600 text-sm md:text-base">
                         Fiber-optic internet with dedicated bandwidth for seamless 
                         online classes, research, and entertainment.
                     </p>
                 </div>
                 
-                <div class="card-hover feature-bg p-8 rounded-2xl">
+                <div class="card-hover feature-bg p-6 md:p-8 rounded-2xl">
                     <div class="icon-circle icon-circle-accent">
                         <i class="fa-solid fa-book-open text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">Study Support</h3>
-                    <p class="text-gray-600">
+                    <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-3">Study Support</h3>
+                    <p class="text-gray-600 text-sm md:text-base">
                         Quiet study rooms, library access, and academic support 
                         programs to help students achieve their educational goals.
                     </p>
@@ -667,177 +807,173 @@
         </div>
     </section>
 
-   <!-- Facilities Section -->
-<section id="facilities" class="py-20 bg-gradient-to-br from-slate-50 to-cyan-50">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-16">
-            <span class="badge-secondary mb-4">
-                <i class="fa-solid fa-building mr-2"></i>
-                Our Facilities
-            </span>
-            <h2 class="text-4xl font-bold text-gray-900 mb-4">Hostel Facilities</h2>
-            <div class="section-divider mb-6"></div>
-            <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-                Comfortable, secure, and hygienic living with all modern amenities.
-            </p>
-        </div>
+    <!-- Facilities Section -->
+    <section id="facilities" class="py-12 md:py-20 bg-gradient-to-br from-slate-50 to-cyan-50">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="text-center mb-12 md:mb-16">
+                <span class="badge-secondary mb-4">
+                    <i class="fa-solid fa-building mr-2"></i>
+                    Our Facilities
+                </span>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Hostel Facilities</h2>
+                <div class="section-divider mb-6"></div>
+                <p class="text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
+                    Comfortable, secure, and hygienic living with all modern amenities.
+                </p>
+            </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 facilities-grid">
             <!-- Meals -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-utensils text-cyan-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">Three Time Quality Meal</h4>
-                <p class="text-sm text-gray-600">Healthy & hygienic food</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-utensils text-cyan-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">Three Time Quality Meal</h4>
+                <p class="text-xs text-gray-600">Healthy & hygienic food</p>
             </div>
 
             <!-- Clean Environment -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-leaf text-green-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">Clean & Green Environment</h4>
-                <p class="text-sm text-gray-600">Peaceful & eco-friendly</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-leaf text-green-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">Clean & Green Environment</h4>
+                <p class="text-xs text-gray-600">Peaceful & eco-friendly</p>
             </div>
 
             <!-- WiFi -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-wifi text-blue-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">High Speed WiFi</h4>
-                <p class="text-sm text-gray-600">Uninterrupted internet</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-wifi text-blue-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">High Speed WiFi</h4>
+                <p class="text-xs text-gray-600">Uninterrupted internet</p>
             </div>
 
             <!-- Electricity -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-bolt text-yellow-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">24/7 Electricity</h4>
-                <p class="text-sm text-gray-600">No load shedding</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-bolt text-yellow-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">24/7 Electricity</h4>
+                <p class="text-xs text-gray-600">No load shedding</p>
             </div>
 
             <!-- Generator -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-plug-circle-bolt text-orange-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">Standby Generator</h4>
-                <p class="text-sm text-gray-600">24/7 backup power</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-plug-circle-bolt text-orange-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">Standby Generator</h4>
+                <p class="text-xs text-gray-600">24/7 backup power</p>
             </div>
 
             <!-- Rooms -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-bed text-indigo-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">Furnished Rooms</h4>
-                <p class="text-sm text-gray-600">Carpeted with mattress</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-bed text-indigo-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">Furnished Rooms</h4>
+                <p class="text-xs text-gray-600">Carpeted with mattress</p>
             </div>
 
             <!-- Hygiene -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-soap text-teal-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">Hygienic Environment</h4>
-                <p class="text-sm text-gray-600">Daily cleanliness</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-soap text-teal-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">Hygienic Environment</h4>
+                <p class="text-xs text-gray-600">Daily cleanliness</p>
             </div>
 
             <!-- Study Room -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-book-open text-purple-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">Study Room</h4>
-                <p class="text-sm text-gray-600">Quiet learning space</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-book-open text-purple-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">Study Room</h4>
+                <p class="text-xs text-gray-600">Quiet learning space</p>
             </div>
 
             <!-- Newspaper -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-newspaper text-gray-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">Daily Newspaper</h4>
-                <p class="text-sm text-gray-600">Stay updated</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-newspaper text-gray-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">Daily Newspaper</h4>
+                <p class="text-xs text-gray-600">Stay updated</p>
             </div>
 
             <!-- Prayer Area -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-mosque text-emerald-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">Prayer Area</h4>
-                <p class="text-sm text-gray-600">Peaceful worship space</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-mosque text-emerald-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">Prayer Area</h4>
+                <p class="text-xs text-gray-600">Peaceful worship space</p>
             </div>
 
             <!-- Water -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-droplet text-sky-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">Pure Drinking Water</h4>
-                <p class="text-sm text-gray-600">Filtered & safe</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-droplet text-sky-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">Pure Drinking Water</h4>
+                <p class="text-xs text-gray-600">Filtered & safe</p>
             </div>
 
             <!-- Parking -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-parking text-amber-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">Wide Parking</h4>
-                <p class="text-sm text-gray-600">Spacious & secure</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-parking text-amber-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">Wide Parking</h4>
+                <p class="text-xs text-gray-600">Spacious & secure</p>
             </div>
 
             <!-- Security -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-camera text-red-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">24/7 Camera Security</h4>
-                <p class="text-sm text-gray-600">Complete surveillance</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-camera text-red-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">24/7 Camera Security</h4>
+                <p class="text-xs text-gray-600">Complete surveillance</p>
             </div>
 
             <!-- Fire Safety -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover">
-                <i class="fa-solid fa-fire-extinguisher text-rose-600 text-3xl mb-3"></i>
-                <h4 class="font-bold">Fire Extinguisher</h4>
-                <p class="text-sm text-gray-600">Safety first</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover">
+                <i class="fa-solid fa-fire-extinguisher text-rose-600 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">Fire Extinguisher</h4>
+                <p class="text-xs text-gray-600">Safety first</p>
             </div>
 
             <!-- Room Types -->
-            <div class="bg-white p-6 rounded-xl text-center card-hover md:col-span-2">
-                <i class="fa-solid fa-house text-cyan-700 text-3xl mb-3"></i>
-                <h4 class="font-bold">Spacious Furnished Rooms</h4>
-                <p class="text-sm text-gray-600">Separate & shared options available</p>
+            <div class="bg-white p-4 md:p-6 rounded-xl text-center card-hover md:col-span-2">
+                <i class="fa-solid fa-house text-cyan-700 text-2xl md:text-3xl mb-3"></i>
+                <h4 class="font-bold text-sm md:text-base">Spacious Furnished Rooms</h4>
+                <p class="text-xs text-gray-600">Separate & shared options available</p>
             </div>
-
         </div>
-    </div>
-</section>
-
+    </section>
 
     <!-- Portals Section -->
-    <section id="portals" class="py-20 section-bg">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
+    <section id="portals" class="py-12 md:py-20 section-bg">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="text-center mb-12 md:mb-16">
                 <span class="badge-primary mb-4">
                     <i class="fa-solid fa-laptop-code mr-2"></i>
                     Digital Access
                 </span>
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Our Digital Portals</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Digital Portals</h2>
                 <div class="section-divider mb-6"></div>
-                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                <p class="text-base md:text-lg text-gray-600 max-w-3xl mx-auto">
                     Access our secure digital platforms designed for students and management.
                 </p>
             </div>
             
-            <div class="grid lg:grid-cols-2 gap-8">
+            <div class="grid lg:grid-cols-2 gap-6 md:gap-8">
                 <!-- Student Portal -->
                 <div class="contact-card">
                     <div class="flex items-start mb-6">
-                        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mr-4">
-                            <i class="fa-solid fa-user-graduate text-white text-2xl"></i>
+                        <div class="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mr-3 md:mr-4">
+                            <i class="fa-solid fa-user-graduate text-white text-xl md:text-2xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Student Portal</h3>
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-2">Student Portal</h3>
                             <p class="text-gray-600">For hostel residents and students</p>
                         </div>
                     </div>
                     
-                    <ul class="space-y-3 mb-8">
+                    <ul class="space-y-3 mb-6 md:mb-8">
                         <li class="flex items-center">
                             <i class="fa-solid fa-check-circle text-emerald-500 mr-3"></i>
-                            <span class="text-gray-700">View and pay fees online</span>
+                            <span class="text-gray-700 text-sm md:text-base">View and pay fees online</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fa-solid fa-check-circle text-emerald-500 mr-3"></i>
-                            <span class="text-gray-700">Check room allocation</span>
+                            <span class="text-gray-700 text-sm md:text-base">Check room allocation</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fa-solid fa-check-circle text-emerald-500 mr-3"></i>
-                            <span class="text-gray-700">View notices and announcements</span>
+                            <span class="text-gray-700 text-sm md:text-base">View notices and announcements</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fa-solid fa-check-circle text-emerald-500 mr-3"></i>
-                            <span class="text-gray-700">Submit maintenance requests</span>
+                            <span class="text-gray-700 text-sm md:text-base">Submit maintenance requests</span>
                         </li>
                     </ul>
                     
@@ -851,31 +987,31 @@
                 <!-- Management Portal -->
                 <div class="contact-card">
                     <div class="flex items-start mb-6">
-                        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mr-4">
-                            <i class="fa-solid fa-chart-line text-white text-2xl"></i>
+                        <div class="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mr-3 md:mr-4">
+                            <i class="fa-solid fa-chart-line text-white text-xl md:text-2xl"></i>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Management Portal</h3>
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-2">Management Portal</h3>
                             <p class="text-gray-600">For administrative and management staff</p>
                         </div>
                     </div>
                     
-                    <ul class="space-y-3 mb-8">
+                    <ul class="space-y-3 mb-6 md:mb-8">
                         <li class="flex items-center">
                             <i class="fa-solid fa-check-circle text-emerald-500 mr-3"></i>
-                            <span class="text-gray-700">Fee collection management</span>
+                            <span class="text-gray-700 text-sm md:text-base">Fee collection management</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fa-solid fa-check-circle text-emerald-500 mr-3"></i>
-                            <span class="text-gray-700">Expense tracking and reporting</span>
+                            <span class="text-gray-700 text-sm md:text-base">Expense tracking and reporting</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fa-solid fa-check-circle text-emerald-500 mr-3"></i>
-                            <span class="text-gray-700">Student records management</span>
+                            <span class="text-gray-700 text-sm md:text-base">Student records management</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fa-solid fa-check-circle text-emerald-500 mr-3"></i>
-                            <span class="text-gray-700">Financial analytics and insights</span>
+                            <span class="text-gray-700 text-sm md:text-base">Financial analytics and insights</span>
                         </li>
                     </ul>
                     
@@ -890,71 +1026,71 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-20 bg-gradient-to-br from-slate-900 to-gray-900">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
+    <section id="contact" class="py-12 md:py-20 bg-gradient-to-br from-slate-900 to-gray-900">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="text-center mb-12 md:mb-16">
                 <span class="badge bg-white/10 text-white mb-4">
                     <i class="fa-solid fa-phone mr-2"></i>
                     Get In Touch
                 </span>
-                <h2 class="text-4xl font-bold text-white mb-4">Contact Information</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Contact Information</h2>
                 <div class="section-divider mb-6"></div>
-                <p class="text-lg text-gray-300 max-w-3xl mx-auto">
+                <p class="text-base md:text-lg text-gray-300 max-w-3xl mx-auto">
                     Reach out to us for inquiries, admissions, or support.
                 </p>
             </div>
             
-            <div class="grid lg:grid-cols-3 gap-8">
-                <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-                    <div class="flex items-center mb-6">
-                        <div class="w-14 h-14 rounded-xl bg-cyan-500/20 flex items-center justify-center mr-4">
-                            <i class="fa-solid fa-location-dot text-cyan-400 text-xl"></i>
+            <div class="grid lg:grid-cols-3 gap-6 md:gap-8">
+                <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
+                    <div class="flex items-start mb-6">
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-cyan-500/20 flex items-center justify-center mr-3 md:mr-4">
+                            <i class="fa-solid fa-location-dot text-cyan-400 text-lg md:text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="text-xl font-bold text-white mb-1">Address</h4>
-                            <p class="text-gray-300">Plot #206, opposite to Broadway Pizza/ Blessing College of Nursing, 100 feet road, cooperative housing Society, Sukkur.</p>
+                            <h4 class="text-lg md:text-xl font-bold text-white mb-1">Address</h4>
+                            <p class="text-gray-300 text-sm md:text-base">Plot #206, opposite to Broadway Pizza/ Blessing College of Nursing, 100 feet road, cooperative housing Society, Sukkur.</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-                    <div class="flex items-center mb-6">
-                        <div class="w-14 h-14 rounded-xl bg-amber-500/20 flex items-center justify-center mr-4">
-                            <i class="fa-solid fa-phone text-amber-400 text-xl"></i>
+                <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
+                    <div class="flex items-start mb-6">
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-amber-500/20 flex items-center justify-center mr-3 md:mr-4">
+                            <i class="fa-solid fa-phone text-amber-400 text-lg md:text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="text-xl font-bold text-white mb-1">Phone Numbers</h4>
-                            <p class="text-gray-300">0319-5738738</p>
-                            <p class="text-gray-300">0313-7352949</p>
-                            <p class="text-gray-300">0315-3491876</p>
+                            <h4 class="text-lg md:text-xl font-bold text-white mb-1">Phone Numbers</h4>
+                            <p class="text-gray-300 text-sm md:text-base">0319-5738738</p>
+                            <p class="text-gray-300 text-sm md:text-base">0313-7352949</p>
+                            <p class="text-gray-300 text-sm md:text-base">0315-3491876</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-                    <div class="flex items-center mb-6">
-                        <div class="w-14 h-14 rounded-xl bg-emerald-500/20 flex items-center justify-center mr-4">
-                            <i class="fa-solid fa-envelope text-emerald-400 text-xl"></i>
+                <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
+                    <div class="flex items-start mb-6">
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-emerald-500/20 flex items-center justify-center mr-3 md:mr-4">
+                            <i class="fa-solid fa-envelope text-emerald-400 text-lg md:text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="text-xl font-bold text-white mb-1">Nearby Institutions</h4>
-                            <p class="text-gray-300">IBA University Sukkur</p>
-                            <p class="text-gray-300">Blessing Nursing College</p>
-                            <p class="text-gray-300">Visionary Nursing College</p>
+                            <h4 class="text-lg md:text-xl font-bold text-white mb-1">Nearby Institutions</h4>
+                            <p class="text-gray-300 text-sm md:text-base">IBA University Sukkur</p>
+                            <p class="text-gray-300 text-sm md:text-base">Blessing Nursing College</p>
+                            <p class="text-gray-300 text-sm md:text-base">Visionary Nursing College</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="mt-12 text-center">
-                <div class="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+            <div class="mt-8 md:mt-12 text-center">
+                <div class="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/5 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
                     <div class="text-left">
-                        <h4 class="text-xl font-bold text-white mb-2">Strategic Locations</h4>
-                        <p class="text-gray-300">• IBA University Sukkur</p>
-                        <p class="text-gray-300">• School of Excellence</p>
-                        <p class="text-gray-300">• 1122 Ambulance Service</p>
+                        <h4 class="text-lg md:text-xl font-bold text-white mb-2">Strategic Locations</h4>
+                        <p class="text-gray-300 text-sm md:text-base">• IBA University Sukkur</p>
+                        <p class="text-gray-300 text-sm md:text-base">• School of Excellence</p>
+                        <p class="text-gray-300 text-sm md:text-base">• 1122 Ambulance Service</p>
                     </div>
-                    <div class="flex gap-4">
+                    <div class="flex flex-col sm:flex-row gap-4">
                         <a href="tel:03195738738" 
                            class="btn-primary whitespace-nowrap">
                             <i class="fa-solid fa-phone mr-2"></i>
@@ -972,45 +1108,47 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid md:grid-cols-4 gap-8">
+    <footer class="bg-gray-900 text-white py-8 md:py-12">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="grid md:grid-cols-4 gap-6 md:gap-8">
                 <div>
                     <div class="flex items-center space-x-3 mb-6">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                            <i class="fa-solid fa-building text-white"></i>
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center overflow-hidden">
+                            <img src="https://i.postimg.cc/RFFccnLV/2-removebg-preview.png" 
+                                 alt="Indus Boys Hostel Logo" 
+                                 class="w-8 h-8 md:w-10 md:h-10 object-contain">
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold">Indus Boys Hostel</h3>
-                            <p class="text-sm text-gray-400">Excellence in Student Living</p>
+                            <h3 class="text-lg md:text-xl font-bold">Indus Boys Hostel</h3>
+                            <p class="text-xs text-gray-400">Excellence in Student Living</p>
                         </div>
                     </div>
-                    <p class="text-gray-400 mb-6">
+                    <p class="text-gray-400 mb-6 text-sm md:text-base">
                         Providing premium accommodation with modern amenities 
                         for students since 2010. Clean & Green hygienic environment.
                     </p>
                 </div>
                 
                 <div>
-                    <h4 class="text-lg font-bold mb-6 text-white">Quick Links</h4>
+                    <h4 class="text-base md:text-lg font-bold mb-6 text-white">Quick Links</h4>
                     <div class="space-y-3">
-                        <a href="#home" class="block text-gray-400 hover:text-cyan-400 transition">Home</a>
-                        <a href="#about" class="block text-gray-400 hover:text-cyan-400 transition">About Us</a>
-                        <a href="#facilities" class="block text-gray-400 hover:text-cyan-400 transition">Facilities</a>
-                        <a href="#menu" class="block text-gray-400 hover:text-cyan-400 transition">Weekly Menu</a>
+                        <a href="#home" class="block text-gray-400 hover:text-cyan-400 transition text-sm md:text-base">Home</a>
+                        <a href="#about" class="block text-gray-400 hover:text-cyan-400 transition text-sm md:text-base">About Us</a>
+                        <a href="#facilities" class="block text-gray-400 hover:text-cyan-400 transition text-sm md:text-base">Facilities</a>
+                        <a href="#menu" class="block text-gray-400 hover:text-cyan-400 transition text-sm md:text-base">Weekly Menu</a>
                     </div>
                 </div>
                 
                 <div>
-                    <h4 class="text-lg font-bold mb-6 text-white">Access Portals</h4>
+                    <h4 class="text-base md:text-lg font-bold mb-6 text-white">Access Portals</h4>
                     <div class="space-y-3">
                         <button onclick="showMenuModal()" 
-                                class="block text-gray-400 hover:text-emerald-400 transition">
+                                class="block text-gray-400 hover:text-emerald-400 transition text-sm md:text-base">
                             <i class="fa-solid fa-utensils mr-2"></i>
                             Today's Menu
                         </button>
                         <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/student_portal_ibh.html" 
-                           class="block text-gray-400 hover:text-cyan-400 transition">
+                           class="block text-gray-400 hover:text-cyan-400 transition text-sm md:text-base">
                             <i class="fa-solid fa-graduation-cap mr-2"></i>
                             Student Portal
                         </a>
@@ -1018,30 +1156,30 @@
                 </div>
                 
                 <div>
-                    <h4 class="text-lg font-bold mb-6 text-white">Connect With Us</h4>
-                    <div class="flex space-x-4 mb-6">
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-cyan-600 transition">
+                    <h4 class="text-base md:text-lg font-bold mb-6 text-white">Connect With Us</h4>
+                    <div class="flex space-x-3 md:space-x-4 mb-6">
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-cyan-600 transition">
                             <i class="fa-brands fa-facebook-f"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-500 transition">
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-500 transition">
                             <i class="fa-brands fa-twitter"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 transition">
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 transition">
                             <i class="fa-brands fa-instagram"></i>
                         </a>
-                        <a href="https://wa.me/923195738738" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 transition">
+                        <a href="https://wa.me/923195738738" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 transition">
                             <i class="fa-brands fa-whatsapp"></i>
                         </a>
                     </div>
                 </div>
             </div>
             
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center">
-                <p class="text-gray-400">
+            <div class="border-t border-gray-800 mt-8 md:mt-12 pt-6 md:pt-8 text-center">
+                <p class="text-gray-400 text-sm md:text-base">
                     © 2025 Indus Boys Hostel. All rights reserved. | 
                     <span class="text-cyan-400">Designed for Excellence</span>
                 </p>
-                <p class="text-gray-500 text-sm mt-2">
+                <p class="text-gray-500 text-xs md:text-sm mt-2">
                     24/7 Electricity & Backup • High-Speed WiFi • Pure Drinking Water • Daily Newspaper
                 </p>
             </div>
@@ -1052,18 +1190,18 @@
     <div id="menuModal" class="modal-overlay hidden">
         <div class="modal-content menu-modal">
             <div class="text-center mb-6">
-                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-utensils text-white text-2xl"></i>
+                <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-utensils text-white text-xl md:text-2xl"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-900" id="modalTitle">Today's Menu</h3>
-                <p class="text-gray-600 mt-2" id="modalDate"></p>
+                <h3 class="text-xl md:text-2xl font-bold text-gray-900" id="modalTitle">Today's Menu</h3>
+                <p class="text-gray-600 mt-2 text-sm md:text-base" id="modalDate"></p>
             </div>
             
-            <div class="space-y-6" id="modalMealsContent">
+            <div class="space-y-4 md:space-y-6" id="modalMealsContent">
                 <!-- Dynamic content will be inserted here -->
             </div>
             
-            <div class="flex gap-3 mt-8">
+            <div class="flex flex-col sm:flex-row gap-3 mt-6 md:mt-8">
                 <button type="button" 
                         onclick="closeMenuModal()"
                         class="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
@@ -1090,21 +1228,21 @@
     <div id="fullMenuModal" class="modal-overlay hidden">
         <div class="modal-content menu-modal">
             <div class="text-center mb-6">
-                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-calendar-week text-white text-2xl"></i>
+                <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-calendar-week text-white text-xl md:text-2xl"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-900">Weekly Meal Plan</h3>
-                <p class="text-gray-600 mt-2">Complete menu for the entire week</p>
+                <h3 class="text-xl md:text-2xl font-bold text-gray-900">Weekly Meal Plan</h3>
+                <p class="text-gray-600 mt-2 text-sm md:text-base">Complete menu for the entire week</p>
             </div>
             
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-600">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3">Day</th>
-                            <th class="px-4 py-3">Breakfast</th>
-                            <th class="px-4 py-3">Lunch</th>
-                            <th class="px-4 py-3">Dinner</th>
+                            <th class="px-3 py-2 md:px-4 md:py-3">Day</th>
+                            <th class="px-3 py-2 md:px-4 md:py-3">Breakfast</th>
+                            <th class="px-3 py-2 md:px-4 md:py-3">Lunch</th>
+                            <th class="px-3 py-2 md:px-4 md:py-3">Dinner</th>
                         </tr>
                     </thead>
                     <tbody id="weeklyMenuTable">
@@ -1113,9 +1251,9 @@
                 </table>
             </div>
             
-            <div class="mt-6 p-4 bg-cyan-50 rounded-lg">
+            <div class="mt-6 p-3 md:p-4 bg-cyan-50 rounded-lg">
                 <h4 class="font-bold text-gray-900 mb-2">Meal Timings:</h4>
-                <div class="grid grid-cols-3 gap-2 text-sm">
+                <div class="grid grid-cols-3 gap-2 text-xs md:text-sm">
                     <div class="text-center p-2 bg-white rounded">
                         <div class="font-bold text-cyan-600">Breakfast</div>
                         <div>7:30 AM - 9:30 AM</div>
@@ -1131,7 +1269,7 @@
                 </div>
             </div>
             
-            <div class="flex gap-3 mt-8">
+            <div class="flex flex-col sm:flex-row gap-3 mt-6 md:mt-8">
                 <button type="button" 
                         onclick="closeFullMenuModal()"
                         class="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
@@ -1150,11 +1288,11 @@
     <div id="managementAccessModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="text-center mb-6">
-                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-lock text-white text-2xl"></i>
+                <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-lock text-white text-xl md:text-2xl"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-900">Secure Access</h3>
-                <p class="text-gray-600 mt-2">Enter management access code</p>
+                <h3 class="text-xl md:text-2xl font-bold text-gray-900">Secure Access</h3>
+                <p class="text-gray-600 mt-2 text-sm md:text-base">Enter management access code</p>
             </div>
             
             <form id="accessForm" onsubmit="checkAccessCode(event)" class="space-y-4">
@@ -1176,7 +1314,7 @@
                     <span id="errorText">Invalid access code. Please try again.</span>
                 </div>
                 
-                <div class="flex gap-3">
+                <div class="flex flex-col sm:flex-row gap-3">
                     <button type="button" 
                             onclick="closeManagementAccessModal()"
                             class="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
@@ -1201,7 +1339,7 @@
     </div>
 
     <!-- Back to Top Button -->
-    <button id="backToTop" class="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-xl hover:shadow-2xl transition-all hidden z-40">
+    <button id="backToTop" class="fixed bottom-6 right-6 w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-xl hover:shadow-2xl transition-all hidden z-40">
         <i class="fa-solid fa-arrow-up text-lg"></i>
     </button>
 
@@ -1305,15 +1443,15 @@
             // Add meal cards
             Object.entries(meals).forEach(([mealType, meal]) => {
                 const mealCard = document.createElement('div');
-                mealCard.className = 'meal-card rounded-xl p-4 border border-gray-200 animate-slide-in';
+                mealCard.className = 'meal-card rounded-xl p-3 md:p-4 border border-gray-200 animate-slide-in';
                 mealCard.innerHTML = `
-                    <div class="flex items-center justify-between mb-2">
-                        <h4 class="font-bold text-gray-900 capitalize">${mealType}</h4>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
+                        <h4 class="font-bold text-gray-900 capitalize text-sm md:text-base">${mealType}</h4>
                         <span class="bg-cyan-100 text-cyan-800 text-xs px-3 py-1 rounded-full font-medium">
                             ${MEAL_TIMINGS[mealType]}
                         </span>
                     </div>
-                    <p class="text-gray-700">${meal}</p>
+                    <p class="text-gray-700 text-sm md:text-base">${meal}</p>
                 `;
                 container.appendChild(mealCard);
             });
@@ -1336,11 +1474,11 @@
             // Add meal cards
             Object.entries(meals).forEach(([mealType, meal]) => {
                 const mealCard = document.createElement('div');
-                mealCard.className = 'meal-card rounded-xl p-5 border border-gray-200';
+                mealCard.className = 'meal-card rounded-xl p-4 md:p-5 border border-gray-200';
                 mealCard.innerHTML = `
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center">
-                            <div class="w-10 h-10 rounded-lg ${
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg ${
                                 mealType === 'breakfast' ? 'bg-amber-100' : 
                                 mealType === 'lunch' ? 'bg-emerald-100' : 'bg-cyan-100'
                             } flex items-center justify-center mr-3">
@@ -1352,13 +1490,13 @@
                                     mealType === 'lunch' ? 'emerald' : 'cyan'
                                 }-600"></i>
                             </div>
-                            <h4 class="font-bold text-gray-900 text-lg capitalize">${mealType}</h4>
+                            <h4 class="font-bold text-gray-900 text-base md:text-lg capitalize">${mealType}</h4>
                         </div>
                         <span class="bg-gray-100 text-gray-800 text-xs px-3 py-1 rounded-full font-medium">
                             ${MEAL_TIMINGS[mealType]}
                         </span>
                     </div>
-                    <p class="text-gray-700 text-lg font-medium">${meal}</p>
+                    <p class="text-gray-700 text-base md:text-lg font-medium">${meal}</p>
                 `;
                 container.appendChild(mealCard);
             });
@@ -1376,12 +1514,12 @@
                     row.className += ' bg-cyan-50';
                 }
                 row.innerHTML = `
-                    <td class="px-4 py-3 font-medium text-gray-900 ${day === getCurrentDay() ? 'text-cyan-600' : ''}">
+                    <td class="px-3 py-2 md:px-4 md:py-3 font-medium text-gray-900 ${day === getCurrentDay() ? 'text-cyan-600' : ''}">
                         ${day}
                     </td>
-                    <td class="px-4 py-3">${meals.breakfast}</td>
-                    <td class="px-4 py-3">${meals.lunch}</td>
-                    <td class="px-4 py-3">${meals.dinner}</td>
+                    <td class="px-3 py-2 md:px-4 md:py-3 text-sm md:text-base">${meals.breakfast}</td>
+                    <td class="px-3 py-2 md:px-4 md:py-3 text-sm md:text-base">${meals.lunch}</td>
+                    <td class="px-3 py-2 md:px-4 md:py-3 text-sm md:text-base">${meals.dinner}</td>
                 `;
                 container.appendChild(row);
             });
@@ -1396,7 +1534,7 @@
             document.getElementById('menuModal').classList.remove('hidden');
             
             // Close mobile menu if open
-            document.getElementById('mobileMenu').classList.add('hidden');
+            closeMobileMenu();
         }
 
         function showTomorrowMeals() {
@@ -1429,11 +1567,16 @@
             document.getElementById('fullMenuModal').classList.remove('hidden');
             
             // Close mobile menu if open
-            document.getElementById('mobileMenu').classList.add('hidden');
+            closeMobileMenu();
         }
 
         function closeFullMenuModal() {
             document.getElementById('fullMenuModal').classList.add('hidden');
+        }
+
+        // Mobile Menu Functions
+        function closeMobileMenu() {
+            document.getElementById('mobileMenu').classList.add('hidden');
         }
 
         // Load attempts from localStorage
@@ -1477,7 +1620,7 @@
             document.getElementById('accessCode').focus();
             
             // Close mobile menu if open
-            document.getElementById('mobileMenu').classList.add('hidden');
+            closeMobileMenu();
         }
 
         function closeManagementAccessModal() {
@@ -1494,12 +1637,12 @@
             form.classList.add('hidden');
             
             const lockedContent = `
-                <div class="text-center py-8">
-                    <div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-ban text-red-600 text-3xl"></i>
+                <div class="text-center py-6 md:py-8">
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-ban text-red-600 text-2xl md:text-3xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Access Temporarily Locked</h3>
-                    <p class="text-gray-600 mb-4">Too many incorrect attempts. Please try again in 30 seconds.</p>
+                    <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-2">Access Temporarily Locked</h3>
+                    <p class="text-gray-600 mb-4 text-sm md:text-base">Too many incorrect attempts. Please try again in 30 seconds.</p>
                     <button onclick="resetAccessForm()" 
                             class="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-200 transition">
                         Try Again
@@ -1518,11 +1661,11 @@
                 // Reset modal content
                 modal.querySelector('.modal-content').innerHTML = `
                     <div class="text-center mb-6">
-                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mx-auto mb-4">
-                            <i class="fa-solid fa-lock text-white text-2xl"></i>
+                        <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mx-auto mb-4">
+                            <i class="fa-solid fa-lock text-white text-xl md:text-2xl"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900">Secure Access</h3>
-                        <p class="text-gray-600 mt-2">Enter management access code</p>
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-900">Secure Access</h3>
+                        <p class="text-gray-600 mt-2 text-sm md:text-base">Enter management access code</p>
                     </div>
                     
                     <form id="accessForm" onsubmit="checkAccessCode(event)" class="space-y-4">
@@ -1544,7 +1687,7 @@
                             <span id="errorText">Invalid access code. Please try again.</span>
                         </div>
                         
-                        <div class="flex gap-3">
+                        <div class="flex flex-col sm:flex-row gap-3">
                             <button type="button" 
                                     onclick="closeManagementAccessModal()"
                                     class="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
@@ -1592,14 +1735,14 @@
                     // Show success message
                     const modal = document.getElementById('managementAccessModal');
                     modal.querySelector('.modal-content').innerHTML = `
-                        <div class="text-center py-8">
-                            <div class="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-                                <i class="fa-solid fa-check text-emerald-600 text-3xl"></i>
+                        <div class="text-center py-6 md:py-8">
+                            <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-check text-emerald-600 text-2xl md:text-3xl"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">Access Granted</h3>
-                            <p class="text-gray-600 mb-6">Redirecting to Management Portal...</p>
-                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mx-auto">
-                                <i class="fa-solid fa-spinner fa-spin text-white text-2xl"></i>
+                            <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-2">Access Granted</h3>
+                            <p class="text-gray-600 mb-6 text-sm md:text-base">Redirecting to Management Portal...</p>
+                            <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mx-auto">
+                                <i class="fa-solid fa-spinner fa-spin text-white text-xl md:text-2xl"></i>
                             </div>
                         </div>
                     `;
@@ -1656,8 +1799,12 @@
         const menuToggle = document.getElementById('menuToggle');
         const mobileMenu = document.getElementById('mobileMenu');
         
-        menuToggle.addEventListener('click', () => {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
             mobileMenu.classList.toggle('hidden');
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('mobile-menu-enter');
+            }
         });
         
         // Close mobile menu when clicking outside
@@ -1665,6 +1812,13 @@
             if (!menuToggle.contains(e.target) && !mobileMenu.contains(e.target)) {
                 mobileMenu.classList.add('hidden');
             }
+        });
+        
+        // Close mobile menu when clicking on links
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
         });
         
         // Back to top button
@@ -1692,7 +1846,7 @@
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
                     // Close mobile menu if open
-                    mobileMenu.classList.add('hidden');
+                    closeMobileMenu();
                     
                     window.scrollTo({
                         top: targetElement.offsetTop - 80,
