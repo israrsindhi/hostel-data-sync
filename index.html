@@ -280,6 +280,86 @@
         .hidden {
             display: none;
         }
+        
+        /* Meal Section Styles */
+        .menu-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://i.postimg.cc/nz4M1Z7t/ok.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+        
+        .menu-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(14, 165, 233, 0.1), rgba(245, 158, 11, 0.1));
+            z-index: 1;
+        }
+        
+        .menu-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .meal-tab {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .timing-badge {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .day-active {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .meal-card {
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .meal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Menu Modal Styles */
+        .menu-modal {
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .meal-time-item {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        /* Animation for meal cards */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -301,13 +381,18 @@
                     <a href="#home" class="nav-link">Home</a>
                     <a href="#about" class="nav-link">About</a>
                     <a href="#facilities" class="nav-link">Facilities</a>
+                    <a href="#menu" class="nav-link">Weekly Menu</a>
                     <a href="#portals" class="nav-link">Portals</a>
                     <a href="#contact" class="nav-link">Contact</a>
                 </div>
                 
                 <div class="flex items-center space-x-4">
+                    <button onclick="showMenuModal()" class="btn-primary text-sm">
+                        <i class="fa-solid fa-utensils mr-2"></i>
+                        Today's Menu
+                    </button>
                     <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/student_portal_ibh.html" 
-                       class="btn-primary text-sm">
+                       class="btn-secondary text-sm">
                         <i class="fa-solid fa-graduation-cap mr-2"></i>
                         Student Portal
                     </a>
@@ -324,13 +409,20 @@
                 <a href="#home" class="block py-2 font-medium text-gray-800 hover:text-cyan-600">Home</a>
                 <a href="#about" class="block py-2 font-medium text-gray-800 hover:text-cyan-600">About</a>
                 <a href="#facilities" class="block py-2 font-medium text-gray-800 hover:text-cyan-600">Facilities</a>
+                <a href="#menu" class="block py-2 font-medium text-gray-800 hover:text-cyan-600">Weekly Menu</a>
                 <a href="#portals" class="block py-2 font-medium text-gray-800 hover:text-cyan-600">Portals</a>
                 <a href="#contact" class="block py-2 font-medium text-gray-800 hover:text-cyan-600">Contact</a>
-                <button onclick="showManagementAccessModal()" 
-                        class="btn-secondary w-full justify-center mt-4">
-                    <i class="fa-solid fa-chart-line mr-2"></i>
-                    Management Portal
-                </button>
+                <div class="pt-4 border-t">
+                    <button onclick="showMenuModal()" class="btn-primary w-full justify-center mb-3">
+                        <i class="fa-solid fa-utensils mr-2"></i>
+                        Today's Menu
+                    </button>
+                    <button onclick="showManagementAccessModal()" 
+                            class="btn-secondary w-full justify-center">
+                        <i class="fa-solid fa-chart-line mr-2"></i>
+                        Management Portal
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -365,72 +457,27 @@
                             <i class="fa-solid fa-graduation-cap mr-2"></i>
                             Student Portal
                         </a>
-                        <button onclick="showManagementAccessModal()" 
-                                class="bg-white/20 text-white px-8 py-3.5 rounded-lg font-semibold hover:bg-white/30 transition">
-                            <i class="fa-solid fa-chart-line mr-2"></i>
-                            Management Portal
+                        <button onclick="showMenuModal()" 
+                                class="bg-emerald-500 text-white px-8 py-3.5 rounded-lg font-semibold hover:bg-emerald-600 transition">
+                            <i class="fa-solid fa-utensils mr-2"></i>
+                            View Today's Menu
                         </button>
                     </div>
                 </div>
                 
                 <div class="relative">
-                    <div class="bg-white rounded-3xl p-2 shadow-2xl floating">
-                        <div class="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8">
-                            <div class="text-center mb-8">
-                                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mx-auto mb-6">
-                                    <i class="fa-solid fa-key text-white text-3xl"></i>
-                                </div>
-                                <h3 class="text-2xl font-bold text-gray-900">Secure Access Portals</h3>
-                                <p class="text-gray-600 mt-2">Choose your dedicated portal</p>
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl">
+                        <img src="https://i.postimg.cc/nz4M1Z7t/ok.jpg" alt="Indus Boys Hostel" class="w-full h-auto">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                    </div>
+                    <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl p-6 shadow-2xl">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                                <i class="fa-solid fa-users text-white text-xl"></i>
                             </div>
-                            
-                            <div class="space-y-4">
-                                <!-- Student Portal Card -->
-                                <div class="portal-card bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-6">
-                                    <div class="flex items-center">
-                                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mr-4">
-                                            <i class="fa-solid fa-user-graduate text-white text-xl"></i>
-                                        </div>
-                                        <div class="flex-1">
-                                            <h4 class="font-bold text-gray-900 text-lg">Student Portal</h4>
-                                            <p class="text-sm text-gray-600">Access fees, room details, notices</p>
-                                        </div>
-                                        <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/student_portal_ibh.html" 
-                                           class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow hover:shadow-md transition">
-                                            <i class="fa-solid fa-arrow-right text-cyan-600"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                
-                                <!-- Management Portal Card -->
-                                <div class="portal-card bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-6">
-                                    <div class="flex items-center">
-                                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mr-4">
-                                            <i class="fa-solid fa-chart-line text-white text-xl"></i>
-                                        </div>
-                                        <div class="flex-1">
-                                            <h4 class="font-bold text-gray-900 text-lg">Management Portal</h4>
-                                            <p class="text-sm text-gray-600">Administrative & financial management</p>
-                                        </div>
-                                        <button onclick="showManagementAccessModal()" 
-                                                class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow hover:shadow-md transition">
-                                            <i class="fa-solid fa-lock text-amber-600"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-8 pt-6 border-t border-gray-200">
-                                <div class="flex items-center justify-center space-x-6 text-sm text-gray-500">
-                                    <span class="flex items-center">
-                                        <i class="fa-solid fa-shield-check text-emerald-500 mr-2"></i>
-                                        Secure Access
-                                    </span>
-                                    <span class="flex items-center">
-                                        <i class="fa-solid fa-lock text-amber-500 mr-2"></i>
-                                        Password Protected
-                                    </span>
-                                </div>
+                            <div>
+                                <div class="text-2xl font-bold text-gray-900">50+</div>
+                                <div class="text-sm text-gray-600">Happy Residents</div>
                             </div>
                         </div>
                     </div>
@@ -465,6 +512,103 @@
                     <div class="text-3xl font-bold text-gray-900 mb-2">100%</div>
                     <div class="text-gray-600">Satisfaction</div>
                     <div class="text-xs text-gray-400 mt-1">Student Feedback</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Weekly Menu Section -->
+    <section id="menu" class="py-20 menu-section">
+        <div class="max-w-7xl mx-auto px-6 menu-content">
+            <div class="text-center mb-16">
+                <span class="badge bg-white/20 text-white mb-4">
+                    <i class="fa-solid fa-utensils mr-2"></i>
+                    Dining Services
+                </span>
+                <h2 class="text-4xl font-bold text-white mb-4">Weekly Meal Plan</h2>
+                <div class="section-divider mb-6"></div>
+                <p class="text-lg text-gray-300 max-w-3xl mx-auto">
+                    Nutritious and delicious meals served daily with hygienic preparation
+                </p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Today's Meals Card -->
+                <div class="meal-tab rounded-2xl p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mr-4">
+                            <i class="fa-solid fa-calendar-day text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Today's Meals</h3>
+                            <p class="text-gray-600" id="currentDate"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6" id="todaysMeals">
+                        <!-- Dynamic content will be inserted here -->
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <button onclick="showTomorrowMeals()" 
+                                    class="text-cyan-600 hover:text-cyan-700 font-medium flex items-center">
+                                <i class="fa-solid fa-arrow-right mr-2"></i>
+                                View Tomorrow's Menu
+                            </button>
+                            <button onclick="showFullMenuModal()" 
+                                    class="text-gray-600 hover:text-gray-800 font-medium flex items-center">
+                                <i class="fa-solid fa-calendar-week mr-2"></i>
+                                Full Weekly Menu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Meal Timings Card -->
+                <div class="meal-tab rounded-2xl p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mr-4">
+                            <i class="fa-solid fa-clock text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Meal Timings</h3>
+                            <p class="text-gray-600">Daily serving schedule</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="meal-time-item rounded-xl p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-bold text-gray-900">Breakfast</h4>
+                                <span class="timing-badge px-3 py-1 rounded-full text-sm font-medium">7:30 AM - 9:30 AM</span>
+                            </div>
+                            <p class="text-gray-600 text-sm">Start your day with a nutritious breakfast</p>
+                        </div>
+                        
+                        <div class="meal-time-item rounded-xl p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-bold text-gray-900">Lunch</h4>
+                                <span class="timing-badge px-3 py-1 rounded-full text-sm font-medium">1:00 PM - 3:00 PM</span>
+                            </div>
+                            <p class="text-gray-600 text-sm">Hearty lunch to keep you energized</p>
+                        </div>
+                        
+                        <div class="meal-time-item rounded-xl p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-bold text-gray-900">Dinner</h4>
+                                <span class="timing-badge px-3 py-1 rounded-full text-sm font-medium">7:30 PM - 9:30 PM</span>
+                            </div>
+                            <p class="text-gray-600 text-sm">Delicious dinner to end your day</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <p class="text-sm text-gray-600">
+                            <i class="fa-solid fa-info-circle mr-2 text-cyan-600"></i>
+                            Special dietary requirements can be arranged upon request
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -724,7 +868,7 @@
                         </div>
                         <div>
                             <h4 class="text-xl font-bold text-white mb-1">Address</h4>
-                            <p class="text-gray-300">Hostel Street, DHA Phase 1, Karachi</p>
+                            <p class="text-gray-300">Bungalow #, 100 feet road opposite Broadway Pizza/ Blessing Nursing College cooperative housing Society, Sukkur.</p>
                         </div>
                     </div>
                 </div>
@@ -735,8 +879,10 @@
                             <i class="fa-solid fa-phone text-amber-400 text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="text-xl font-bold text-white mb-1">Phone Number</h4>
-                            <p class="text-gray-300">0333-1234567</p>
+                            <h4 class="text-xl font-bold text-white mb-1">Phone Numbers</h4>
+                            <p class="text-gray-300">0319-5738738</p>
+                            <p class="text-gray-300">0313-7352949</p>
+                            <p class="text-gray-300">0315-3491876</p>
                         </div>
                     </div>
                 </div>
@@ -747,8 +893,10 @@
                             <i class="fa-solid fa-envelope text-emerald-400 text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="text-xl font-bold text-white mb-1">Email</h4>
-                            <p class="text-gray-300">info@indusboyshostel.pk</p>
+                            <h4 class="text-xl font-bold text-white mb-1">Nearby Institutions</h4>
+                            <p class="text-gray-300">IBA University Sukkur</p>
+                            <p class="text-gray-300">Blessing Nursing College</p>
+                            <p class="text-gray-300">Visionary Nursing College</p>
                         </div>
                     </div>
                 </div>
@@ -757,21 +905,22 @@
             <div class="mt-12 text-center">
                 <div class="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
                     <div class="text-left">
-                        <h4 class="text-xl font-bold text-white mb-2">Office Hours</h4>
-                        <p class="text-gray-300">Monday - Saturday: 9:00 AM - 6:00 PM</p>
-                        <p class="text-gray-300">Sunday: 10:00 AM - 4:00 PM</p>
+                        <h4 class="text-xl font-bold text-white mb-2">Strategic Locations</h4>
+                        <p class="text-gray-300">• IBA University Sukkur</p>
+                        <p class="text-gray-300">• School of Excellence</p>
+                        <p class="text-gray-300">• 1122 Ambulance Service</p>
                     </div>
                     <div class="flex gap-4">
-                        <a href="tel:03331234567" 
+                        <a href="tel:03195738738" 
                            class="btn-primary whitespace-nowrap">
                             <i class="fa-solid fa-phone mr-2"></i>
                             Call Now
                         </a>
-                        <a href="mailto:info@indusboyshostel.pk" 
+                        <button onclick="showFullMenuModal()" 
                            class="btn-secondary whitespace-nowrap">
-                            <i class="fa-solid fa-envelope mr-2"></i>
-                            Email Us
-                        </a>
+                            <i class="fa-solid fa-utensils mr-2"></i>
+                            View Full Menu
+                        </button>
                     </div>
                 </div>
             </div>
@@ -794,7 +943,7 @@
                     </div>
                     <p class="text-gray-400 mb-6">
                         Providing premium accommodation with modern amenities 
-                        for students since 2010.
+                        for students since 2010. Clean & Green hygienic environment.
                     </p>
                 </div>
                 
@@ -804,23 +953,23 @@
                         <a href="#home" class="block text-gray-400 hover:text-cyan-400 transition">Home</a>
                         <a href="#about" class="block text-gray-400 hover:text-cyan-400 transition">About Us</a>
                         <a href="#facilities" class="block text-gray-400 hover:text-cyan-400 transition">Facilities</a>
-                        <a href="#contact" class="block text-gray-400 hover:text-cyan-400 transition">Contact</a>
+                        <a href="#menu" class="block text-gray-400 hover:text-cyan-400 transition">Weekly Menu</a>
                     </div>
                 </div>
                 
                 <div>
                     <h4 class="text-lg font-bold mb-6 text-white">Access Portals</h4>
                     <div class="space-y-3">
+                        <button onclick="showMenuModal()" 
+                                class="block text-gray-400 hover:text-emerald-400 transition">
+                            <i class="fa-solid fa-utensils mr-2"></i>
+                            Today's Menu
+                        </button>
                         <a href="https://israrsindhi.github.io/Indus-Boys-Hostel-/student_portal_ibh.html" 
                            class="block text-gray-400 hover:text-cyan-400 transition">
                             <i class="fa-solid fa-graduation-cap mr-2"></i>
                             Student Portal
                         </a>
-                        <button onclick="showManagementAccessModal()" 
-                                class="block text-gray-400 hover:text-amber-400 transition">
-                            <i class="fa-solid fa-chart-line mr-2"></i>
-                            Management Portal
-                        </button>
                     </div>
                 </div>
                 
@@ -836,7 +985,7 @@
                         <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 transition">
                             <i class="fa-brands fa-instagram"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 transition">
+                        <a href="https://wa.me/923195738738" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 transition">
                             <i class="fa-brands fa-whatsapp"></i>
                         </a>
                     </div>
@@ -849,11 +998,109 @@
                     <span class="text-cyan-400">Designed for Excellence</span>
                 </p>
                 <p class="text-gray-500 text-sm mt-2">
-                    Address: Hostel Street, DHA Phase 1, Karachi | Phone: 0333-1234567
+                    24/7 Electricity & Backup • High-Speed WiFi • Pure Drinking Water • Daily Newspaper
                 </p>
             </div>
         </div>
     </footer>
+
+    <!-- Today's Menu Modal -->
+    <div id="menuModal" class="modal-overlay hidden">
+        <div class="modal-content menu-modal">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-utensils text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900" id="modalTitle">Today's Menu</h3>
+                <p class="text-gray-600 mt-2" id="modalDate"></p>
+            </div>
+            
+            <div class="space-y-6" id="modalMealsContent">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+            
+            <div class="flex gap-3 mt-8">
+                <button type="button" 
+                        onclick="closeMenuModal()"
+                        class="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
+                    Close
+                </button>
+                <button type="button" 
+                        onclick="toggleDayView()"
+                        id="toggleDayBtn"
+                        class="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-3 rounded-lg font-medium hover:from-cyan-600 hover:to-blue-700 transition">
+                    View Tomorrow
+                </button>
+            </div>
+            
+            <div class="text-center mt-4">
+                <p class="text-xs text-gray-500">
+                    <i class="fa-solid fa-info-circle mr-1"></i>
+                    Meal timings: Breakfast 7:30-9:30, Lunch 1:00-3:00, Dinner 7:30-9:30
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Weekly Menu Modal -->
+    <div id="fullMenuModal" class="modal-overlay hidden">
+        <div class="modal-content menu-modal">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-calendar-week text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900">Weekly Meal Plan</h3>
+                <p class="text-gray-600 mt-2">Complete menu for the entire week</p>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-600">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3">Day</th>
+                            <th class="px-4 py-3">Breakfast</th>
+                            <th class="px-4 py-3">Lunch</th>
+                            <th class="px-4 py-3">Dinner</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyMenuTable">
+                        <!-- Dynamic content will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-6 p-4 bg-cyan-50 rounded-lg">
+                <h4 class="font-bold text-gray-900 mb-2">Meal Timings:</h4>
+                <div class="grid grid-cols-3 gap-2 text-sm">
+                    <div class="text-center p-2 bg-white rounded">
+                        <div class="font-bold text-cyan-600">Breakfast</div>
+                        <div>7:30 AM - 9:30 AM</div>
+                    </div>
+                    <div class="text-center p-2 bg-white rounded">
+                        <div class="font-bold text-emerald-600">Lunch</div>
+                        <div>1:00 PM - 3:00 PM</div>
+                    </div>
+                    <div class="text-center p-2 bg-white rounded">
+                        <div class="font-bold text-amber-600">Dinner</div>
+                        <div>7:30 PM - 9:30 PM</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 mt-8">
+                <button type="button" 
+                        onclick="closeFullMenuModal()"
+                        class="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
+                    Close
+                </button>
+                <button type="button" 
+                        onclick="showMenuModal()"
+                        class="flex-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-3 rounded-lg font-medium hover:from-emerald-600 hover:to-green-700 transition">
+                    Today's Menu
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Management Access Modal -->
     <div id="managementAccessModal" class="modal-overlay hidden">
@@ -915,17 +1162,235 @@
     </button>
 
     <script>
+        // Meal Data
+        const WEEKLY_MENU = {
+            "Monday": {
+                "breakfast": "Tea Paratha",
+                "lunch": "Sabzi",
+                "dinner": "Dal Chawal"
+            },
+            "Tuesday": {
+                "breakfast": "Tea Paratha",
+                "lunch": "Cholle",
+                "dinner": "Chicken"
+            },
+            "Wednesday": {
+                "breakfast": "Tea Paratha",
+                "lunch": "Daleem Chawal",
+                "dinner": "Fried Aaloo"
+            },
+            "Thursday": {
+                "breakfast": "Tea Paratha",
+                "lunch": "Aaloo",
+                "dinner": "Sabzi"
+            },
+            "Friday": {
+                "breakfast": "Tea Paratha",
+                "lunch": "Special Biryani",
+                "dinner": "Dal Mung"
+            },
+            "Saturday": {
+                "breakfast": "Tea Paratha",
+                "lunch": "Chicken Chana Dal",
+                "dinner": "Aaloo Egg"
+            },
+            "Sunday": {
+                "breakfast": "Tea & Special Biscuits",
+                "lunch": "Cholla / Aaloo Biryani",
+                "dinner": "Chicken"
+            }
+        };
+
+        const MEAL_TIMINGS = {
+            "breakfast": "7:30 AM - 9:30 AM",
+            "lunch": "1:00 PM - 3:00 PM",
+            "dinner": "7:30 PM - 9:30 PM"
+        };
+
         // Secure Access Configuration
         const ACCESS_CONFIG = {
             CORRECT_CODE: "teamibh2026",
             MAX_ATTEMPTS: 3,
-            LOCKOUT_TIME: 30000, // 30 seconds in milliseconds
+            LOCKOUT_TIME: 30000,
             STORAGE_KEY: 'management_access_attempts'
         };
 
         let accessAttempts = 0;
         let isLocked = false;
         let lockoutTimeout = null;
+        let isViewingTomorrow = false;
+
+        // Get current day
+        function getCurrentDay() {
+            const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const today = new Date();
+            return days[today.getDay()];
+        }
+
+        // Get tomorrow's day
+        function getTomorrowDay() {
+            const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return days[tomorrow.getDay()];
+        }
+
+        // Format date
+        function formatDate(date, isTomorrow = false) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            if (isTomorrow) {
+                date.setDate(date.getDate() + 1);
+            }
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        // Render today's meals
+        function renderTodaysMeals() {
+            const today = getCurrentDay();
+            const meals = WEEKLY_MENU[today];
+            const container = document.getElementById('todaysMeals');
+            const currentDate = document.getElementById('currentDate');
+            
+            // Set current date
+            currentDate.textContent = formatDate(new Date());
+            
+            // Clear container
+            container.innerHTML = '';
+            
+            // Add meal cards
+            Object.entries(meals).forEach(([mealType, meal]) => {
+                const mealCard = document.createElement('div');
+                mealCard.className = 'meal-card rounded-xl p-4 border border-gray-200 animate-slide-in';
+                mealCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-bold text-gray-900 capitalize">${mealType}</h4>
+                        <span class="bg-cyan-100 text-cyan-800 text-xs px-3 py-1 rounded-full font-medium">
+                            ${MEAL_TIMINGS[mealType]}
+                        </span>
+                    </div>
+                    <p class="text-gray-700">${meal}</p>
+                `;
+                container.appendChild(mealCard);
+            });
+        }
+
+        // Render meals for modal
+        function renderMealsForModal(day, isTomorrow = false) {
+            const meals = WEEKLY_MENU[day];
+            const container = document.getElementById('modalMealsContent');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDate = document.getElementById('modalDate');
+            
+            // Set modal title and date
+            modalTitle.textContent = isTomorrow ? "Tomorrow's Menu" : "Today's Menu";
+            modalDate.textContent = formatDate(new Date(), isTomorrow);
+            
+            // Clear container
+            container.innerHTML = '';
+            
+            // Add meal cards
+            Object.entries(meals).forEach(([mealType, meal]) => {
+                const mealCard = document.createElement('div');
+                mealCard.className = 'meal-card rounded-xl p-5 border border-gray-200';
+                mealCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-lg ${
+                                mealType === 'breakfast' ? 'bg-amber-100' : 
+                                mealType === 'lunch' ? 'bg-emerald-100' : 'bg-cyan-100'
+                            } flex items-center justify-center mr-3">
+                                <i class="fas fa-${
+                                    mealType === 'breakfast' ? 'sun' : 
+                                    mealType === 'lunch' ? 'utensils' : 'moon'
+                                } text-${
+                                    mealType === 'breakfast' ? 'amber' : 
+                                    mealType === 'lunch' ? 'emerald' : 'cyan'
+                                }-600"></i>
+                            </div>
+                            <h4 class="font-bold text-gray-900 text-lg capitalize">${mealType}</h4>
+                        </div>
+                        <span class="bg-gray-100 text-gray-800 text-xs px-3 py-1 rounded-full font-medium">
+                            ${MEAL_TIMINGS[mealType]}
+                        </span>
+                    </div>
+                    <p class="text-gray-700 text-lg font-medium">${meal}</p>
+                `;
+                container.appendChild(mealCard);
+            });
+        }
+
+        // Render weekly menu table
+        function renderWeeklyMenuTable() {
+            const container = document.getElementById('weeklyMenuTable');
+            container.innerHTML = '';
+            
+            Object.entries(WEEKLY_MENU).forEach(([day, meals]) => {
+                const row = document.createElement('tr');
+                row.className = 'bg-white border-b hover:bg-gray-50';
+                if (day === getCurrentDay()) {
+                    row.className += ' bg-cyan-50';
+                }
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-medium text-gray-900 ${day === getCurrentDay() ? 'text-cyan-600' : ''}">
+                        ${day}
+                    </td>
+                    <td class="px-4 py-3">${meals.breakfast}</td>
+                    <td class="px-4 py-3">${meals.lunch}</td>
+                    <td class="px-4 py-3">${meals.dinner}</td>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // Menu Modal Functions
+        function showMenuModal() {
+            const today = getCurrentDay();
+            isViewingTomorrow = false;
+            renderMealsForModal(today, false);
+            document.getElementById('toggleDayBtn').textContent = 'View Tomorrow';
+            document.getElementById('menuModal').classList.remove('hidden');
+            
+            // Close mobile menu if open
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+
+        function showTomorrowMeals() {
+            const tomorrow = getTomorrowDay();
+            isViewingTomorrow = true;
+            renderMealsForModal(tomorrow, true);
+            document.getElementById('toggleDayBtn').textContent = 'View Today';
+            document.getElementById('menuModal').classList.remove('hidden');
+        }
+
+        function toggleDayView() {
+            isViewingTomorrow = !isViewingTomorrow;
+            if (isViewingTomorrow) {
+                const tomorrow = getTomorrowDay();
+                renderMealsForModal(tomorrow, true);
+                document.getElementById('toggleDayBtn').textContent = 'View Today';
+            } else {
+                const today = getCurrentDay();
+                renderMealsForModal(today, false);
+                document.getElementById('toggleDayBtn').textContent = 'View Tomorrow';
+            }
+        }
+
+        function closeMenuModal() {
+            document.getElementById('menuModal').classList.add('hidden');
+        }
+
+        function showFullMenuModal() {
+            renderWeeklyMenuTable();
+            document.getElementById('fullMenuModal').classList.remove('hidden');
+            
+            // Close mobile menu if open
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+
+        function closeFullMenuModal() {
+            document.getElementById('fullMenuModal').classList.add('hidden');
+        }
 
         // Load attempts from localStorage
         function loadAccessAttempts() {
@@ -1203,41 +1668,40 @@
             }
         });
         
-        // Add animation on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-fadeIn');
-                }
-            });
-        }, observerOptions);
-        
-        // Observe elements for animation
-        document.querySelectorAll('.card-hover, .stat-card, .icon-circle').forEach(el => {
-            observer.observe(el);
-        });
-        
-        // Close modal when clicking outside
-        document.getElementById('managementAccessModal').addEventListener('click', function(e) {
-            if (e.target === this) {
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            const menuModal = document.getElementById('menuModal');
+            const fullMenuModal = document.getElementById('fullMenuModal');
+            const managementModal = document.getElementById('managementAccessModal');
+            
+            if (menuModal && !menuModal.classList.contains('hidden') && e.target === menuModal) {
+                closeMenuModal();
+            }
+            
+            if (fullMenuModal && !fullMenuModal.classList.contains('hidden') && e.target === fullMenuModal) {
+                closeFullMenuModal();
+            }
+            
+            if (managementModal && !managementModal.classList.contains('hidden') && e.target === managementModal) {
                 closeManagementAccessModal();
             }
         });
         
-        // Close modal with Escape key
+        // Close modals with Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
+                closeMenuModal();
+                closeFullMenuModal();
                 closeManagementAccessModal();
             }
         });
         
         // Initialize
-        loadAccessAttempts();
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTodaysMeals();
+            renderWeeklyMenuTable();
+            loadAccessAttempts();
+        });
     </script>
 </body>
 </html>
