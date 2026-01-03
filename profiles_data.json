@@ -1,13 +1,13 @@
 {
   "users": [
     {
-      "username": "israr",
-      "password": "israr123",
+      "username": "israrsindhi",
+      "password": "israrali01",
       "defaultProfile": {
-        "name": "Administrator",
+        "name": "Israr ALi",
         "role": "System Admin",
         "department": "Administration",
-        "email": "admin@indushostel.com",
+        "email": "israrasadnan@gmail.com.com",
         "phone": "0333-1234567",
         "image": "https://ui-avatars.com/api/?name=Admin&background=4f46e5&color=fff&size=128",
         "signature": "Admin Signature",
@@ -18,16 +18,16 @@
       }
     },
     {
-      "username": "manager",
-      "password": "manager123",
+      "username": "Afzalali",
+      "password": "afzalali01",
       "defaultProfile": {
-        "name": "Hostel Manager",
-        "role": "Manager",
+        "name": "Afzal Ali",
+        "role": "Owner",
         "department": "Management",
-        "email": "manager@indushostel.com",
-        "phone": "0333-7654321",
+        "email": "afzalmallahrn@gmail.com",
+        "phone": "03000360956",
         "image": "https://ui-avatars.com/api/?name=Manager&background=059669&color=fff&size=128",
-        "signature": "Manager Signature",
+        "signature": "Owner Signature",
         "permissions": ["view"],
         "theme": "green",
         "notifications": true,
@@ -35,14 +35,14 @@
       }
     },
     {
-      "username": "accountant",
-      "password": "accountant123",
+      "username": "management",
+      "password": "managementteam990",
       "defaultProfile": {
-        "name": "Accountant",
-        "role": "Finance Officer",
-        "department": "Accounts",
+        "name": "Management Team",
+        "role": "Management Team",
+        "department": "Management",
         "email": "accountant@indushostel.com",
-        "phone": "0333-9876543",
+        "phone": " ",
         "image": "https://ui-avatars.com/api/?name=Accountant&background=7c3aed&color=fff&size=128",
         "signature": "Accountant Signature",
         "permissions": ["view"],
@@ -54,7 +54,7 @@
   ],
   "portalInfo": {
     "name": "Indus Boys Hostel Management Portal",
-    "address": "Hostel Street, DHA Phase 1, Karachi",
+    "address": " Opposite Broadway Pizza, 100ft Road, Cooperative Housing Society Sukkur",
     "contact": "0333-1234567",
     "established": "2020",
     "version": "2.0"
